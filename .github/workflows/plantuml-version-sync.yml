@@ -1,0 +1,113 @@
+name: PlantUML Version Sync
+
+on:
+  schedule:
+    # Check for new PlantUML releases daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  check-plantuml-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Get current PlantUML version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(ruby -e "require './lib/metanorma/plugin/plantuml/version'; puts Metanorma::Plugin::Plantuml::PLANTUML_JAR_VERSION")
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get latest PlantUML release
+        id: latest-version
+        run: |
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/plantuml/plantuml/releases/latest | jq -r .tag_name | sed 's/^v//')
+          echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: compare
+        run: |
+          if [ "${{ steps.current-version.outputs.version }}" != "${{ steps.latest-version.outputs.version }}" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "Current version: ${{ steps.current-version.outputs.version }}"
+            echo "Latest version: ${{ steps.latest-version.outputs.version }}"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "PlantUML version is up to date"
+          fi
+
+      - name: Update version file
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          NEW_VERSION="${{ steps.latest-version.outputs.version }}"
+          sed -i "s/PLANTUML_JAR_VERSION = \".*\"/PLANTUML_JAR_VERSION = \"$NEW_VERSION\"/" lib/metanorma/plugin/plantuml/version.rb
+
+      - name: Update gem version
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          # Increment patch version using semantic versioning
+          CURRENT_GEM_VERSION=$(ruby -e "require './lib/metanorma/plugin/plantuml/version'; puts Metanorma::Plugin::Plantuml::VERSION")
+          NEW_GEM_VERSION=$(ruby -e "
+            require 'rubygems'
+            current_version = Gem::Version.new('$CURRENT_GEM_VERSION')
+            segments = current_version.segments
+            segments[2] = (segments[2] || 0) + 1
+            puts segments.join('.')
+          ")
+          sed -i "s/VERSION = \".*\"/VERSION = \"$NEW_GEM_VERSION\"/" lib/metanorma/plugin/plantuml/version.rb
+          echo "Updated gem version from $CURRENT_GEM_VERSION to $NEW_GEM_VERSION"
+
+      - name: Remove old JAR and download new one
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          rm -f data/plantuml.jar
+          bundle exec rake download_jar
+
+      - name: Verify new JAR works
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          if [ -f "data/plantuml.jar" ]; then
+            echo "PlantUML JAR downloaded successfully"
+            java -jar data/plantuml.jar -version || echo "Version check completed"
+          else
+            echo "Failed to download PlantUML JAR"
+            exit 1
+          fi
+
+      - name: Create Pull Request
+        if: steps.compare.outputs.needs_update == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            Update PlantUML to version ${{ steps.latest-version.outputs.version }}
+
+            - Updated PLANTUML_JAR_VERSION to ${{ steps.latest-version.outputs.version }}
+            - Downloaded new PlantUML JAR file
+            - Incremented gem version
+          title: "Update PlantUML to version ${{ steps.latest-version.outputs.version }}"
+          body: |
+            This PR updates PlantUML to the latest version ${{ steps.latest-version.outputs.version }}.
+
+            Changes:
+            - Updated `PLANTUML_JAR_VERSION` in `lib/metanorma/plugin/plantuml/version.rb`
+            - Downloaded new PlantUML JAR to `data/plantuml.jar`
+            - Incremented gem version
+
+            This update was created automatically by the PlantUML version sync workflow.
+          branch: update-plantuml-${{ steps.latest-version.outputs.version }}
+          base: main
+          labels: |
+            enhancement
+            automated

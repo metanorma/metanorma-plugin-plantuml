@@ -1,0 +1,374 @@
+= Metanorma PlantUML plugin (metanorma-plugin-plantuml)
+
+image:https://github.com/metanorma/metanorma-plugin-plantuml/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/metanorma-plugin-plantuml/actions?workflow=rake"]
+
+== Purpose
+
+This is a Metanorma plugin to enable usage of PlantUML diagrams in Metanorma
+documents.
+
+It provides a Ruby API that wraps a bundled PlantUML JAR file.
+
+== PlantUML
+
+PlantUML is a popular tool that allows users to create rich diagrams from plain
+text descriptions, including:
+
+* UML diagrams
+
+** Sequence diagram
+** Usecase diagram
+** Class diagram
+** Object diagram
+** Activity diagram
+** Component diagram
+** Deployment diagram
+** State diagram
+** Timing diagram
+
+It also supports the following non-UML diagrams:
+
+* JSON Data
+* YAML Data
+* Network diagram (nwdiag)
+* Wireframe graphical interface
+* Archimate diagram
+* Specification and Description Language (SDL)
+* Ditaa diagram
+* Gantt diagram
+* MindMap diagram
+* Work Breakdown Structure diagram
+* Mathematic with AsciiMath or JLaTeXMath notation
+* Entity Relationship diagram
+
+For more details, please refer to the
+https://www.plantuml.net[official PlantUML website].
+
+The official PlantUML Language Reference Guide is available at:
+
+* https://pdf.plantuml.net/PlantUML_Language_Reference_Guide_en.pdf
+
+
+== Installation
+
+[source,console]
+----
+$ gem install metanorma-plugin-plantuml
+----
+
+
+== Usage
+
+This plugin enables PlantUML diagram generation in Metanorma documents through
+the `plantuml` block directive.
+
+
+=== Basic syntax
+
+[source,asciidoc]
+----
+[plantuml]
+....
+@startuml
+Alice -> Bob: Hello
+Bob -> Alice: Hi there
+@enduml
+....
+----
+
+=== Supported diagram types
+
+PlantUML supports various diagram types, each with its own `@start` and `@end` directives:
+
+`@startuml` / `@enduml`:: UML diagrams (sequence, class, activity, etc.)
+`@startmindmap` / `@endmindmap`:: Mind map diagrams
+`@startgantt` / `@endgantt`:: Gantt charts
+`@startsalt` / `@endsalt`:: Wireframe diagrams
+`@startdot` / `@enddot`:: Graphviz DOT diagrams
+`@startditaa` / `@endditaa`:: ASCII art diagrams
+`@startjson` / `@endjson`:: JSON data visualization
+`@startyaml` / `@endyaml`:: YAML data visualization
+
+.Sequence diagram
+[example]
+====
+[source,asciidoc]
+----
+[plantuml]
+....
+@startuml sequence-example
+participant Alice
+participant Bob
+
+Alice -> Bob: Authentication Request
+Bob --> Alice: Authentication Response
+@enduml
+....
+----
+====
+
+.Mind map
+[example]
+====
+[source,asciidoc]
+----
+[plantuml]
+....
+@startmindmap
+* Metanorma
+** Standards
+*** ISO
+*** IEC
+*** ITU
+** Formats
+*** PDF
+*** HTML
+*** Word
+@endmindmap
+....
+----
+====
+
+=== Format options
+
+==== Single format specification
+
+Specify the output format using the `format` attribute:
+
+[source,asciidoc]
+----
+[plantuml,format=svg]
+....
+@startuml
+Alice -> Bob: Hello
+@enduml
+....
+----
+
+Supported formats:
+
+`png`:: (default) Portable Network Graphics
+`svg`:: Scalable Vector Graphics
+`pdf`:: Portable Document Format
+`txt`:: ASCII art text output
+`eps`:: Encapsulated PostScript
+
+==== Multiple format generation
+
+Generate multiple formats simultaneously using the `formats` attribute:
+
+[source,asciidoc]
+----
+[plantuml,formats="png,svg,pdf"]
+....
+@startuml
+Alice -> Bob: Hello
+@enduml
+....
+----
+
+==== Document-level format configuration
+
+Set the default format for all PlantUML diagrams in your document:
+
+[source,asciidoc]
+----
+:plantuml-image-format: svg
+
+[plantuml]
+....
+@startuml
+Alice -> Bob: Hello
+@enduml
+....
+----
+
+=== Image attributes
+
+Standard AsciiDoc image attributes are supported:
+
+[source,asciidoc]
+----
+[plantuml,id=my-diagram,title="My Sequence Diagram",width=600,height=400]
+....
+@startuml
+Alice -> Bob: Hello
+@enduml
+....
+----
+
+Supported attributes:
+
+`id`:: Element identifier
+`title`:: Image title/caption
+`alt`:: Alternative text
+`width`:: Image width
+`height`:: Image height
+`align`:: Alignment (left, center, right)
+`float`:: Float positioning
+`role`:: CSS class/role
+
+=== Filename specification
+
+Specify custom filenames within the PlantUML source:
+
+[source,asciidoc]
+----
+[plantuml]
+....
+@startuml my-custom-name
+Alice -> Bob: Hello
+@enduml
+....
+----
+
+This generates `my-custom-name.png` (or specified format) instead of an
+auto-generated filename.
+
+
+=== Configuration options
+
+==== Disable PlantUML processing
+
+Disable PlantUML processing document-wide:
+
+[source,asciidoc]
+----
+:plantuml-disabled:
+
+[plantuml]
+....
+@startuml
+Alice -> Bob: Hello
+@enduml
+....
+----
+
+When disabled, PlantUML blocks are rendered as code listings instead of diagrams.
+
+==== Environment variable
+
+Disable PlantUML processing via environment variable:
+
+[source,console]
+----
+$ PLANTUML_DISABLED=true metanorma document.adoc
+----
+
+=== File organization
+
+Generated PlantUML images are stored in the `_plantuml_images/` directory
+relative to your document location. This directory is automatically created if
+it doesn't exist.
+
+== Development
+
+=== Architecture
+
+This plugin follows a layered architecture that separates concerns between
+Metanorma integration and PlantUML execution:
+
+[source]
+----
+Metanorma Document
+      ↓
+BlockProcessor ← (processes [plantuml] blocks)
+      ↓
+Backend ← (Metanorma integration, paths, validation)
+      ↓
+Wrapper ← (Java/JAR execution, file I/O)
+      ↓
+PlantUML JAR ← (diagram generation)
+----
+
+`BlockProcessor`:: Processes `[plantuml]` blocks in Metanorma documents and
+integrates with the Metanorma rendering pipeline.
+
+`Backend`:: Handles Metanorma-specific logic including document paths, PlantUML
+source validation, filename extraction, and attribute mapping.
+
+`Wrapper`:: Provides low-level PlantUML JAR execution with cross-platform Java
+handling, file I/O operations, and format conversion.
+
+
+=== Version mapping
+
+This gem uses semantic versioning independent of the PlantUML JAR version.
+
+The following table shows the relationship between gem versions and bundled
+PlantUML versions:
+
+[cols="1,1,1", options="header"]
+|===
+| Gem version | PlantUML version | Notes
+
+| 1.0.0       | 1.2025.4        | Latest release with updated architecture
+|===
+
+This approach allows the gem to follow standard semantic versioning practices
+while clearly documenting which PlantUML version is bundled with each release.
+
+=== Updating PlantUML version
+
+This gem bundles a specific version of PlantUML JAR file. To update to a newer
+version:
+
+. Check the latest PlantUML release at
+https://github.com/plantuml/plantuml/releases
+
+. Update the version in `lib/metanorma/plugin/plantuml/version.rb`:
++
+[source,ruby]
+----
+PLANTUML_JAR_VERSION = "1.2025.4"  # Update to latest version
+VERSION = "1.0.1"                  # Increment patch version
+----
+
+. Clean the old JAR file:
++
+[source,console]
+----
+$ bundle exec rake clean_jar
+----
+
+. Download the new JAR file:
++
+[source,console]
+----
+$ bundle exec rake download_jar
+----
+
+. Run tests to ensure everything works:
++
+[source,console]
+----
+$ bundle exec rake spec
+----
+
+. Update the gem version by incrementing the patch version (e.g., `1.0.0` →
+`1.0.1`) for PlantUML updates, or increment minor/major versions for gem feature
+updates.
+
+=== Available rake tasks
+
+[source,console]
+----
+$ bundle exec rake download_jar  # Download PlantUML JAR file
+$ bundle exec rake clean_jar     # Remove downloaded JAR file
+$ bundle exec rake spec          # Run tests
+----
+
+== Documentation
+
+Please refer to https://www.metanorma.org.
+
+== Copyright and license
+
+Copyright Ribose.
+
+PlantUML is open-sourced under multiple licenses. For more details, please refer
+to the PlantUML repository at https://github.com/plantuml/plantuml.
+
+For the purposes of this plugin, it is distributed under the MIT license.
+
+Licensed under the 2-Clause BSD License.
