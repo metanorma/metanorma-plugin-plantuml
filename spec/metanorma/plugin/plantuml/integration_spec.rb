@@ -42,7 +42,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           #{BLANK_HDR}
           <sections>
             <figure id="_">
-              <image src="_plantuml_images/_.png" filename="_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
             </figure>
           </sections>
           </metanorma>
@@ -77,7 +77,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           #{BLANK_HDR}
           <sections>
             <figure id="_">
-              <image src="_plantuml_images/_.svg" filename="_plantuml_images/_.svg" id="_" mimetype="image/svg+xml" height="auto" width="auto"/>
+              <image src="../../_plantuml_images/_.svg" filename="../../_plantuml_images/_.svg" id="_" mimetype="image/svg+xml" height="auto" width="auto"/>
             </figure>
           </sections>
           </metanorma>
@@ -112,7 +112,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           #{BLANK_HDR}
           <sections>
             <figure id="_">
-              <image src="_plantuml_images/_.png" filename="_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
             </figure>
           </sections>
           </metanorma>
@@ -152,10 +152,10 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           #{BLANK_HDR}
           <sections>
             <figure id="_">
-              <image src="_plantuml_images/_.png" filename="_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
             </figure>
             <figure id="_">
-              <image src="_plantuml_images/_.png" filename="_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
             </figure>
           </sections>
           </metanorma>

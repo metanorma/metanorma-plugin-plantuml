@@ -86,7 +86,7 @@ RSpec.describe "PlantUML Filename Handling" do
     end
 
     it "processes plantuml-lrg-4-7.wsd with filename PERT" do
-      fixture_content = File.read(File.join(fixtures_path, "plantuml-lrg-4-7.wsd"))
+      fixture_content = File.read(fixtures_path('plantuml-lrg-4-7.wsd'))
       reader = TestReader.new(fixture_content)
 
       result = Metanorma::Plugin::Plantuml::Backend.generate_file(test_parent, reader)
@@ -95,7 +95,7 @@ RSpec.describe "PlantUML Filename Handling" do
     end
 
     it "processes plantuml-custom-filename.wsd with quoted filename" do
-      fixture_content = File.read(File.join(fixtures_path, "plantuml-custom-filename.wsd"))
+      fixture_content = File.read(fixtures_path('plantuml-custom-filename.wsd'))
       reader = TestReader.new(fixture_content)
 
       result = Metanorma::Plugin::Plantuml::Backend.generate_file(test_parent, reader)
