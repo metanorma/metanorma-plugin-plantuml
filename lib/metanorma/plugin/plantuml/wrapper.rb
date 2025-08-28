@@ -235,7 +235,7 @@ module Metanorma
 
           def extract_plantuml_filename_from_content(content)
             # Extract the raw filename from @start... line (don't sanitize)
-            match = content.match(/^@start\w+\s+(.+)$/mi)
+            match = content.match(/^@start\w+\s+(.{1,999})$/mi)
             return nil unless match
 
             filename = match[1].strip.split("\n").first&.strip
