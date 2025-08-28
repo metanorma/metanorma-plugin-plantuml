@@ -20,7 +20,6 @@ module Metanorma
             docdir = document.attributes["docdir"] || Dir.pwd
             File.expand_path(file_path, docdir)
           end
-
         end
       end
     end

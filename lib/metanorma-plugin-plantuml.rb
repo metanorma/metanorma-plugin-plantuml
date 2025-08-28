@@ -1,4 +1,3 @@
-
 module Metanorma
   module Plugin
     module Plantuml

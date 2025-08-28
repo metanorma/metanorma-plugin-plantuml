@@ -26,7 +26,7 @@ end
 def strip_guid(xml)
   strip_schema_version(
     xml.gsub(%r{<fetched>[^<]+</fetched>}, "<fetched/>")
-      .gsub(%r{id="_[^"]+"}, 'id="_"')
+      .gsub(%r{id="_[^"]+"}, 'id="_"'),
   )
 end
 

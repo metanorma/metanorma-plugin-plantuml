@@ -20,11 +20,11 @@ module Metanorma
           create_listing_block(
             parent,
             reader.source,
-            (attrs.reject { |k, _v| k.to_s.match?(/^\d+$/) })
+            attrs.reject { |k, _v| k.to_s.match?(/^\d+$/) },
           )
         end
 
-        def process(parent, reader, attrs)
+        def process(parent, reader, attrs) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           # Check for document-level disable flag
           if parent.document.attr("plantuml-disabled")
             return abort(parent, reader, attrs, "PlantUML processing disabled")
@@ -41,21 +41,21 @@ module Metanorma
           if formats.length == 1
             # Single format - original behavior
             filename = Backend.generate_file(parent, reader, formats.first)
-            through_attrs = Backend.generate_attrs attrs
+            through_attrs = Backend.generate_attrs(attrs)
             through_attrs["target"] = filename
-            create_image_block parent, through_attrs
           else
             # Multiple formats - generate multiple files
-            through_attrs = Backend.generate_multiple_files(parent, reader, formats, attrs)
-            create_image_block parent, through_attrs
+            through_attrs = Backend
+              .generate_multiple_files(parent, reader, formats, attrs)
           end
+          create_image_block parent, through_attrs
         rescue StandardError => e
           abort(parent, reader, attrs, e.message)
         end
 
         private
 
-        def parse_formats(attrs, document)
+        def parse_formats(attrs, document) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
           # Check for formats attribute (multiple formats)
           if attrs["formats"]
             formats = attrs["formats"].split(",").map(&:strip).map(&:downcase)
@@ -69,7 +69,8 @@ module Metanorma
           end
 
           # Fall back to document attribute or default
-          default_format = document.attr("plantuml-image-format")&.strip&.downcase || "png"
+          default_format = document
+            .attr("plantuml-image-format")&.strip&.downcase || "png"
           [default_format]
         end
 

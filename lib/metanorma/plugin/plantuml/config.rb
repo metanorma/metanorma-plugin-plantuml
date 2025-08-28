@@ -17,7 +17,7 @@ module Metanorma
           options = [
             "-Xss5m",
             "-Xmx#{memory_limit}",
-            "-Djava.awt.headless=true"
+            "-Djava.awt.headless=true",
           ]
 
           if RbConfig::CONFIG["host_os"].match?(/darwin|mac os/)

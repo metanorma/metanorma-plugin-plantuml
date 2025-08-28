@@ -1,15 +1,15 @@
 require "spec_helper"
 
 RSpec.describe Metanorma::Plugin::Plantuml do
-
   def metanorma_convert(input)
     result = Asciidoctor.convert(
       input,
       backend: :standoc, header_footer: true,
-        agree_to_terms: true, to_file: false, safe: :safe,
-        attributes: ["nodoc", "stem", "xrefstyle=short",
-                      "docfile=test.adoc",
-                      "output_dir="])
+      agree_to_terms: true, to_file: false, safe: :safe,
+      attributes: ["nodoc", "stem", "xrefstyle=short",
+                   "docfile=test.adoc",
+                   "output_dir="]
+    )
     strip_guid(result)
   end
 
@@ -48,7 +48,8 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           </metanorma>
         XML
 
-        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.}, "_plantuml_images/_.")))
+        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.},
+                                      "_plantuml_images/_.")))
           .to be_xml_equivalent_to(expected)
       end
     end
@@ -83,7 +84,8 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           </metanorma>
         XML
 
-        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.}, "_plantuml_images/_.")))
+        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.},
+                                      "_plantuml_images/_.")))
           .to be_xml_equivalent_to(expected)
       end
     end
@@ -161,7 +163,8 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           </metanorma>
         XML
 
-        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.}, "_plantuml_images/_.")))
+        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.},
+                                      "_plantuml_images/_.")))
           .to be_xml_equivalent_to(expected)
       end
     end
@@ -183,19 +186,22 @@ RSpec.describe Metanorma::Plugin::Plantuml do
       end
 
       it "falls back to source code block with syntax errors" do
-        expect { metanorma_convert(input) }
-          .to output(%r{@startuml without matching @enduml in PlantUML!}).to_stderr
+        expect do
+          metanorma_convert(input)
+        end
+          .to output(%r{@startuml without matching @enduml in PlantUML!})
+          .to_stderr
 
         result = metanorma_convert(input)
 
         expected = <<~XML
-          #{BLANK_HDR}
-          <sections>
-            <sourcecode id="_" lang="plantuml"><body>@startuml
-Alice -&gt; Bob: Authentication Request
-Bob --&gt; Alice: Authentication Response</body></sourcecode>
-          </sections>
-          </metanorma>
+                    #{BLANK_HDR}
+                    <sections>
+                      <sourcecode id="_" lang="plantuml"><body>@startuml
+          Alice -&gt; Bob: Authentication Request
+          Bob --&gt; Alice: Authentication Response</body></sourcecode>
+                    </sections>
+                    </metanorma>
         XML
 
         expect(strip_guid(result)).to be_xml_equivalent_to(expected)
@@ -219,19 +225,20 @@ Bob --&gt; Alice: Authentication Response</body></sourcecode>
 
       it "falls back to source code block when PlantUML is disabled" do
         # Use document attribute to disable PlantUML processing
-        input_with_disabled = input.sub(/:no-isobib:/, ":no-isobib:\n:plantuml-disabled:")
+        input_with_disabled = input.sub(/:no-isobib:/,
+                                        ":no-isobib:\n:plantuml-disabled:")
 
         result = metanorma_convert(input_with_disabled)
 
         expected = <<~XML
-          #{BLANK_HDR}
-          <sections>
-            <sourcecode id="_" lang="plantuml"><body>@startuml
-Alice -&gt; Bob: Authentication Request
-Bob --&gt; Alice: Authentication Response
-@enduml</body></sourcecode>
-          </sections>
-          </metanorma>
+                    #{BLANK_HDR}
+                    <sections>
+                      <sourcecode id="_" lang="plantuml"><body>@startuml
+          Alice -&gt; Bob: Authentication Request
+          Bob --&gt; Alice: Authentication Response
+          @enduml</body></sourcecode>
+                    </sections>
+                    </metanorma>
         XML
 
         expect(strip_guid(result)).to be_xml_equivalent_to(expected)

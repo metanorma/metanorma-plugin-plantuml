@@ -13,9 +13,11 @@ rescue StandardError
 end
 
 gem "byebug"
+gem "canon"
 gem "debug"
 gem "metanorma"
-gem "metanorma-standoc", github: "metanorma/metanorma-standoc", branch: "feature/extract-plantuml"
+gem "metanorma-standoc", github: "metanorma/metanorma-standoc",
+                         branch: "feature/extract-plantuml"
 gem "rake"
 gem "rspec"
 gem "rspec-html-matchers"
@@ -25,6 +27,3 @@ gem "simplecov"
 gem "timecop"
 gem "vcr"
 gem "webmock"
-gem "canon"
-gem "rubocop"
-gem "rubocop-performance"

@@ -10,7 +10,7 @@ task default: [
 ]
 
 def uri_open(url)
-  require 'open-uri'
+  require "open-uri"
   URI.parse(url).open
 end
 
@@ -29,7 +29,7 @@ file "data/plantuml.jar" do |file|
 end
 
 desc "Download PlantUML JAR file"
-task :download_jar => "data/plantuml.jar"
+task download_jar: "data/plantuml.jar"
 
 desc "Clean downloaded JAR file"
 task :clean_jar do
