@@ -12,16 +12,21 @@ module Metanorma
 
       class JarNotFoundError < PlantumlError
         def initialize(jar_path = nil)
-          message = jar_path ?
-            "PlantUML JAR file not found at: #{jar_path}" :
-            "PlantUML JAR file not found"
+          message = if jar_path
+                      "PlantUML JAR file not found at: #{jar_path}"
+                    else
+                      "PlantUML JAR file not found"
+                    end
           super(message)
         end
       end
 
       class JavaNotFoundError < PlantumlError
         def initialize
-          super("Java runtime not found. Please ensure Java is installed and available in PATH")
+          super(
+            "Java runtime not found. Please ensure Java is installed and " \
+            "available in PATH",
+          )
         end
       end
 
@@ -34,7 +39,10 @@ module Metanorma
 
       class InvalidFormatError < PlantumlError
         def initialize(format, available_formats)
-          super("Invalid format '#{format}'. Available formats: #{available_formats.join(', ')}")
+          super(
+            "Invalid format '#{format}'. Available formats: " \
+            "#{available_formats.join(', ')}",
+          )
         end
       end
     end
