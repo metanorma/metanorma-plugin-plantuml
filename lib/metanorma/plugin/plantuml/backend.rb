@@ -14,9 +14,9 @@ module Metanorma
       class Backend
         class << self
           def plantuml_installed?
-            unless Wrapper.available?
-              raise "PlantUML not installed"
-            end
+            return true if plantuml_available?
+
+            raise "PlantUML not installed"
           end
 
           def plantuml_available?
@@ -72,8 +72,9 @@ module Metanorma
           def generate_file_prep(parent)
             ldir = localdir(parent)
             imagesdir = parent.document.attr("imagesdir")
-            fmt = parent
-              .document.attr("plantuml-image-format")&.strip&.downcase || "png"
+            fmt = parent.document
+              .attr("plantuml-image-format")&.strip&.downcase ||
+              Wrapper::DEFAULT_FORMAT
             [ldir, imagesdir, fmt]
           end
 

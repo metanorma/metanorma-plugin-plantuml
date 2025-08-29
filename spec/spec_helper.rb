@@ -82,3 +82,66 @@ BLANK_HDR = <<~"HDR".freeze
     </presentation-metadata>
   </metanorma-extension>
 HDR
+
+class TestDocument
+  attr_reader :attributes
+
+  def initialize(temp_dir, attrs = {})
+    @attributes = {
+      "docdir" => temp_dir,
+      "imagesdir" => "images",
+      "plantuml-image-format" => "png",
+    }.merge(attrs)
+  end
+
+  def attr(key)
+    @attributes[key]
+  end
+end
+
+class TestParent
+  attr_reader :document
+
+  def initialize(document)
+    @document = document
+  end
+end
+
+class TestReader
+  attr_reader :source, :lines
+
+  def initialize(source)
+    @source = source
+    @lines = [source]
+  end
+end
+
+# Test implementation that captures method calls
+class TestBlockProcessor < Metanorma::Plugin::Plantuml::BlockProcessor
+  attr_reader :warnings, :created_blocks
+
+  def initialize
+    super
+    @warnings = []
+    @created_blocks = []
+  end
+
+  def warn(message)
+    @warnings << message
+  end
+
+  def create_image_block(parent, attrs)
+    @created_blocks << { type: :image, parent: parent, attrs: attrs }
+    "image_block_result"
+  end
+
+  def create_listing_block(parent, content, attrs)
+    @created_blocks << {
+      type: :listing,
+      parent: parent,
+      content: content,
+      attrs: attrs,
+    }
+    "listing_block_result"
+  end
+end

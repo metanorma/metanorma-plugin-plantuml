@@ -1,38 +1,5 @@
 require "spec_helper"
 
-class TestDocument
-  attr_reader :attributes
-
-  def initialize(temp_dir, attrs = {})
-    @attributes = {
-      "docdir" => temp_dir,
-      "imagesdir" => "images",
-      "plantuml-image-format" => "png",
-    }.merge(attrs)
-  end
-
-  def attr(key)
-    @attributes[key]
-  end
-end
-
-class TestParent
-  attr_reader :document
-
-  def initialize(document)
-    @document = document
-  end
-end
-
-class TestReader
-  attr_reader :source, :lines
-
-  def initialize(source)
-    @source = source
-    @lines = [source]
-  end
-end
-
 RSpec.describe Metanorma::Plugin::Plantuml::Backend do
   let(:temp_dir) { Dir.mktmpdir }
 
