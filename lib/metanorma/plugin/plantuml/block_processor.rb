@@ -70,12 +70,14 @@ module Metanorma
 
           # Fall back to document attribute or default
           default_format = document
-            .attr("plantuml-image-format")&.strip&.downcase || "png"
+            .attr("plantuml-image-format")&.strip&.downcase ||
+            Wrapper::DEFAULT_FORMAT
+
           [default_format]
         end
 
         def valid_format?(format)
-          %w[png svg pdf txt eps].include?(format)
+          Wrapper::SUPPORTED_FORMATS.include?(format)
         end
       end
     end
