@@ -17,7 +17,7 @@ gem "canon"
 gem "debug"
 gem "metanorma"
 gem "metanorma-standoc", github: "metanorma/metanorma-standoc",
-                         branch: "feature/extract-plantuml"
+                         branch: "main"
 gem "rake"
 gem "rspec"
 gem "rspec-html-matchers"
