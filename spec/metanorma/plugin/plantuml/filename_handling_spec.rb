@@ -70,8 +70,8 @@ RSpec.describe "PlantUML Filename Handling" do
       skip "PlantUML not available" unless Metanorma::Plugin::Plantuml::Wrapper.available?
     end
 
-    it "processes plantuml-lrg-4-7.wsd with filename PERT" do
-      fixture_content = File.read(fixtures_path("plantuml-lrg-4-7.wsd"))
+    it "processes plantuml-lrg-4-7.puml with filename PERT" do
+      fixture_content = File.read(fixtures_path("plantuml-lrg-4-7.puml"))
       reader = TestReader.new(fixture_content)
 
       result = Metanorma::Plugin::Plantuml::Backend
@@ -80,8 +80,10 @@ RSpec.describe "PlantUML Filename Handling" do
       expect(result).to match(/_plantuml_images\/PERT\.png/)
     end
 
-    it "processes plantuml-custom-filename.wsd with quoted filename" do
-      fixture_content = File.read(fixtures_path("plantuml-custom-filename.wsd"))
+    it "processes plantuml-custom-filename.puml with quoted filename" do
+      fixture_content = File.read(
+        fixtures_path("plantuml-custom-filename.puml"),
+      )
       reader = TestReader.new(fixture_content)
 
       result = Metanorma::Plugin::Plantuml::Backend

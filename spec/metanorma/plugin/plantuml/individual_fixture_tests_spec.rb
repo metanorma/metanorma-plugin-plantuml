@@ -7,7 +7,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
   end
 
   # Get all fixture files
-  fixture_files = Dir.glob(File.join(fixtures_path("."), "*.wsd")).sort
+  fixture_files = Dir.glob(File.join(fixtures_path("."), "*.puml")).sort
 
   # Chapter names from the PlantUML Language Reference Guide
   def self.chapter_names
@@ -40,10 +40,10 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
       chapter = $1.to_i
       chapter_name = chapter_names[chapter] || "Unknown Chapter"
       section = filename
-        .match(/plantuml-lrg-\d+-(.+)\.wsd$/)&.[](1) || "unknown"
+        .match(/plantuml-lrg-\d+-(.+)\.puml$/)&.[](1) || "unknown"
       [chapter, chapter_name, section]
     else
-      [0, "Other", filename.gsub(".wsd", "")]
+      [0, "Other", filename.gsub(".puml", "")]
     end
   end
 
@@ -67,7 +67,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
   # Create individual tests for each fixture file
   fixture_files.each do |fixture_file|
-    fixture_name = File.basename(fixture_file, ".wsd")
+    fixture_name = File.basename(fixture_file, ".puml")
     chapter, chapter_name, section = get_chapter_info(fixture_name)
 
     describe "#{chapter_name} (Chapter #{chapter})" do
