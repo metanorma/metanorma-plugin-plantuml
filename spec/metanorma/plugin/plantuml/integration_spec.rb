@@ -168,6 +168,56 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           .to be_xml_equivalent_to(expected)
       end
     end
+
+    context "Multiple PlantUML diagrams with included files" do
+      let(:input) do
+        <<~TEXT
+          #{ASCIIDOC_BLANK_HDR}
+          :imagesdir: spec/assets
+          :plantuml-includedir: spec/fixtures/plantuml
+
+          [plantuml]
+          ....
+          @startuml
+          !include sequences.puml!1
+          @enduml
+          ....
+
+          [plantuml]
+          ....
+          @startuml
+          !include components.puml!FRONTEND
+          !include components.puml!BACKEND
+
+          WebApp --> APIGateway
+          MobileApp --> APIGateway
+          APIGateway --> DB
+          @enduml
+          ....
+        TEXT
+      end
+
+      it "processes multiple diagrams correctly" do
+        result = metanorma_convert(input)
+
+        expected = <<~XML
+          #{BLANK_HDR}
+          <sections>
+            <figure id="_">
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+            </figure>
+            <figure id="_">
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+            </figure>
+          </sections>
+          </metanorma>
+        XML
+
+        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.},
+                                      "_plantuml_images/_.")))
+          .to be_xml_equivalent_to(expected)
+      end
+    end
   end
 
   context "PlantUML error handling" do

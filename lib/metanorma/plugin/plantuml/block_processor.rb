@@ -38,15 +38,24 @@ module Metanorma
           # Parse format specifications
           formats = parse_formats(attrs, parent.document)
 
+          # Parse include directory
+          options = {}
+          includedir = parse_includedir(parent.document)
+          options[:includedir] = includedir if includedir
+
           if formats.length == 1
             # Single format - original behavior
-            filename = Backend.generate_file(parent, reader, formats.first)
+            filename = Backend.generate_file(
+              parent, reader, format_override: formats.first, options: options
+            )
             through_attrs = Backend.generate_attrs(attrs)
             through_attrs["target"] = filename
           else
             # Multiple formats - generate multiple files
             through_attrs = Backend
-              .generate_multiple_files(parent, reader, formats, attrs)
+              .generate_multiple_files(
+                parent, reader, formats, attrs, options: options
+              )
           end
           create_image_block parent, through_attrs
         rescue StandardError => e
@@ -54,6 +63,10 @@ module Metanorma
         end
 
         private
+
+        def parse_includedir(document)
+          document.attr("plantuml-includedir")
+        end
 
         def parse_formats(attrs, document) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
           # Check for formats attribute (multiple formats)

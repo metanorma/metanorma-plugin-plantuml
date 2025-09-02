@@ -80,6 +80,18 @@ RSpec.describe "PlantUML Filename Handling" do
       expect(result).to match(/_plantuml_images\/PERT\.png/)
     end
 
+    it "processes plantuml-lrg-25-10-1.puml with includedir" do
+      fixture_content = File.read(fixtures_path("plantuml-lrg-25-10-1.puml"))
+      reader = TestReader.new(fixture_content)
+
+      result = Metanorma::Plugin::Plantuml::Backend
+        .generate_file(
+          test_parent, reader, options: { includedir: fixtures_path(".") }
+        )
+
+      expect(result).to match(/_plantuml_images\/plantuml_(.){1,999}.png/)
+    end
+
     it "processes plantuml-custom-filename.puml with quoted filename" do
       fixture_content = File.read(
         fixtures_path("plantuml-custom-filename.puml"),
