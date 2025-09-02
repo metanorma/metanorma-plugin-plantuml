@@ -75,7 +75,11 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
         let(:content) { File.read(fixture_file) }
 
         it "generates PNG successfully" do
-          result = @wrapper.generate(content, format: :png)
+          result = @wrapper.generate(
+            content,
+            format: :png,
+            includedir: File.dirname(fixture_file),
+          )
 
           if result[:success]
             expect(File.exist?(result[:output_path])).to be(true)
@@ -83,6 +87,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
             # Verify PNG format
             png_content = File.binread(result[:output_path])
+
             expect(valid_png?(png_content))
               .to be(true), "Generated file is not a valid PNG"
 
@@ -98,7 +103,11 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
         end
 
         it "generates SVG successfully" do
-          result = @wrapper.generate(content, format: :svg)
+          result = @wrapper.generate(
+            content,
+            format: :svg,
+            includedir: File.dirname(fixture_file),
+          )
 
           if result[:success]
             expect(File.exist?(result[:output_path])).to be(true)

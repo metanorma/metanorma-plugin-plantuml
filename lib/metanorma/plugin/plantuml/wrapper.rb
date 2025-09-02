@@ -32,7 +32,7 @@ module Metanorma
             options
           end
 
-          def generate( # rubocop:disable Metrics/MethodLength
+          def generate( # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
             content,
             format: DEFAULT_FORMAT,
             output_file: nil,
@@ -41,6 +41,9 @@ module Metanorma
             validate_format!(format)
             ensure_jar_available!
             ensure_java_available!
+
+            include_files = get_include_files(content, options)
+            options[:include_files] = include_files unless include_files.empty?
 
             result = if output_file
                        generate_to_file(content, format, output_file, options)
@@ -53,6 +56,24 @@ module Metanorma
             { success: true }.merge(result)
           rescue PlantumlError => e
             { success: false, error: e }
+          end
+
+          def get_include_files(content, _options) # rubocop:disable Metrics/MethodLength
+            include_files = []
+            content.each_line do |line|
+              case line
+              when /(!include|!includesub)\s(.+){1}/
+                found_file = $2.split("!").first
+
+                # skip web links and standard libraries
+                if found_file.start_with?("<", "http")
+                  found_file = nil
+                end
+
+                include_files << found_file
+              end
+            end
+            include_files.compact.uniq
           end
 
           def generate_from_file(
@@ -169,47 +190,74 @@ module Metanorma
           end
 
           def execute_plantuml(content, format, output_file, options) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
-            Tempfile.create(["plantuml_input", ".puml"]) do |input_file| # rubocop:disable Metrics/BlockLength
-              input_file.write(content)
-              input_file.close
+            # PlantUML generates output files based on filename specified in
+            # @start... line
+            # We need to use a temp directory and then move the file
+            Dir.mktmpdir do |temp_dir| # rubocop:disable Metrics/BlockLength
+              # create input file
+              File.open("#{temp_dir}/plantuml_input.puml", "w") do |f|
+                f.write(content)
+              end
 
-              # PlantUML generates output files based on filename specified in
-              # @start... line
-              # We need to use a temp directory and then move the file
-              Dir.mktmpdir do |temp_dir| # rubocop:disable Metrics/BlockLength
-                cmd = build_command(input_file.path, format, temp_dir, options)
-
-                output, error, status = Open3.capture3(*cmd)
-
-                unless status.success?
-                  error_message = if error.empty?
-                                    "Unknown PlantUML error"
-                                  else
-                                    error.strip
-                                  end
-                  raise GenerationError.new(error_message, error)
+              if options[:include_files] && !options[:include_files].empty?
+                if options[:includedir].nil?
+                  # raise error when include files are found but includedir
+                  # is nil
+                  raise PlantumlError.new(
+                    "includedir is required when include files are specified",
+                  )
                 end
 
-                # Find the generated file and move it to the desired location
-                if output_file
-                  generated_file = find_generated_file(temp_dir, content,
-                                                       format)
-                  if generated_file && File.exist?(generated_file)
-                    FileUtils.mv(generated_file, output_file)
-                  else
-                    # Debug: List what files were actually generated
-                    generated_files = Dir.glob(File.join(temp_dir, "*"))
-                    error_msg = "Generated file not found in temp directory. "
-                    error_msg += "Expected: #{generated_file}. "
-                    error_msg += "Found files: #{generated_files.map do |f|
-                      File.basename(f)
-                    end.join(', ')}"
-                    raise GenerationError.new(error_msg)
+                options[:include_files].each do |include_file|
+                  # local file system
+                  include_file_path = File
+                    .join(options[:includedir], include_file)
+                  include_file_content = File.read(include_file_path)
+
+                  # create include file in temp directory
+                  File.open("#{temp_dir}/#{include_file}", "w") do |f|
+                    f.write(include_file_content)
                   end
                 end
-
-                output
               end
+
+              cmd = build_command(
+                "#{temp_dir}/plantuml_input.puml",
+                format,
+                temp_dir,
+                options,
+              )
+
+              output, error, status = Open3.capture3(*cmd)
+
+              unless status.success?
+                error_message = if error.empty?
+                                  "Unknown PlantUML error"
+                                else
+                                  error.strip
+                                end
+                raise GenerationError.new(error_message, error)
+              end
+
+              # Find the generated file and move it to the desired location
+              if output_file
+                generated_file = find_generated_file(temp_dir, content,
+                                                     format)
+                if generated_file && File.exist?(generated_file)
+                  FileUtils.mv(generated_file, output_file)
+                else
+                  # Debug: List what files were actually generated
+                  generated_files = Dir.glob(File.join(temp_dir, "*"))
+                  error_msg = "Generated file not found in temp directory. "
+                  error_msg += "Expected: #{generated_file}. "
+                  error_msg += "Found files: #{generated_files.map do |f|
+                    File.basename(f)
+                  end.join(', ')}"
+                  raise GenerationError.new(error_msg)
+                end
+              end
+
+              output
             end
           end
 
