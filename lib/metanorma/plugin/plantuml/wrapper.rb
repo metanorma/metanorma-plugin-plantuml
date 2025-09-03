@@ -199,24 +199,35 @@ module Metanorma
                 f.write(content)
               end
 
+              # Handle include files
               if options[:include_files] && !options[:include_files].empty?
-                if options[:includedir].nil?
-                  # raise error when include files are found but includedir
+                if options[:includedirs].empty?
+                  # raise error when include files are found but includedirs
                   # is nil
                   raise PlantumlError.new(
-                    "includedir is required when include files are specified",
+                    "includedirs is required when include files are specified",
                   )
                 end
 
                 options[:include_files].each do |include_file|
-                  # local file system
-                  include_file_path = File
-                    .join(options[:includedir], include_file)
-                  include_file_content = File.read(include_file_path)
+                  # find local include file in includedirs
+                  found_include_file = nil
+                  options[:includedirs].each do |includedir|
+                    include_file_path = File.join(includedir, include_file)
+                    if File.exist?(include_file_path)
+                      found_include_file = include_file_path
+                      break
+                    end
+                  end
 
-                  # create include file in temp directory
-                  File.open("#{temp_dir}/#{include_file}", "w") do |f|
-                    f.write(include_file_content)
+                  if found_include_file
+                    # create include file in temp directory
+                    temp_include_file = File.join(temp_dir, include_file)
+                    FileUtils.mkdir_p(File.dirname(temp_include_file))
+
+                    File.open(temp_include_file, "w") do |f|
+                      f.write(File.read(found_include_file))
+                    end
                   end
                 end
               end

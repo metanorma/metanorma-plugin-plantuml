@@ -54,6 +54,40 @@ RSpec.describe Metanorma::Plugin::Plantuml do
       end
     end
 
+    context "Basic PlantUML processing with file in includedirs" do
+      let(:input) do
+        <<~TEXT
+          #{ASCIIDOC_BLANK_HDR}
+          :imagesdir: spec/assets
+
+          [plantuml,includedirs="spec/fixtures/plantuml/test_include_path"]
+          ....
+          @startuml
+          !include sequences-a.puml!1
+          @enduml
+          ....
+        TEXT
+      end
+
+      it "correctly renders PlantUML diagrams" do
+        result = metanorma_convert(input)
+
+        expected = <<~XML
+          #{BLANK_HDR}
+          <sections>
+            <figure id="_">
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+            </figure>
+          </sections>
+          </metanorma>
+        XML
+
+        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.},
+                                      "_plantuml_images/_.")))
+          .to be_xml_equivalent_to(expected)
+      end
+    end
+
     context "PlantUML with format specification" do
       let(:input) do
         <<~TEXT
@@ -174,7 +208,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
         <<~TEXT
           #{ASCIIDOC_BLANK_HDR}
           :imagesdir: spec/assets
-          :plantuml-includedir: spec/fixtures/plantuml
+          :plantuml-includedirs: spec/fixtures/plantuml
 
           [plantuml]
           ....
