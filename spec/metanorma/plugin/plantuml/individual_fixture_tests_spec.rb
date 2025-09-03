@@ -32,6 +32,8 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
       18 => "Work Breakdown Structure (WBS)",
       19 => "Maths",
       20 => "Information Engineering Diagrams",
+      25 => "Preprocessing",
+      27 => "PlantUML Standard Library",
     }.freeze
   end
 
@@ -75,10 +77,18 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
         let(:content) { File.read(fixture_file) }
 
         it "generates PNG successfully" do
+          includedirs = [File.dirname(fixture_file)]
+
+          # add additional include directories from the document
+          if fixture_name == "plantuml-lrg-25-10-1-include"
+            includedirs << File.join(File.dirname(fixture_file),
+                                     "test_include_path")
+          end
+
           result = @wrapper.generate(
             content,
             format: :png,
-            includedir: File.dirname(fixture_file),
+            includedirs: includedirs,
           )
 
           if result[:success]
@@ -103,10 +113,18 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
         end
 
         it "generates SVG successfully" do
+          includedirs = [File.dirname(fixture_file)]
+
+          # add additional include directories from the document
+          if fixture_name == "plantuml-lrg-25-10-1-include"
+            includedirs << File.join(File.dirname(fixture_file),
+                                     "test_include_path")
+          end
+
           result = @wrapper.generate(
             content,
             format: :svg,
-            includedir: File.dirname(fixture_file),
+            includedirs: includedirs,
           )
 
           if result[:success]
