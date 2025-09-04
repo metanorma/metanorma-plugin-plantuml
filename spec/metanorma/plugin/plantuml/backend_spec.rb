@@ -15,7 +15,7 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
       let(:reader) { TestReader.new("@startuml\nAlice -> Bob\n@enduml") }
 
       it "returns the source as-is" do
-        result = described_class.prep_source(reader)
+        result = described_class.prep_source(test_parent, reader)
         expect(result).to eq("@startuml\nAlice -> Bob\n@enduml")
       end
     end
@@ -24,7 +24,7 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
       let(:reader) { TestReader.new("Alice -> Bob") }
 
       it "raises an error for missing delimiters" do
-        expect { described_class.prep_source(reader) }
+        expect { described_class.prep_source(test_parent, reader) }
           .to raise_error(
             "PlantUML content must start with @start... directive!",
           )
@@ -35,7 +35,7 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
       let(:reader) { TestReader.new("@startuml\nAlice -> Bob") }
 
       it "raises an error" do
-        expect { described_class.prep_source(reader) }
+        expect { described_class.prep_source(test_parent, reader) }
           .to raise_error("@startuml without matching @enduml in PlantUML!")
       end
     end

@@ -7,7 +7,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
   end
 
   # Get all fixture files
-  fixture_files = Dir.glob(File.join(fixtures_path("."), "*.wsd")).sort
+  fixture_files = Dir.glob(File.join(fixtures_path("."), "*.puml")).sort
 
   # Chapter names from the PlantUML Language Reference Guide
   def self.chapter_names
@@ -32,6 +32,8 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
       18 => "Work Breakdown Structure (WBS)",
       19 => "Maths",
       20 => "Information Engineering Diagrams",
+      25 => "Preprocessing",
+      27 => "PlantUML Standard Library",
     }.freeze
   end
 
@@ -40,10 +42,10 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
       chapter = $1.to_i
       chapter_name = chapter_names[chapter] || "Unknown Chapter"
       section = filename
-        .match(/plantuml-lrg-\d+-(.+)\.wsd$/)&.[](1) || "unknown"
+        .match(/plantuml-lrg-\d+-(.+)\.puml$/)&.[](1) || "unknown"
       [chapter, chapter_name, section]
     else
-      [0, "Other", filename.gsub(".wsd", "")]
+      [0, "Other", filename.gsub(".puml", "")]
     end
   end
 
@@ -67,7 +69,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
   # Create individual tests for each fixture file
   fixture_files.each do |fixture_file|
-    fixture_name = File.basename(fixture_file, ".wsd")
+    fixture_name = File.basename(fixture_file, ".puml")
     chapter, chapter_name, section = get_chapter_info(fixture_name)
 
     describe "#{chapter_name} (Chapter #{chapter})" do
@@ -75,7 +77,19 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
         let(:content) { File.read(fixture_file) }
 
         it "generates PNG successfully" do
-          result = @wrapper.generate(content, format: :png)
+          includedirs = [File.dirname(fixture_file)]
+
+          # add additional include directories from the document
+          if fixture_name == "plantuml-lrg-25-10-1-include"
+            includedirs << File.join(File.dirname(fixture_file),
+                                     "test_include_path")
+          end
+
+          result = @wrapper.generate(
+            content,
+            format: :png,
+            includedirs: includedirs,
+          )
 
           if result[:success]
             expect(File.exist?(result[:output_path])).to be(true)
@@ -83,6 +97,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
             # Verify PNG format
             png_content = File.binread(result[:output_path])
+
             expect(valid_png?(png_content))
               .to be(true), "Generated file is not a valid PNG"
 
@@ -98,7 +113,19 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
         end
 
         it "generates SVG successfully" do
-          result = @wrapper.generate(content, format: :svg)
+          includedirs = [File.dirname(fixture_file)]
+
+          # add additional include directories from the document
+          if fixture_name == "plantuml-lrg-25-10-1-include"
+            includedirs << File.join(File.dirname(fixture_file),
+                                     "test_include_path")
+          end
+
+          result = @wrapper.generate(
+            content,
+            format: :svg,
+            includedirs: includedirs,
+          )
 
           if result[:success]
             expect(File.exist?(result[:output_path])).to be(true)

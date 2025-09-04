@@ -23,10 +23,12 @@ module Metanorma
             Wrapper.available?
           end
 
-          def generate_file(parent, reader, format_override = nil) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+          def generate_file( # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+            parent, reader, format_override: nil, options: {}
+          )
             ldir, imagesdir, fmt = generate_file_prep(parent)
             fmt = format_override if format_override
-            plantuml_content = prep_source(reader)
+            plantuml_content = prep_source(parent, reader)
 
             # Extract filename from PlantUML source if specified
             filename = generate_unique_filename(fmt)
@@ -43,6 +45,7 @@ module Metanorma
               plantuml_content,
               format: fmt,
               output_file: output_file,
+              includedirs: options[:includedirs],
             )
 
             unless result[:success]
@@ -52,10 +55,12 @@ module Metanorma
             File.join(relative_path, filename)
           end
 
-          def generate_multiple_files(parent, reader, formats, attrs)
+          def generate_multiple_files(
+            parent, reader, formats, attrs, options: {}
+          )
             # Generate files for each format
             filenames = formats.map do |format|
-              generate_file(parent, reader, format)
+              generate_file(parent, reader, format, options: options)
             end
 
             # Return data for BlockProcessor to create image block
@@ -101,8 +106,15 @@ module Metanorma
             ]
           end
 
-          def prep_source(reader)
-            src = reader.source
+          def prep_source(parent, reader) # rubocop:disable Metrics/MethodLength
+            src = if reader.respond_to?(:source)
+                    # get content from BlockProcessor
+                    reader.source
+                  else
+                    # get content from ImageBlockMacroProcessor
+                    docdir = parent.document.attributes["docdir"]
+                    File.read(File.join(docdir, reader))
+                  end
 
             # Validate that we have matching start/end pairs
             validate_plantuml_delimiters(src)

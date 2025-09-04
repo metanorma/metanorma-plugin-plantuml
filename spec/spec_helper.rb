@@ -7,6 +7,13 @@ require "tempfile"
 require "fileutils"
 require "canon"
 
+# Register lutaml blocks as first preprocessors in line in order
+# to test properly with metanorma-standoc
+Asciidoctor::Extensions.register do
+  block_macro Metanorma::Plugin::Plantuml::ImageBlockMacroProcessor
+  block Metanorma::Plugin::Plantuml::BlockProcessor
+end
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"

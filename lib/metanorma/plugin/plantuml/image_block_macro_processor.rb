@@ -4,12 +4,10 @@ module Metanorma
   module Plugin
     module Plantuml
       # PlantUML block processor for Asciidoctor
-      class BlockProcessor < ::Asciidoctor::Extensions::BlockProcessor
+      class ImageBlockMacroProcessor < ::Asciidoctor::Extensions::BlockMacroProcessor
         include ::Metanorma::Plugin::Plantuml::BlockProcessorBase
         use_dsl
-        named :plantuml
-        on_context :literal
-        parse_content_as :raw
+        named :plantuml_image
 
         def process(parent, reader, attrs) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           # Check for document-level disable flag
@@ -33,13 +31,22 @@ module Metanorma
 
         private
 
-        def parse_options(parent, _reader, attrs)
+        def add_image_path_to_includedirs(document, image_path, includedirs)
+          docdir = document.attributes["docdir"]
+          includedirs << File.dirname(File.join(docdir, image_path))
+          includedirs.compact.uniq
+        end
+
+        def parse_options(parent, reader, attrs)
           options = {}
 
           # Parse include directory
           options[:includedirs] = parse_doc_includedirs(parent.document)
           options[:includedirs] = add_attrs_to_includedirs(
             parent.document, attrs, options[:includedirs]
+          )
+          options[:includedirs] = add_image_path_to_includedirs(
+            parent.document, reader, options[:includedirs]
           )
 
           options
