@@ -65,6 +65,8 @@ the `plantuml` block directive.
 
 === Basic syntax
 
+==== Block style
+
 [source,asciidoc]
 ----
 [plantuml]
@@ -75,6 +77,25 @@ Bob -> Alice: Hi there
 @enduml
 ....
 ----
+
+==== Block macro style
+
+[source,asciidoc]
+----
+plantuml_image::path/to/my-plantuml.puml[]
+----
+
+The file `path/to/my-plantuml.puml` looks like:
+[source,plantuml]
+----
+@startuml
+Alice -> Bob: Hello
+Bob -> Alice: Hi there
+@enduml
+----
+
+`plantuml_image` block macro performs the same function as the `plantuml` block,
+but the PlantUML diagram is defined in a separate file instead of a block.
 
 === Supported diagram types
 
@@ -183,6 +204,132 @@ Alice -> Bob: Hello
 ....
 ----
 
+==== Document-level includedirs configuration
+
+When using `!include` or `!includesub` in your PlantUML diagrams, you can set
+the default include directories (separated by semicolons) by
+`plantuml-includedirs` to search for files for all PlantUML diagrams in your
+document:
+
+[source,asciidoc]
+----
+:plantuml-includedirs: path/to/plantuml/include-1;path/to/plantuml/include-2
+
+[plantuml]
+....
+@startuml
+!include sequences.puml!1
+@enduml
+....
+
+[plantuml]
+....
+@startuml
+!include components.puml!FRONTEND
+!include components.puml!BACKEND
+
+WebApp --> APIGateway
+MobileApp --> APIGateway
+APIGateway --> DB
+@enduml
+....
+
+[plantuml]
+....
+@startuml
+title this contains only B and D
+!includesub subpart.puml!BASIC
+@enduml
+....
+----
+
+This plugin will search the include directories specified by
+`includedirs` options (i.e. `path/to/plantuml/include-1` and
+`path/to/plantuml/include-2`) for the files referenced in `!include` or
+`!includesub` directives (i.e. `sequences.puml`, `components.puml` and
+`subpart.puml`).
+
+You can also use `plantuml_image` to include external PlantUML files as images:
+
+[source,asciidoc]
+----
+:plantuml-includedirs: path/to/plantuml/include-1;path/to/plantuml/include-2
+
+plantuml_image::path/to/my-plantuml-1.puml[]
+
+plantuml_image::path/to/my-plantuml-2.puml[]
+----
+
+The file `path/to/my-plantuml-1.puml` looks like:
+[source,plantuml]
+----
+@startuml
+!include sequences.puml!1
+@enduml
+----
+
+The file `path/to/my-plantuml-2.puml` looks like:
+[source,plantuml]
+----
+@startuml
+!include components.puml!FRONTEND
+!include components.puml!BACKEND
+
+WebApp --> APIGateway
+MobileApp --> APIGateway
+APIGateway --> DB
+@enduml
+----
+
+When using `plantuml_image`, the path of the directory of the PlantUML file will
+also be added into the `includedirs`. (i.e. `path/to` will be added to
+`includedirs`)
+
+==== Block-level includedirs configuration
+
+When using `!include` or `!includesub` in your PlantUML diagrams, you can set
+the default include directories (separated by semicolons) by `includedirs` in
+block-level to search for files for the PlantUML diagram defined in your block:
+
+[source,asciidoc]
+----
+[plantuml,includedirs="path/to/plantuml/include-1"]
+....
+@startuml
+!include sequences.puml!1
+@enduml
+....
+
+[plantuml,includedirs="path/to/plantuml/include-2"]
+....
+@startuml
+!include components.puml!FRONTEND
+!include components.puml!BACKEND
+
+WebApp --> APIGateway
+MobileApp --> APIGateway
+APIGateway --> DB
+@enduml
+....
+----
+
+This plugin will search `sequences.puml` in `path/to/plantuml/include-1` and
+`components.puml` in `path/to/plantuml/include-2`.
+
+The block-level `includedirs` configuration can be used together with the
+document-level configuration to provide more granular control over include
+paths.  You can set multiple paths by separating them with semicolons.
+
+You can also use `plantuml_image` to set `includedirs` option to include
+external PlantUML files:
+
+[source,asciidoc]
+----
+plantuml_image::path/to/my-plantuml-1.puml[includedirs=path/to/plantuml/include-1]
+
+plantuml_image::path/to/my-plantuml-2.puml[includedirs=path/to/plantuml/include-2]
+----
+
 === Image attributes
 
 Standard AsciiDoc image attributes are supported:
@@ -272,7 +419,7 @@ Metanorma integration and PlantUML execution:
 ----
 Metanorma Document
       ↓
-BlockProcessor ← (processes [plantuml] blocks)
+BlockProcessor ← (processes [plantuml] blocks) or ImageBlockMacroProcessor ← (processes plantuml_image::{path}[{options}] macros)
       ↓
 Backend ← (Metanorma integration, paths, validation)
       ↓
@@ -283,6 +430,9 @@ PlantUML JAR ← (diagram generation)
 
 `BlockProcessor`:: Processes `[plantuml]` blocks in Metanorma documents and
 integrates with the Metanorma rendering pipeline.
+
+`ImageBlockMacroProcessor`:: Processes `plantuml_image::{path}[{options}]` macros
+in Metanorma documents and integrates with the Metanorma rendering pipeline.
 
 `Backend`:: Handles Metanorma-specific logic including document paths, PlantUML
 source validation, filename extraction, and attribute mapping.
