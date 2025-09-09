@@ -3,7 +3,7 @@
 module Metanorma
   module Plugin
     module Plantuml
-      # PlantUML block processor for Asciidoctor
+      # PlantUML block processor
       class BlockProcessor < ::Asciidoctor::Extensions::BlockProcessor
         include ::Metanorma::Plugin::Plantuml::BlockProcessorBase
         use_dsl
@@ -37,9 +37,8 @@ module Metanorma
           options = {}
 
           # Parse include directory
-          options[:includedirs] = parse_doc_includedirs(parent.document)
           options[:includedirs] = add_attrs_to_includedirs(
-            parent.document, attrs, options[:includedirs]
+            parent.document, attrs, parse_doc_includedirs(parent.document)
           )
 
           options
