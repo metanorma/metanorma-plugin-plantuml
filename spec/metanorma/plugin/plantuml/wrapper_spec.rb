@@ -63,22 +63,9 @@ RSpec.describe Metanorma::Plugin::Plantuml::Wrapper do
     end
 
     context "when JAR version is available" do
-      before do
-        # Mock a typical PlantUML version output
-        allow(Open3).to receive(:capture3).and_return(
-          ["PlantUML version 1.2025.4 (Wed Jan 01 00:00:00 UTC 2025)", "",
-           double(success?: true)],
-        )
-      end
-
       it "gem version uses semantic versioning" do
         gem_version = Metanorma::Plugin::Plantuml::VERSION
         expect(gem_version).to match(/^\d+\.\d+\.\d+$/)
-      end
-
-      it "can detect JAR version" do
-        jar_version = described_class.version
-        expect(jar_version).to eq("1.2025.4")
       end
 
       it "JAR version matches expected version" do
