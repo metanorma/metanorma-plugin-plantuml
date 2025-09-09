@@ -18,6 +18,7 @@ gem "debug"
 gem "metanorma"
 gem "metanorma-standoc", github: "metanorma/metanorma-standoc",
                          branch: "main"
+gem "octokit"
 gem "rake"
 gem "rspec"
 gem "rspec-html-matchers"
