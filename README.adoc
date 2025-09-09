@@ -832,6 +832,8 @@ PlantUML versions:
 | Gem version | PlantUML version | Notes
 
 | 1.0.0       | 1.2025.4        | Latest release with updated architecture
+| 1.0.4       | 1.2025.7        | Latest release
+
 |===
 
 This approach allows the gem to follow standard semantic versioning practices
@@ -839,53 +841,132 @@ while clearly documenting which PlantUML version is bundled with each release.
 
 === Updating PlantUML version
 
-This gem bundles a specific version of PlantUML JAR file. To update to a newer
-version:
+==== General
+
+This gem bundles a specific version of PlantUML JAR file.
+
+There are two ways to update to a newer version.
+
+==== Automatic update (recommended)
+
+The simplest way to update PlantUML is to use the automated update task:
+
+[source,console]
+----
+$ bundle exec rake update_plantuml
+----
+
+This task will:
+
+* Search GitHub for the latest valid PlantUML release (excluding pre-releases and native builds)
+* Compare with the current version and skip if already up to date
+* Update version files automatically (both PlantUML and gem versions)
+* Download and verify the new JAR file
+* Test the JAR functionality to ensure it works correctly
+
+The task uses exit codes to indicate the result:
+
+* Exit code 0: No update needed (already up to date)
+* Exit code 1: Update completed successfully
+* Exit code 2: Update failed due to an error
+
+==== Manual update
+
+For manual updates or to specify a particular version:
 
 . Check the latest PlantUML release at
 https://github.com/plantuml/plantuml/releases
 
-. Update the version in `lib/metanorma/plugin/plantuml/version.rb`:
-+
-[source,ruby]
-----
-PLANTUML_JAR_VERSION = "1.2025.4"  # Update to latest version
-VERSION = "1.0.1"                  # Increment patch version
-----
-
-. Clean the old JAR file:
+. Use the manual version update task:
 +
 [source,console]
 ----
-$ bundle exec rake clean_jar
+$ bundle exec rake update_plantuml_version[1.2025.7]
 ----
 
 . Download the new JAR file:
 +
 [source,console]
 ----
-$ bundle exec rake download_jar
+$ bundle exec rake clean_jar download_jar
 ----
 
-. Run tests to ensure everything works:
+. Test the functionality:
 +
 [source,console]
 ----
-$ bundle exec rake spec
+$ bundle exec rake test_plantuml
 ----
 
-. Update the gem version by incrementing the patch version (e.g., `1.0.0` →
-`1.0.1`) for PlantUML updates, or increment minor/major versions for gem feature
-updates.
+==== Version checking
 
-=== Available rake tasks
+You can check the current PlantUML and gem versions:
 
 [source,console]
 ----
-$ bundle exec rake download_jar  # Download PlantUML JAR file
-$ bundle exec rake clean_jar     # Remove downloaded JAR file
-$ bundle exec rake spec          # Run tests
+$ bundle exec rake check_plantuml_version
 ----
+
+You can find the latest available PlantUML version:
+
+[source,console]
+----
+$ bundle exec rake find_latest_plantuml
+----
+
+=== Available rake tasks
+
+==== PlantUML management tasks
+
+[source,console]
+----
+$ bundle exec rake update_plantuml                    # Update PlantUML to latest version (automatic)
+$ bundle exec rake update_plantuml_version[VERSION]   # Update PlantUML to specific version (manual)
+$ bundle exec rake check_plantuml_version             # Check current PlantUML and gem versions
+$ bundle exec rake find_latest_plantuml               # Find latest valid PlantUML release
+$ bundle exec rake test_plantuml                      # Test PlantUML JAR functionality
+----
+
+==== JAR file management tasks
+
+[source,console]
+----
+$ bundle exec rake download_jar    # Download PlantUML JAR file
+$ bundle exec rake clean_jar       # Remove downloaded JAR file
+----
+
+==== Development tasks
+
+[source,console]
+----
+$ bundle exec rake spec            # Run tests
+$ bundle exec rake                 # Default task: download JAR + run tests
+----
+
+==== Task descriptions
+
+`update_plantuml`:: Automatically finds the latest valid PlantUML release,
+updates version files, downloads the new JAR, and tests functionality. This is
+the recommended way to update PlantUML.
+
+`update_plantuml_version[VERSION]`:: Manually updates the PlantUML version in
+`version.rb` to the specified version and increments the gem version. Use this
+when you need to specify a particular PlantUML version.
+
+`check_plantuml_version`:: Displays the current PlantUML JAR version and gem
+version from `version.rb`.
+
+`find_latest_plantuml`:: Searches GitHub for the latest valid PlantUML release,
+filtering out pre-releases, native builds, and invalid versions. Shows the
+version and release information.
+
+`test_plantuml`:: Tests the downloaded PlantUML JAR by running version checks
+and generating a test diagram to ensure functionality.
+
+`download_jar`:: Downloads the PlantUML JAR file based on the version specified
+in `version.rb`. Creates the `data/` directory if it doesn't exist.
+
+`clean_jar`:: Removes the downloaded PlantUML JAR file from `data/plantuml.jar`.
 
 == Documentation
 
