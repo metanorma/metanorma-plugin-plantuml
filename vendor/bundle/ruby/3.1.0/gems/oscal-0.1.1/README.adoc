@@ -1,0 +1,112 @@
+= OSCAL in Ruby
+
+== Purpose
+
+This is an implementation of the OSCAL models, allowing the manipulation of
+these models, as well as reading and writing of OSCAL serialization formats
+(YAML, JSON, XML).
+
+NOTE: This gem is used by the
+https://github.com/metanorma/metanorma-plugin-oscal[Metanorma plugin for OSCAL].
+
+
+== Installation
+
+Install the gem:
+
+[source,console]
+----
+[sudo] gem install oscal
+----
+
+or add it to your `Gemfile`:
+
+[source,ruby]
+----
+gem 'oscal'
+----
+
+== Command-line usage
+
+TODO: Write usage instructions here
+
+[source,ruby]
+----
+> require 'oscal'
+> x = Oscal::Catalog.load_from_yaml('spec/oscal-content/examples/catalog/yaml/basic-catalog.yaml')
+=>
+#<Oscal::Catalog:0x000000010b817e08
+...
+> x.groups.first.groups.first.parts.first.prose
+=> "To establish a management framework to initiate and control the implementation and operation of information security within the organization."
+----
+
+Get all controls
+
+[source,ruby]
+----
+> require 'oscal'
+> x = Oscal::Catalog.load_from_yaml('spec/oscal-content/examples/catalog/yaml/basic-catalog.yaml')
+=>
+#<Oscal::Catalog:0x000000010b817e08
+...
+> o = x.get_all_controls
+> o.count
+=> 4
+----
+
+Find object by id
+
+[source,ruby]
+----
+> require 'oscal'
+> x = Oscal::Catalog.load_from_yaml('spec/oscal-content/examples/catalog/yaml/basic-catalog.yaml')
+=>
+#<Oscal::Catalog:0x000000010b817e08
+...
+> p = x.find_object_by_id('s1.1_smt')
+=>
+#<Oscal::Part:0x000000014c0c4070 @id="s1.1_smt", ...>
+----
+
+Find object by uuid
+
+[source,ruby]
+----
+> require 'oscal'
+> x = Oscal::Catalog.load_from_yaml('spec/oscal-content/examples/catalog/yaml/basic-catalog.yaml')
+=>
+#<Oscal::Catalog:0x000000010b817e08
+...
+> p = x.find_object_by_id('74c8ba1e-5cd4-4ad1-bbfd-d888e2f6c724', x, :uuid)
+=>
+#<Oscal::Catalog:0x000000014c0c5f38 @uuid="74c8ba1e-5cd4-4ad1-bbfd-d888e2f6c724", ...>
+----
+
+== Ruby library usage
+
+TODO: Write usage instructions here
+
+== Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run
+`rake spec` to run the tests. You can also run `bin/console` for an interactive
+prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To
+release a new version, update the version number in `version.rb`, and then run
+`bundle exec rake release`, which will create a git tag for the version, push
+git commits and the created tag, and push the `.gem` file to
+https://rubygems.org.
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/metanorma/oscal. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the https://github.com/metanorma/oscal/blob/main/CODE_OF_CONDUCT.md[code of conduct].
+
+== Code of Conduct
+
+Everyone interacting in the Oscal project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the https://github.com/metanorma/oscal/blob/main/CODE_OF_CONDUCT.md[code of conduct].
+
+== LICENSE
+
+Copyright Ribose. The OSCAL schema is published by NIST.

@@ -1,0 +1,160 @@
+= Html2Doc
+
+https://github.com/metanorma/html2doc/workflows/main/badge.svg
+
+image:https://img.shields.io/gem/v/html2doc.svg["Gem Version", link="https://rubygems.org/gems/html2doc"]
+image:https://github.com/metanorma/html2doc/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/html2doc/actions?workflow=rake"]
+image:https://codeclimate.com/github/metanorma/html2doc/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/html2doc"]
+image:https://img.shields.io/github/issues-pr-raw/metanorma/html2doc.svg["Pull Requests", link="https://github.com/metanorma/html2doc/pulls"]
+image:https://img.shields.io/github/commits-since/metanorma/html2doc/latest.svg["Commits since latest",link="https://github.com/metanorma/html2doc/releases"]
+
+== Purpose
+
+Gem to convert an HTML document into a Word document (.doc) format. This is intended for automated generation of Microsoft Word documents, given HTML documents, which are much more readily crafted.
+
+== Origin
+
+This gem originated out of https://github.com/metanorma/metanorma-iso, which creates a Word document from a automatically generated HTML document (created in turn by processing Asciidoc).
+
+This work is driven by the Word document generation procedure documented in http://sebsauvage.net/wiki/doku.php?id=word_document_generation. For more on the approach taken, and on alternative approaches, see https://github.com/metanorma/html2doc/wiki/Why-not-docx%3F
+
+== Functions
+
+The gem currently does the following:
+
+* Convert any AsciiMath and MathML to Word's native mathematical formatting language, OOXML. Word supports copy-pasting MathML into Word and converting it into OOXML; however the conversion is not infallible (we have in the past found problems with `\sum`: Word claims parameters were missing, and inserting dotted squares to indicate as much), and you may need to post-edit the OOXML.
+** The gem does attempt to repair the MathML input, to bring it in line with Word's OOXML's expectations. If you find any issues with AsciiMath or MathML input, please raise an issue.
+* Identify any footnotes in the document (defined as hyperlinks with attributes `class = "Footnote"` or `epub:type = "footnote"`), and render them as Microsoft Word footnotes.
+** The corresponding footnote content is any `div` or `aside` element with the same `@id` attribute as the footnote points to; e.g. `<a href="#ftn1" epub:type="footnote"><sup>3</sup></a></span>`, pointing to `<aside id="ftn3">`.
+** By default, the footnote hyperlink contents are overwritten with the autonumbering element: `<a href="#ftn1" epub:type="footnote"><sup>1</sup></a>` is replaced with `<a style='mso-footnote-id:ftn1' href='#_ftn1' name='_ftnref1' title='' id='_ftnref1'><span class='MsoFootnoteReference'><span style='mso-special-character:footnote'/></span>`
+** If the footnote hyperlink already contains (as a child) an element marked up as `<span class='MsoFootnoteReference'>`, only that span is replaced by the Microsoft autonumber element; any text surrounding it is preserved in both the footnote reference and the footnote target. For example, `<a href="#ftn1" epub:type="footnote"><span class='MsoFootnoteReference'>1</span>)</a>` will render as the footnote _1)_, both in the link and the target.
+* Resize any local images in the HTML file to fit within the maximum page size. (Word will otherwise crash on reading the document.)
+* Optionally apply list styles with predefined bullet and numbering from a Word CSS to the unordered and ordered lists in the document, restarting numbering for each ordered list.
+* Convert all lists to native Word HTML rendering (using paragraphs with `MsoListParagraphCxSpFirst, MsoListParagraphCxSpMiddle, MsoListParagraphCxSpLast` styles)
+* Generate additional list styles in CSS for any ordered lists with a new start number.
+* Convert any internal `@id` anchors to `a@name` anchors; Word only hyperlinks to the latter.
+* Generate a filelist.xml listing of all files to be bundled into the Word document.
+* Assign the class `MsoNormal` to any paragraphs that do not have a class, so that they can be treated as Normal Style when editing the Word document.
+* Inject Microsoft Word-specific CSS into the HTML document. If a CSS file is not supplied, the CSS file used is at `lib/html2doc/wordstyle.css` is used by default. Microsoft Word HTML has particular requirements from its CSS, and you should review the sample CSS before replacing it with your own. (This generic CSS can be overridden by CSS already in the HTML document, since the generic CSS is injected at the top of the document.)
+* Bundle up the local images, the HTML file of the document proper, and the `header.html` file representing header/footer information, into a MIME file, and save that file to disk (so that Microsoft Word can deal with it as a Word file.)
+
+For a representative generator of HTML that uses this gem in postprocessing, see https://github.com/metanorma/metanorma-iso
+
+== Constraints
+
+This gem generates `.doc` documents. Future versions may upgrade the output to `docx`.
+
+Because `.doc` is the format of an older version of Microsoft Word, the output of this gem do *not* support SVG graphics. Word itself converts SVG into PNG when it saves documents as Word HTML, which is the input to this gem. External consumers of this gem in Metanorma convert SVG to EMF.
+
+There there are two other Microsoft Word vendors in the Ruby ecosystem.
+
+* https://github.com/jetruby/puredocx generate Word documents from a ruby struct as a DSL, rather than converting a preexisting html document. That constrains it's coverage to what is explicitly catered for in the DSL.
+* https://github.com/MuhammetDilmac/Html2Docx is a much simpler wrapper around html: it does not do any of the added functionality described above (image resizing, converting footnotes, AsciiMath and MathML). However it does already generate docx, which involves many more auxiliary files than the .doc format. (Any attempt to generate docx through this gem will likely involve Html2Docx.)
+
+== Usage
+
+=== Programmatic
+
+[source,ruby]
+--
+require "html2doc"
+
+Html2Doc.new(filename: filename, imagedir: imagedir, stylesheet: stylesheet, header_file: header_filename, dir: dir, asciimathdelims: asciimathdelims, liststyles: liststyles).process(result)
+--
+
+result:: is the Html document to be converted into Word, as a string.
+filename:: is the name the document is to be saved as, without a file suffix
+imagedir:: base directory for local image file names in source XML
+stylesheet:: is the full path filename of the CSS stylesheet for Microsoft Word-specific styles. If this is not provided, the program will used the default stylesheet included in the gem, `lib/html2doc/wordstyle.css`. The stylsheet provided must match this stylesheet; you can obtain one by saving a Word document with your desired styles to HTML, and extracting the style definitions from the HTML document header.
+header_file:: is the filename of the HTML document containing header and footer for the document, as well as footnote/endnote separators; if there is none, use nil. To generate your own such document, save a Word document with headers/footers and/or footnote/endnote separators as an HTML document; the `header.html` will be in the `{filename}.fld` folder generated along with the HTML. A sample file is available at https://github.com/metanorma/metanorma-iso/blob/master/lib/asciidoctor/iso/word/header.html
+dir:: is the folder that any ancillary files (images, headers, filelist) are to be saved to. If not provided, it will be created as `{filename}_files`. Anything in the directory will be attached to the Word document; so this folder should only contain the images that accompany the document. (If the images are elsewhere on the local drive, the gem will move them into the folder. External URL images are left alone, and are not downloaded.)
+asciimathdelims:: are the AsciiMath delimiters used in the text (an array of an opening and a closing delimiter). If none are provided, no AsciiMath conversion is attempted.
+liststyles:: a hash of list style labels in Word CSS, which are used to define the behaviour of list item labels (e.g. _i)_ vs _i._). The gem recognises the hash keys `ul`, `ol`. So if the appearance of an ordered list's item labels in the supplied stylesheet is governed by style `@list l1` (e.g. `@list l1:level1 {mso-level-text:"%1\)";}` appears in the stylesheet), call the method with `liststyles:{ol: "l1"}`. The lists that the `ul` and `ol` list styles are applied to are assumed not to have any CSS class. If there any additional hash keys, they are assumed to be classes applied to the topmost ordered or unordered list; e.g. `liststyles:{steps: "l5"}` means that any list with class `steps` at the topmost level has the list style `l5` recursively applied to it. Any top-level lists without a class named in liststyles will be treated like lists with no CSS class.
+
+Note that the local CSS stylesheet file contains a variable `FILENAME` for the location of footnote/endnote separators and headers/footers, which are provided in the header HTML file. The gem replaces `FILENAME` with the file name that the document will be saved as. If you supply your own stylesheet and also wish to use separators or headers/footers, you will likewise need to replace the document name mentioned in your stylesheet with a `FILENAME` string.
+
+=== Command line
+
+We include a script in this distribution that processes files from the command line, optionally including header and stylesheet:
+
+[source,console]
+--
+$ bin/html2doc --header header.html --stylesheet stylesheet.css filename.html
+--
+
+=== Converting document output to "`Native Word`" (`.docx`)
+
+The generated Word document is not quite in the most "`native`" format used by Word, `.docx`: it outputs the older `.doc` format. (See https://github.com/metanorma/html2doc/wiki/Why-not-docx%3F for the reasons why.)
+
+Here are the steps to convert our output into native-`docx`.
+
+==== Microsoft Word on macOS
+
+. Open the generated Word document (`*.doc`) in Word.
+
+. Press "`Save`", it prompts you to save as "`.mht`", but change it to "`.doc`", then "`Save".
+
+. It may automatically prompt you, but if not, do "`Save As`", change the file type to "`.docx`".
+
+.. Change the "`View`" to "`Print Layout`".
+
+.. Right click the Table of Contents, click "`Update Field`" (and either selection of "`Update page numbers only`" / "`Update entire able`").
+
+. Press "`Save`" again to save changes.
+
+. Now you have a distributable, native-`docx`, Word document.
+
+
+== Caveats
+
+=== HTML
+
+The good news is that Word understands HTML.
+
+The bad news is that Word's understanding of HTML is HTML 4. In order for bookmarks to work, for example, this gem has to translate `<p id="">` back down into `<p><a name="">`. Word (and this gem) will not do much with HTML 5-specific elements (or SVG graphics), and if you're generating HTML for automated generation of Word documents, you need to keep your HTML old-fashioned.
+
+=== CSS
+
+The good news with generating a Word document via HTML is that Word understands CSS, and you can determine much of what the Word document looks like by manipulating that CSS. That extends to features that are not part of HTML CSS: if you want to work out how to get Word to do something in CSS, save a Word document that already does what you want as HTML, and inspect the HTML and CSS you get.
+
+The bad news is that Word's implementation of CSS is poorly documented -- even
+if Office HTML is documented in a 1300 page document (online
+https://stigmortenmyre.no/mso/[here] and
+https://www.rodriguezcommaj.com/assets/resources/microsoft-office-html-and-xml-reference.pdf[here]),
+and the CSS selectors are only partially and selectively implemented. For list
+styles, for example, `mso-level-text` governs how the list label is displayed;
+but it is only recognised in a `@list` style: it is ignored in a CSS rule like
+`ol li`, or in a `style` attribute on a node. CSS selectors only support
+classes, in ancestor relations: `p.class1 ol.class2` is supported, but `#id1` is
+not, and neither is `p > ol`. Working out the right CSS for what you want will
+take some trial and error, and you are better placed to try to do things Word's
+way than the right way.
+
+=== Math
+
+Word uses OMML instead of W3C's MathML which is now the de-facto standard of XML
+math representation.
+
+The https://github.com/plurimath/plurimath[Plurimath gem] is used to convert
+Metanorma's MathML into OMML.
+
+NOTE: Previously `html2doc` use a modified, early draft of the XSLT stylesheet
+`mml2omml.xsl`, published by the
+https://github.com/TEIC/Stylesheets[TEI stylesheet set] (CC/BSD licensed).
+
+=== Math Positioning
+
+By default, mathematical formulas that are the only content of their paragraph
+are rendered as centered in Word. If you want your AsciiMath or MathML to be
+left-aligned or right-aligned, add `style="text-align:left"` or
+`style="text-align:right"` to its ancestor `div`, `p` or `td` node in HTML.
+
+
+=== Lists
+Natively, Word does not use `<ol>`, `<ul>`, or `<dl>` lists in its HTML exports at all: it uses paragraphs styled with list styles. If you save a Word document as HTML in order to use its CSS for Word documents generated by HTML, those styles will still work (with the caveat that you will need to extract the `@list` style specific to ordered and unordered lists, and pass it as a `liststyles` parameter to the conversion). The gem will duplicate the ordered list style definition to provide new styles, in order to deal with custom numbering.
+
+Word HTML understands `<ol>, <ul>, <li>`, but its rendering is fragile: in particular, any instance of `<p>` within a `<li>` is treated as a new list item (so Word HTML will not let you have multi-paragraph list items if you use native HTML.) This gem now exports lists as Word HTML prefers to see them, with `MsoListParagraphCxSpFirst, MsoListParagraphCxSpMiddle, MsoListParagraphCxSpLast` styles. You will need to include these in the CSS stylesheet you supply, in order to get the right indentation for lists.
+
+== Example
+
+The `spec/examples` directory includes `rice.doc` and its source files: this Word document has been generated from `rice.html` through a call to html2doc from https://github.com/metanorma/metanorma-iso. (The source document `rice.html` was itself generated from Asciidoc, rather than being hand-crafted.)

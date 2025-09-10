@@ -1,0 +1,43 @@
+name: test-and-release
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*' ]
+  pull_request:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        # It seems that Ruby 2.4 or this gem has a bug related to this gem.
+        ruby: ['2.3', '2.5', '2.6', '2.7', '3.0', '3.1', head]
+    runs-on: ${{ matrix.os }}-latest
+    continue-on-error: ${{ endsWith(matrix.ruby, 'head') || matrix.ruby == 'debug' }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - run: gem update bundler
+    - run: bundle install
+    - run: bundle exec rake build_local
+    - run: bundle exec rake spec
+
+  release:
+    name: Release gem
+    needs: test
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: cadwallion/publish-rubygems-action@master
+        env:
+          RUBYGEMS_API_KEY: ${{secrets.FONTIST_CI_RUBYGEMS_API_KEY}}

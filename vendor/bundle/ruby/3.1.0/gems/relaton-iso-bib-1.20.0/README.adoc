@@ -1,0 +1,488 @@
+= RelatonIsoBib
+
+image:https://img.shields.io/gem/v/relaton-iso-bib.svg["Gem Version", link="https://rubygems.org/gems/relaton-iso-bib"]
+image:https://github.com/relaton/relaton-iso-bib/workflows/rake/badge.svg["Build Status (macOS)", link="https://github.com/relaton/relaton-iso-bib/actions?workflow=rake"]
+image:https://codeclimate.com/github/relaton/relaton-iso-bib/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/relaton/relaton-iso-bib"]
+image:https://img.shields.io/github/issues-pr-raw/relaton/relaton-iso-bib.svg["Pull Requests", link="https://github.com/relaton/relaton-iso-bib/pulls"]
+image:https://img.shields.io/github/commits-since/relaton/relaton-iso-bib/latest.svg["Commits since latest",link="https://github.com/relaton/relaton-iso-bib/releases"]
+
+IsoBib is a Ruby gem that implements the https://github.com/metanorma/metanorma-model-iso#iso-bibliographic-item[IsoBibliographicItem model].
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+[source,ruby]
+----
+gem 'relaton-iso-bib'
+----
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install relaton-iso-bib
+
+== Usage
+
+=== Create ISO bibliographic item
+
+[source,ruby]
+----
+require 'relaton_iso_bib'
+=> true
+
+hash = YAML.load_file "spec/examples/iso_bib_item.yml"
+=> {
+    "schema-version"=>"v1.0.3",
+    "id"=>"ISO/TC211",
+    "title"=>[
+      {"type"=>"title-intro", "content"=>"Geographic information", "language"=>"en", "script"=>"Latn", "format"=>"text/plain"},
+    ...
+
+bib_hash = RelatonIsoBib::HashConverter.hash_to_bib hash
+=> {:"schema-version"=>"v1.0.3",
+ :id=>"ISO/TC211",
+ :fetched=>"2011-06-22",
+ :title=>
+  #<RelatonBib::TypedTitleStringCollection:0x00007ff73e922ab0
+   @array=
+    [#<RelatonBib::TypedTitleString:0x00007ff73e9225d8
+  ...
+
+item = RelatonIsoBib::IsoBibliographicItem.new(**bib_hash)
+=> #<RelatonIsoBib::IsoBibliographicItem:0x00007ff77f8952c8
+ @abstract=
+  [#<RelatonBib::FormattedString:0x00007ff76f1496c8
+    @content="ISO 19115-1:2014 defines the schema required for ...",
+  ...
+----
+
+=== IsoBibliographicItem Localized Strings
+
+[source,ruby]
+----
+item.title
+=> #<RelatonBib::TypedTitleStringCollection:0x00007ff73e922ab0
+ @array=
+  [#<RelatonBib::TypedTitleString:0x00007ff73e9225d8
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e9224c0 @content="Geographic information", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-intro">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921cc8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921b60 @content="Metadata", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9219d0
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921908 @content="Part 1: Fundamentals", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-part">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921638
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e921548
+      @content="Geographic information – Metadata – Part 1: Fundamentals",
+      @format="text/plain",
+      @language=["en"],
+      @script=["Latn"]>,
+    @type="main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9214a8
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e921368 @content="Information géographique", @format="text/plain", @language=["fr"], @script=["Latn"]>,
+    @type="title-intro">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9212c8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e9211b0 @content="Métadonnées", @format="text/plain", @language=["fr"], @script=["Latn"]>,
+    @type="title-main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921020
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e920f08 @content="Information géographique", @format="text/plain", @language=["fr"], @script=["Latn"]>,
+    @type="title-part">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e920da0
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e920c60
+      @content="Information géographique – Métadonnées – Information géographique",
+      @format="text/plain",
+      @language=["fr"],
+      @script=["Latn"]>,
+    @type="main">]>
+
+item.title(lang: "en")
+=> #<RelatonBib::TypedTitleStringCollection:0x00007ff72f0c2e88
+ @array=
+  [#<RelatonBib::TypedTitleString:0x00007ff73e9225d8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e9224c0 @content="Geographic information", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-intro">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921cc8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921b60 @content="Metadata", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9219d0
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921908 @content="Part 1: Fundamentals", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-part">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921638
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e921548
+      @content="Geographic information – Metadata – Part 1: Fundamentals",
+      @format="text/plain",
+      @language=["en"],
+      @script=["Latn"]>,
+    @type="main">]>
+
+item.abstract(lang: "en").to_s
+=> "ISO 19115-1:2014 defines the schema required for ..."
+----
+
+=== IsoBibliographicItem references
+
+[source,ruby]
+----
+item.shortref(item.structuredidentifier)
+=> "ISO1-2-2014:2014"
+----
+
+=== IsoBibliographicItem URLs
+
+[source,ruby]
+----
+item.url
+=> "https://www.iso.org/standard/53798.html"
+
+item.url(:obp)
+=> "https://www.iso.org/obp/ui/#!iso:std:53798:en"
+
+item.url(:rss)
+=> "https://www.iso.org/contents/data/standard/05/37/53798.detail.rss"
+----
+
+
+=== IsoBibliographicItem ICS
+
+[source,ruby]
+----
+item.ics
+[<RelatonIsoBib::Ics:0x007fd1d92334f0
+  @code="35.240.70",
+  @description="IT applications in science",
+  @description_full="Information technology. Applications of information technology. IT applications in science.",
+  @fieldcode="35",
+  @groupcode="240",
+  @notes=[#<Isoics::Note:0x007fd1d9232f28 @ics_code=nil, @text="Including digital geographic information">],
+  @subgroupcode="70">]
+----
+
+=== IsoBibliographicItem BibliographicDates
+
+[source,ruby]
+----
+item.date
+=> [#<RelatonBib::BibliographicDate:0x00007ff77f894f08 @from=nil, @on="2014", @to=nil, @type="issued">,
+ #<RelatonBib::BibliographicDate:0x00007ff76f161f70 @from=nil, @on="2014-04", @to=nil, @type="published">,
+ #<RelatonBib::BibliographicDate:0x00007ff76f1605f8 @from=nil, @on="2015-05-20", @to=nil, @type="accessed">]
+
+item.date(type: "published").first.on
+=> "2014-04"
+
+item.date(type: "published").first.on :year
+=> 2014
+
+item.date(type: "published").first.on :month
+=> 4
+
+item.date(type: "published").first.on :day
+=> nil
+
+item.date(type: "published").first.on :date
+=> #<Date: 2014-04-01 ((2456749j,0s,0n),+0s,2299161j)>
+----
+
+=== IsoBibliographicItem DocumentStatus
+
+[source,ruby]
+----
+item.status
+=> #<RelatonBib::DocumentStatus:0x00007ff76f0eb8e8
+ @iteration="final",
+ @stage=#<RelatonBib::DocumentStatus::Stage:0x00007ff76f0ebaf0 @abbreviation=nil, @value=60>,
+ @substage=#<RelatonBib::DocumentStatus::Stage:0x00007ff76f0eba78 @abbreviation=nil, @value=60>>
+----
+
+[source,ruby]
+----
+wg = item.editorialgroup
+=> #<RelatonIsoBib::EditorialGroup:0x00007ff73e91a478
+ @secretariat=nil,
+ @subcommittee=
+  [#<RelatonBib::WorkGroup:0x00007ff73e91a108
+    @identifier=nil,
+    @name="International Organization for Standardization",
+    @number="122",
+    @prefix=nil,
+    @type="ISO">],
+ @technical_committee=
+  [#<RelatonBib::WorkGroup:0x00007ff73e91a338
+    @identifier=nil,
+    @name="ISO/TC 211 Geographic information/Geomatics",
+    @number="211",
+    @prefix=nil,
+    @type="technicalCommittee">],
+ @workgroup=[#<RelatonBib::WorkGroup:0x00007ff73e919ed8 @identifier=nil, @name="Workgroup Organization", @number="111", @prefix=nil, @type="WG">]>
+----
+
+=== Document relations of a standard
+
+[source,ruby]
+----
+item.relation
+=> #<RelatonBib::DocRelationCollection:0x007fc0aeb819f8
+ @array=
+  [#<RelatonBib::DocumentRelation:0x007fc0aeb90610
+    @bibitem=
+     #<RelatonIsoBib::IsoBibliographicItem:0x007fc0aeb91330
+  ...
+----
+
+=== Reference modification: convert to all parts reference
+
+In ISO, an All Parts reference is a reference to all parts of a standard. If a standard consists of parts,
+only those parts are referenced in the ISO website (as retrieved by the isobib gem). A part reference is
+converted to an All Parts reference by making the part reference a partOf relation to a new reference,
+which strips the part number and part title of the original, and its abstract. The operation is destructive.
+
+[source,ruby]
+----
+all_parts_item = item.to_all_parts
+=> #<RelatonIsoBib::IsoBibliographicItem:0x007fc0aec00960
+ @abstract=[],
+ @accesslocation=["accesslocation1", "accesslocation2"],
+ @all_parts=true,
+ ...
+
+all_parts_item.title(lang: "en")
+=> #<RelatonBib::TypedTitleStringCollection:0x00007ff77ea5fde8
+ @array=
+  [#<RelatonBib::TypedTitleString:0x00007ff77ecb5160
+    @title=#<RelatonBib::FormattedString:0x00007ff77ecb5098 @content="Geographic information", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-intro">,
+   #<RelatonBib::TypedTitleString:0x00007ff77ecb4ee0
+    @title=#<RelatonBib::FormattedString:0x00007ff77ecb4e90 @content="Metadata", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-main">,
+   #<RelatonBib::TypedTitleString:0x00007ff77ecb4c10
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff77ecb4bc0
+      @content="Geographic information – Metadata",
+      @format="text/plain",
+      @language=["en"],
+      @script=["Latn"]>,
+    @type="main">]>
+
+all_parts_item.shortref(item.structuredidentifier)
+=> "ISO1-2-2014:2014: All Parts"
+
+all_parts_item.relation.last.bibitem.title
+=> #<RelatonBib::TypedTitleStringCollection:0x00007ff73e922ab0
+ @array=
+  [#<RelatonBib::TypedTitleString:0x00007ff73e9225d8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e9224c0 @content="Geographic information", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-intro">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921cc8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921b60 @content="Metadata", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9219d0
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921908 @content="Part 1: Fundamentals", @format="text/plain", @language=["en"], @script=["Latn"]>,
+    @type="title-part">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921638
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e921548
+      @content="Geographic information – Metadata – Part 1: Fundamentals",
+      @format="text/plain",
+      @language=["en"],
+      @script=["Latn"]>,
+    @type="main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9214a8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e921368 @content="Information géographique", @format="text/plain", @language=["fr"], @script=["Latn"]>,
+    @type="title-intro">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e9212c8
+    @title=#<RelatonBib::FormattedString:0x00007ff73e9211b0 @content="Métadonnées", @format="text/plain", @language=["fr"], @script=["Latn"]>,
+    @type="title-main">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e921020
+    @title=#<RelatonBib::FormattedString:0x00007ff73e920f08 @content="Information géographique", @format="text/plain", @language=["fr"], @script=["Latn"]>,
+    @type="title-part">,
+   #<RelatonBib::TypedTitleString:0x00007ff73e920da0
+    @title=
+     #<RelatonBib::FormattedString:0x00007ff73e920c60
+      @content="Information géographique – Métadonnées – Information géographique",
+      @format="text/plain",
+      @language=["fr"],
+      @script=["Latn"]>,
+    @type="main">]>
+----
+
+=== Reference modification: convert to most recent reference
+
+In ISO, an undated reference is interpreted as a _de dicto_ reference to the most recent instance of the
+reference; if the document is read after a new version of the reference has been issued, the reference is taken
+to refer to that new instance, even if that instance had not been published at the time the bibliography was authored.
+All references on the ISO website (as retrieved by the isobib gem) are dated. A dated reference is
+converted to a Most Recent reference by making the dated reference an instance relation to a new reference,
+which strips the date of publication of the original, and its abstract. The operation is destructive.
+
+[source,ruby]
+----
+all_parts_item.date
+=> [#<RelatonBib::BibliographicDate:0x00007ff77ecb4418 @from=nil, @on="2014", @to=nil, @type="issued">,
+ #<RelatonBib::BibliographicDate:0x00007ff77ecb4328 @from=nil, @on="2014-04", @to=nil, @type="published">,
+ #<RelatonBib::BibliographicDate:0x00007ff77ecb42b0 @from=nil, @on="2015-05-20", @to=nil, @type="accessed">]
+
+most_recent_ref_item = all_parts_item.to_most_recent_reference
+=> #<RelatonIsoBib::IsoBibliographicItem:0x00007ff73ea4b978
+  @abstract=[],
+  @accesslocation=["accesslocation1", "accesslocation2"],
+  @all_parts=true,
+  ...
+
+most_recent_ref_item.date
+=> []
+
+most_recent_ref_item.shortref(most_recent_ref_item.structuredidentifier)
+=> "ISO1(allparts): All Parts"
+----
+
+
+=== XML serialization
+
+[source,ruby]
+----
+item.to_xml(bibdata: true)
+=> "<bibdata type="standard" schema-version="v1.2.1">
+  <fetched>2011-06-22</fetched>
+  <title type="title-intro" format="text/plain" language="en" script="Latn">Geographic information</title>
+  <title type="title-main" format="text/plain" language="en" script="Latn">Metadata</title>
+  <title type="title-part" format="text/plain" language="en" script="Latn">Part 1: Fundamentals</title>
+  <title type="main" format="text/plain" language="en" script="Latn">Geographic information – Metadata – Part 1: Fundamentals</title>
+  <title type="title-intro" format="text/plain" language="fr" script="Latn">Information géographique</title>
+  <title type="title-main" format="text/plain" language="fr" script="Latn">Métadonnées</title>
+  <title type="title-part" format="text/plain" language="fr" script="Latn">Information géographique</title>
+  <title type="main" format="text/plain" language="fr" script="Latn">Information géographique – Métadonnées – Information géographique</title>
+  ...
+  <ext schema-version="v1.0.3">
+    <doctype>international-standard</doctype>
+    ...
+  </ext>
+</bibdata>"
+
+item.to_xml(bibdata: true, note: [{ type: "note type", text: "test note" }])
+=> "<bibdata type="standard" schema-version="v1.2.1">
+  <fetched>2011-06-22</fetched>
+  <title type="title-intro" format="text/plain" language="en" script="Latn">Geographic information</title>
+  ...
+  <note format="text/plain" type="note type">test note</note>
+  ...
+</bibdata>"
+----
+=== Export bibliographic item to BibTeX
+
+[source,ruby]
+----
+item.to_bibtex
+=> "@misc{ISO/TC211,
+  title = {Geographic information – Metadata – Part 1: Fundamentals},
+  edition = {1},
+  author = {Bierman, A. and Bierman, A},
+  publisher = {IETF},
+  address = {bib place},
+  year = {2014},
+  month = apr,
+  urldate = {2015-05-20},
+  type = {value},
+  timestamp = {2011-06-22},
+  url = {https://www.iso.org/standard/53798.html},
+  month_numeric = {4}
+}"
+----
+
+=== Exporting bibliographic item to AsciiBib
+
+[source,ruby]
+----
+item.to_asciibib
+=> "[%bibitem]
+== {blank}
+id:: ISO/TC211
+fetched:: 2011-06-22
+title::
+title.type:: title-intro
+title.content:: Geographic information
+title.language:: en
+title.script:: Latn
+title.format:: text/plain
+title::
+title.type:: title-main
+title.content:: Metadata
+title.language:: en
+title.script:: Latn
+title.format:: text/plain
+...
+"
+----
+
+=== Create bibliographic item from YAML
+[source,ruby]
+----
+hash = YAML.load_file 'spec/examples/iso_bib_item.yml'
+=> {"schema-version"=>"v1.0.3",
+ "id"=>"ISO/TC211",
+...
+
+bib_hash = RelatonIsoBib::HashConverter.hash_to_bib hash
+=> {:"schema-version"=>"v1.0.3",
+ :id=>"ISO/TC211",
+...
+
+RelatonIsoBib::IsoBibliographicItem.new **bib_hash
+=> #<RelatonIsoBib::IsoBibliographicItem:0x007fdb95ba98e8
+...
+----
+
+=== Logging
+
+RelatonIsoBib uses the relaton-logger gem for logging. By default, it logs to STDOUT. To change the log levels and add other loggers, read the https://github.com/relaton/relaton-logger#usage[relaton-logger] documentation.
+
+== BibliographicItem
+
+The ISO standards use a subset of the generic bibliographic fields specified in the https://github.com/metanorma/metanorma-model-iso#iso-bibliographic-item[IsoBibliographicItem model]:
+
+* Title:
+** English; French
+** titleIntro; titleMain; titlePart
+* DocIdentifier:
+** project number; part number; technical committee document number
+* Source: the ISO page from which the standard may be purchased or downloaded
+* Type: IsoDocumentType (International Standard, Technical Specification, Technical Report, Publicly Available Specification, International Workshop Agreement, Guide)
+* Project Group:
+** Technical Committee, Subcommittee, Workgroup, Secretariat
+** Technical Committee Number, Subcommittee Number, Workgroup Number
+** Technical Committee Type, Subcommittee Type, Workgroup Type (e.g. JTC)
+** Organization:Name (ISO; other standards organizations, for standards jointly published with ISO)
+* ICS: refer https://www.iso.org/publication/PUB100033.html
+* Status
+** Stage, Substage
+* Edition
+* Date:Published
+* Abstract
+* Relations
+** Obsoletes, Updates
+
+All FormattedString instances are returned by default as a text/plain string; if required, they are returned as a text/html string.
+
+== Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/relaton-iso-bib.
+
+== License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+

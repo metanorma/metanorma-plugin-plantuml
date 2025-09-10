@@ -1,0 +1,7 @@
+require_relative "html2doc/version"
+require_relative "html2doc/base"
+require_relative "html2doc/mime"
+require_relative "html2doc/notes"
+require_relative "html2doc/math"
+require_relative "html2doc/lists"
+require_relative "html2doc/xml"

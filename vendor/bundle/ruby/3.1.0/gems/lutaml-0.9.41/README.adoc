@@ -1,0 +1,112 @@
+= LutaML: Ruby library for accessing data models
+
+== Purpose
+
+LutaML aims to be a universal data model accessor that allows parsing
+data models in multiple languages, including:
+
+* EXPRESS (https://www.expresslang.org[EXPRESS Language Foundation], ISO 10303-11)
+* XMI (from OMG)
+* UML in LutaML format
+
+
+== Install
+
+With bundler, in `Gemfile`:
+
+[source,ruby]
+----
+gem "lutaml"
+----
+
+Directly:
+
+[source,console]
+----
+$ gem install lutaml
+----
+
+== Usages
+
+=== Parsing
+
+The `Lutaml::Parser.parse` method provides a single point of entry for parsing
+data model files, such as:
+
+* EXPRESS files with `.exp` extension
+* YAML Compressed EXPRESS CACHE files
+* XMI files with `.xmi` extension
+* XML files with `.xml` extension
+* LutaML files with `.lutaml` extension
+* LutaML YAML files with `.yml` extension
+
+Depending on the input file type, `Lutaml::Parser.parse` returns:
+
+* `Expressir::Express::Model::Repository` for EXPRESS files
+* `Expressir::Express::Cache` for EXPRESS CACHE files
+* `Lutaml::Uml::Document` for XMI files
+* `Lutaml::Uml::Document` for XML files
+* `Lutaml::Uml::Document` for LutaML files
+* `Lutaml::Uml::Document` for LutaML YAML files
+
+Examples to use the `Lutaml::Parser.parse`:
+
+[source,ruby]
+----
+require "lutaml"
+
+# example.exp is an EXPRESS schema file
+model = Lutaml::Parser.parse([File.new("example.exp")])
+# => returns Expressir::Express::Model::Repository model
+
+# example.exp.yaml is an EXPRESS cache file created with Expressir
+model = Lutaml::Parser.parse([File.new("example.exp.yaml")], ::Lutaml::Parser::EXPRESS_CACHE_PARSE_TYPE)
+# => returns Expressir::Express::Cache model
+
+# example.xmi is an XMI file
+model = Lutaml::Parser.parse([File.new("example.xmi")])
+# => returns Lutaml::Uml::Document model
+
+# example.xml is an XML file
+model = Lutaml::Parser.parse([File.new("example.xml")])
+# => returns Lutaml::Uml::Document model
+
+# example.lutaml is an LutaML file
+model = Lutaml::Parser.parse([File.new("example.lutaml")])
+# => returns Lutaml::Uml::Document model
+
+# example.yaml is an LutaML YAML file
+model = Lutaml::Parser.parse([File.new("example.yaml")])
+# => returns Lutaml::Uml::Document model
+----
+
+
+=== CLI
+
+There is a command-line interface available for parsing supported data model files.
+
+* EXPRESS `*.exp`
+* LutaML UML `*.lutaml`
+* LutaML YAML datastruct files
+
+[source,bash]
+----
+# Will generate `test.dot` file in the current directory
+$ lutaml -o . test.lutaml
+
+# Will generate `test.png` file in the `assets` directory
+$ lutaml -o assets -t png test.lutaml
+----
+
+For additional info refer to `lutaml --help output`.
+
+== Other Usages
+
+* link:docs/lutaml-uml.adoc[Usage with Lutaml::Uml]
+* link:docs/lutaml-express.adoc[Usage with Lutaml::Express]
+* link:docs/lutaml-xmi.adoc[Usage with Lutaml::XMI]
+// * link:docs/lutaml-sysml.adoc[Usage with Lutaml::Sysml]
+
+== Copyright and license
+
+Copyright Ribose. BSD-3 License.

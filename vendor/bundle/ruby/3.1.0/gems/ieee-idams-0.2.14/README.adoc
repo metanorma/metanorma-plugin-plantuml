@@ -1,0 +1,30 @@
+= IEEE IDAMS Exchange Format in Ruby
+
+image:https://img.shields.io/gem/v/ieee-idams.svg["Gem Version", link="https://rubygems.org/gems/ieee-idams"]
+image:https://github.com/relaton/ieee-idams/workflows/rake/badge.svg["Build Status", link="https://github.com/relaton/ieee-idams/actions?workflow=rake"]
+image:https://codeclimate.com/github/relaton/ieee-idams/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/relaton/ieee-idams"]
+
+== Purpose
+
+This is a class-oriented Ruby library that parses IEEE IDAMS Exchange data.
+
+This gem is developed according to:
+
+* https://www.ieee.org/content/dam/ieee-org/ieee/web/org/pubs/ieee-books-xml-metadata-documentation.pdf[IEEE Publishing Technology Books Metadata Description and XML Documentation, Version 4.1, December 2022]
+
+== Usage
+
+=== Ruby API
+
+[source,ruby]
+----
+require 'ieee-idams'
+
+# Single record under `<publication>`
+Ieee::Idams::Publication.from_xml(File.read("spec/fixtures/record_1.xml"))
+----
+
+
+== License
+
+Copyright Ribose.

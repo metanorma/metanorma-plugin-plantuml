@@ -1,0 +1,45 @@
+requirements:
+  default:
+    requirement: مطلب
+    recommendation: توصية
+    permission: إذن
+    obligation: التزام
+    subject: موضوع
+    inherits: يرث
+  modspec:
+    recommendationtest: اختبار التوصية
+    requirementtest: اختبار المتطلبات
+    permissiontest: اختبار الإذن
+    recommendationclass: فئة التوصيات
+    requirementclass: فئة المتطلبات
+    permissionclass: فئة الأذونات
+    abstracttest: اختبار تجريدي
+    conformanceclass: فئة المطابقة
+    conformancetest: اختبار المطابقة
+    targettype: نوع الهدف
+    target: استهداف
+    testpurpose: هدف الاختبار
+    testmethod: طريقة اختبار
+    dependency: المتطلبات المسبقة
+    indirectdependency: شرط مسبق غير مباشر
+    identifier: المعرف
+    included_in: مدرج في
+    statement: بيان
+    description: وصف
+    guidance: إرشاد
+    implements: تنفذ
+    provision: بيان المعياري
+inflection:
+  بيان المعياري:
+    sg: بيان المعياري
+    pl: البيانات المعيارية
+  اختبار المطابقة:
+    sg: اختبار المطابقة
+    pl: اختبارات المطابقة
+  المتطلبات المسبقة:
+    sg: المتطلبات المسبقة
+    pl: المتطلبات الأساسية
+  شرط مسبق غير مباشر:
+    sg: شرط مسبق غير مباشر
+    pl: المتطلبات الأساسية غير المباشرة
+

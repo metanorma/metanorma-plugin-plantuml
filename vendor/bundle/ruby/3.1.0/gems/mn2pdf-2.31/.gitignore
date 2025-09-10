@@ -1,0 +1,19 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/Gemfile.lock
+/vendor/
+
+# rspec failure tracking
+.rspec_status
+
+.rubocop-http*
+
+/bin/mn2pdf.jar
+
+/missing.pdf.err

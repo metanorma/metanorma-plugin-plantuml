@@ -1,0 +1,49 @@
+in: 
+at: 
+and: と
+author_and: ","
+updated: 更新しました
+viewed: 参照
+version: バージョン
+also_pub_as: 次のようにも出版されています
+no_date: 日付なし。
+no_place: 都市はありません。
+date_formats:
+  month_year: yMMMM
+  day_month_year: to_long_s
+  date_time: to_long_s
+ordinal_keys: []
+OrdinalRules: digits-ordinal
+edition: 版
+edition_ordinal: "第{{ var1 }}版"
+draft: "下書き %"
+editor:
+  sg: 編
+  pl: 編
+qq-open: 
+qq-close: 
+q-open:
+q-close:
+stage:
+  valid: 有効です
+  withdrawn: 取り消されました
+extent:
+  page:
+    sg: "p. %"
+    pl: "pp. %"
+  volume:
+    sg: "巻%"
+    pl: "巻%"
+  issue:
+    sg: "いいえ%"
+    pl: "いいえ%"
+size:
+  page:
+    sg: "% p."
+    pl: "% pp."
+  volume:
+    sg: "巻%"
+    pl: "巻%"
+  issue:
+    sg: "いいえ%"
+    pl: "いいえ%"

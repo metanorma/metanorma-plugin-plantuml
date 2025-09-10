@@ -1,0 +1,207 @@
+term_def_boilerplate:
+scope: مجال التطبيق
+symbolsabbrev: الرموز والاختصارات
+abbrev: الاختصارات
+symbols: الرموز
+table_of_contents: جدول المحتويات
+introduction: مقدمة
+section: قسم
+foreword: تمهيد
+abstract: ملخص
+acknowledgements: شكر
+executivesummary: الملخص التنفيذي
+termsdef: مصطلحات معرفة
+termsdefsymbolsabbrev: المصطلحات والتعريفات والرموز والاختصارات
+termsdefsymbols: المصطلحات والتعريفات والرموز
+termsdefabbrev: المصطلحات والتعريفات والاختصارات
+normref: المراجع المعيارية
+bibliography: بيبليوغرافيا
+index: الفهرس
+see: انظر
+see_also: انظر أيضًا
+clause: فقرة
+annex: ملحق
+appendix: تذييل
+continued: واصلت
+no_terms_boilerplate: |
+  لم يتم سرد أي مصطلحات وتعريفات في هذا المستند.
+internal_terms_boilerplate: |
+  لأغراض هذا المستند، تنطبق المصطلحات والتعريفات التالية.
+norm_with_refs_pref:
+  تتم الإشارة إلى المستندات التالية في النص بحيث يشكل بعض أو كل محتوياتها متطلبات هذا المستند. للحصول على مراجع مؤرخة، تطبق النسخة المشار إليها فقط. بالنسبة للمراجع غير المؤرخة ، تنطبق أحدث طبعة من الوثيقة المشار إليها (بما في ذلك أي تعديلات).
+norm_empty_pref:
+  لا توجد مراجع معيارية في هذه الوثيقة.
+external_terms_boilerplate: |
+   لأغراض هذا المستند ، تنطبق المصطلحات والتعريفات الواردة في%. 
+internal_external_terms_boilerplate: |
+  لأغراض هذه الوثيقة ،تنطبق المصطلحات والتعاريف الواردة في % وما يلي.
+no_information_available: "[لا توجد معلومات متاحة]"
+term_defined_in: "(%)"
+binary_and: "%1 <conn>ﻭ</conn> %2"
+multiple_and: "%1<enum-comma>,</enum-comma> <conn>ﻭ</conn> %2"
+binary_or: "%1 <conn>ﺍﻭ</conn> %2"
+multiple_or: "%1<enum-comma>,</enum-comma> <conn>ﺍﻭ</conn> %2"
+chain_and: "%1 <conn>ﻭ</conn> %2"
+chain_or: "%1 <conn>ﺍﻭ</conn> %2"
+chain_from: "%1 <conn>%ﻢﻧ</conn> 2"
+chain_to: "<conn>ﻢﻧ</conn> %1 <conn>ﺈﻟﻯ</conn> %2"
+nested_xref: "%1<comma>,</comma> %2"
+list_nested_xref: "%1 %2"
+ordinal_keys: [gender]
+SpelloutRules:
+  f: spellout-ordinal-feminine
+  m: spellout-ordinal-masculine
+OrdinalRules: digits-ordinal
+note: ملاحظة
+note_xref: ملاحظة
+termnote: ملاحظة % للقيد
+list: قائمة
+deflist: قائمة تعريف
+figure: شكل
+diagram: رسم بياني
+formula: معادلة
+inequality: عدم مساواة
+table: جدول
+requirement: مطلب
+recommendation: توصية
+permission: إذن
+box: الإطار
+key: مفتاح
+example: مثال
+example_xref: مثال
+where: حيث
+where_one: حيث
+wholeoftext: كامل النص
+draft_label: مسودة
+inform_annex: إخباري
+norm_annex: مقياسي
+modified: معدلة
+adapted: تكيف
+deprecated: مهمل
+source: مصدر
+no_identifier: (لا يوجد معرف)
+and: و
+all_parts: كل الأجزاء
+edition_ordinal: "ﺎﻠﻄﺒﻋﺓ؜ {{ var1 | ordinal_word: 'edition', '' }}"
+edition: الطبعة؜ ؜
+version: الإصدار
+toc_figures: جدول الأرقام
+toc_tables: جدول الجداول
+toc_recommendations: جدول التوصيات
+month_january: يناير
+month_february: فبراير
+month_march: مارس
+month_april: أبريل
+month_may: مايو
+month_june: يونيو
+month_july: يوليو
+month_august: أعسطس
+month_september: سبتمبر
+month_october: أكتوبر
+month_november: نوفمبر
+month_december: ديسمبر
+obligation: التزام
+admonition:
+  danger: خطر
+  warning: تحذير
+  caution: حذر
+  important: مهم
+  safety precautions: احتياطات السلامة
+  editorial: ملاحظة تحريرية
+locality:
+  section: قسم
+  clause: فقرة
+  part: جزء
+  paragraph: فقرة
+  chapter: فصل
+  page: صفحة
+  table: جدول
+  annex: ملحق, مرفق
+  figure: شكل
+  example: مثال
+  note: ملحوظة, ملاحظة
+  formula: معادلة
+grammar_abbrevs:
+  masculine: مذكر
+  feminine: مؤ
+  neuter: محايد
+  common: خنثى
+  singular: مفرد
+  dual: مزدوج
+  plural: جمع
+  isPreposition: حرف جر
+  isParticiple: النعت
+  isAdjective: صفة
+  isAdverb: ظرف
+  isNoun: اسم
+  isVerb: الفعل
+relatedterms:
+  deprecates: يهمل
+  supersedes: حل محل
+  # حل محل
+  narrower: أضيق
+  broader: أوسع
+  equivalent: مُعادل
+  compare: قارن
+  contrast: مضاد
+  # تباين
+  see: انظر
+  seealso: انظر أيضا
+inflection:
+  فقرة:
+    sg: فقرة
+    pl: فقرات
+  ملحق:
+    sg: ملحق
+    pl: لحقات
+  تذييل:
+    sg: تذييل
+    pl: تذييلات
+  ملاحظة:
+    sg: ملاحظة
+    pl: ملاحظات
+  "ملاحظة % للقيد":
+    sg: ملاحظة % للقيد
+    pl: ملاحظات % للقيد
+  قائمة:
+    sg: قائمة
+    pl: قوائم
+  شكل:
+    sg: شكل
+    pl: أشكال
+  معادلة:
+    sg: معادلة
+    pl: معادلات
+  جدول:
+    sg: جدول
+    pl: جداول
+  مطلب:
+    sg: مطلب
+    pl: متطلبات
+  توصية:
+    sg: توصية
+    pl: توصيات
+  تصريح:
+    sg: تصريح
+    pl: تصريحات
+  مثال:
+    sg: مثال
+    pl: أمثلة
+  جزء:
+    sg: جزء
+    pl: أجزاء
+  قسم:
+    sg: قسم
+    pl: أقسام
+  فقرة:
+    sg: فقرة
+    pl: فقرات
+  فصل:
+    sg: فصل
+    pl: فصول
+  صفحة:
+    sg: صفحة
+    pl: صفحات
+  الطبعة؜:
+    grammar:
+      gender: f

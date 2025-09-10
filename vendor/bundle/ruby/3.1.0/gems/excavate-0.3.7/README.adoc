@@ -1,0 +1,163 @@
+image:https://img.shields.io/gem/v/excavate.svg["Gem Version", link="https://rubygems.org/gems/excavate"]
+image:https://codeclimate.com/github/fontist/excavate/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/fontist/excavate"]
+image:https://github.com/fontist/excavate/workflows/test-and-release/badge.svg["Build Status", link="https://github.com/fontist/excavate/actions?workflow=test-and-release"]
+
+= Excavate: Ruby gem to extract nested archives
+
+Extract nested archives with a single command.
+
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+[source,ruby]
+----
+gem "excavate"
+----
+
+And then execute:
+
+[source,sh]
+----
+$ bundle install
+----
+
+Or install it yourself as:
+
+[source,sh]
+----
+$ gem install excavate
+----
+
+
+== Usage
+
+To extract an archive containing other archives inside:
+
+[source,ruby]
+----
+target = Dir.mktmpdir
+Excavate::Archive.new("path/to/archive.cab").extract(target, recursive_packages: true)
+----
+
+The same but allowing to choose only necessary files inside:
+
+[source,ruby]
+----
+target = Dir.mktmpdir
+Excavate::Archive.new("path/to/archive.cab").files(recursive_packages: true) do |path|
+  FileUtils.mv(path, target) if path.end_with?(".txt")
+end
+----
+
+
+== CLI
+
+`excavate` can be used via command line. To extract an archive including the nested ones:
+
+[source,sh]
+----
+$ excavate --recursive path/to/archive.cab
+----
+
+It supports recursive extraction of a directory containing archives:
+
+[source,sh]
+----
+$ excavate --recursive path/to/dir_with_archives
+----
+
+If you'd like to skip extraction of nested archives, just use:
+
+[source,sh]
+----
+$ excavate path/to/archive.cab
+----
+
+To extract a particular file or files specify them as last arguments:
+
+[source,sh]
+----
+$ excavate --recursive archive.cab file1 dir/file2
+----
+
+Also `excavate` supports extraction from nested archives:
+
+[source,sh]
+----
+$ excavate --recursive archive.cab dir/nested.zip/file
+----
+
+And filtering:
+
+[source,sh]
+----
+$ excavate archive.cab --filter "**/specialfile*.txt"
+----
+
+== Dependencies
+
+Depends on
+https://github.com/fontist/ffi-libarchive-binary[ffi-libarchive-binary] which
+has the following requirements:
+
+* zlib
+* Expat
+* OpenSSL (for Linux only)
+
+These dependencies are generally present on all systems.
+
+
+== Development
+
+We are following Sandi Metz's Rules for this gem, you can read the
+http://robots.thoughtbot.com/post/50655960596/sandi-metz-rules-for-developers[description of the rules here].
+All new code should follow these
+rules. If you make changes in a pre-existing file that violates these rules you
+should fix the violations as part of your contribution.
+
+
+== Releasing
+
+Releasing is done automatically with GitHub Action. Just bump and tag with `gem-release`.
+
+For a patch release (0.0.x) use:
+
+[source,ruby]
+----
+gem bump --version patch --tag --push
+----
+
+For a minor release (0.x.0) use:
+
+[source,ruby]
+----
+gem bump --version minor --tag --push
+----
+
+
+== Contributing
+
+First, thank you for contributing! We love pull requests from everyone. By
+participating in this project, you hereby grant https://www.ribose.com[Ribose Inc.] the
+right to grant or transfer an unlimited number of non exclusive licenses or
+sub-licenses to third parties, under the copyright covering the contribution
+to use the contribution by all means.
+
+Here are a few technical guidelines to follow:
+
+1. Open an https://github.com/fontist/excavate/issues[issue] to discuss a new feature.
+1. Write tests to support your new feature.
+1. Make sure the entire test suite passes locally and on CI.
+1. Open a Pull Request.
+1. https://github.com/thoughtbot/guides/tree/master/protocol/git#write-a-feature[Squash your commits]
+  after receiving feedback.
+1. Party!
+
+
+== License
+
+This gem is distributed with a BSD 3-Clause license.
+
+This gem is developed, maintained and funded by https://www.ribose.com/[Ribose Inc.]

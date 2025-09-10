@@ -1,0 +1,48 @@
+requirements:
+  default:
+    requirement: Exigence
+    recommendation: Recommandation
+    permission: Autorisation
+    obligation: Obligation
+    subject: Sujet
+    inherits: Hérite
+  modspec:
+    recommendationtest: Test de recommendation
+    requirementtest: Test d’exigence
+    permissiontest: Test d’autorisation
+    recommendationclass: Classe de recommendations
+    requirementclass: Classe d’exigences
+    permissionclass: Classe d’autorisations
+    abstracttest: Test abstrait
+    conformanceclass: Classe de confirmité
+    conformancetest: Test de conformité
+    targettype: Type de cible
+    target: Cible
+    testpurpose: Objectif du test
+    testmethod: Méthode du test
+    dependency: Prérequis
+    indirectdependency: Prérequis indirect
+    identifier: Identifiant
+    included_in: Inclus dans
+    statement: Déclaration
+    description: Description
+    guidance: Avis
+    implements: Implémente
+    provision: Déclaration normative
+inflection:
+  Déclaration normative:
+    sg: Déclaration normative
+    pl: Déclarations normatives
+  Test de conformité:
+    sg: Tests de conformité
+    pl: Tests de conformité
+  Déclaration:
+    sg: Déclaration
+    pl: Déclarations
+  Prérequis:
+    sg: Prérequis
+    pl: Prérequis
+  Dépendance indirecte:
+    sg: Prérequis indirect
+    pl: Prérequis indirects
+

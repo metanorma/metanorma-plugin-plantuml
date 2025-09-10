@@ -1,0 +1,121 @@
+have_header: checking for ruby/thread.h... -------------------- yes
+
+LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.1.7/x64/lib "gcc -o conftest -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0 -I. -DENABLE_PATH_CHECK=0   -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wundef  -fPIC conftest.c  -L. -L/opt/hostedtoolcache/Ruby/3.1.7/x64/lib -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.1.7/x64/lib -L. -fstack-protector-strong -rdynamic -Wl,-export-dynamic -Wl,--no-as-needed     -Wl,-rpath,/opt/hostedtoolcache/Ruby/3.1.7/x64/lib -L/opt/hostedtoolcache/Ruby/3.1.7/x64/lib -lruby  -lm  -lc"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.1.7/x64/lib "gcc -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0 -I. -DENABLE_PATH_CHECK=0   -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wundef  -fPIC   -c conftest.c"
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <ruby/thread.h>
+/* end */
+
+--------------------
+
+LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.1.7/x64/lib "gcc -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0 -I. -DENABLE_PATH_CHECK=0   -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wundef  -fPIC   -c conftest.c"
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: #include <ruby/thread.h>
+ 5: 
+ 6: #include <stdio.h>
+ 7: 
+ 8: int main(int argc, char *argv[])
+ 9: {
+10:     printf("%p\n", rb_thread_call_without_gvl);
+11:     return 0;
+12: }
+/* end */
+
+LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.1.7/x64/lib "gcc -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0 -I. -DENABLE_PATH_CHECK=0   -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wundef  -fPIC   -c conftest.c"
+conftest.c: In function ‘main’:
+conftest.c:6:20: error: ‘nullptr’ undeclared (first use in this function); did you mean ‘nullptr_t’?
+    6 |     printf("%p\n", nullptr);
+      |                    ^~~~~~~
+      |                    nullptr_t
+conftest.c:6:20: note: each undeclared identifier is reported only once for each function it appears in
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <stdio.h>
+4: int main(int argc, char *argv[])
+5: {
+6:     printf("%p\n", nullptr);
+7:     return 0;
+8: }
+/* end */
+
+LD_LIBRARY_PATH=.:/opt/hostedtoolcache/Ruby/3.1.7/x64/lib "gcc -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/x86_64-linux -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward -I/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0 -I. -DENABLE_PATH_CHECK=0   -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wdeprecated-declarations -Wduplicated-cond -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wwrite-strings -Wold-style-definition -Wimplicit-fallthrough=0 -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-packed-bitfield-compat -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wunused-variable -Wundef  -fPIC   -x c++  -c conftest.c"
+cc1plus: warning: command-line option ‘-Wimplicit-function-declaration’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wimplicit-int’ is valid for C/ObjC but not for C++
+cc1plus: warning: command-line option ‘-Wold-style-definition’ is valid for C/ObjC but not for C++
+In file included from /opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/internal/anyargs.h:83,
+                 from /opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/ruby.h:26,
+                 from /opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby.h:38,
+                 from conftest.c:1:
+/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward/cxxanyargs.hpp:540:6: warning: "RUBY_API_VERSION_MAJOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |      ^~~~~~~~~~~~~~~~~~~~~~
+/opt/hostedtoolcache/Ruby/3.1.7/x64/include/ruby-3.1.0/ruby/backward/cxxanyargs.hpp:540:37: warning: "RUBY_API_VERSION_MINOR" is not defined, evaluates to 0 [-Wundef]
+  540 | #if (RUBY_API_VERSION_MAJOR * 100 + RUBY_API_VERSION_MINOR) >= 301
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~
+cc1plus: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1plus: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <functional>
+ 4: #include <algorithm>
+ 5: #include <array>
+ 6: #include <iostream>
+ 7: 
+ 8: #include <ruby.h>
+ 9: 
+10: // see the test on memset_s below, which is a purely BSD thing
+11: #if defined(__APPLE__) || defined(BSD)
+12: #include <string.h>
+13: #endif
+14: 
+15: void test()
+16: {
+17:     int array[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+18:     const int size = sizeof(array)/sizeof(array[0]);
+19:     std::array<int, size> var_list;
+20: 
+21:     std::function<int (int, int)> convert = [&](int arg1, int arg2){
+22:         return arg1 * arg2;
+23:     };
+24: 
+25:     const int value = 10;
+26: 
+27:     std::transform(array, array + size, var_list.begin(), [&](int arg){
+28:         return convert(arg, value);
+29:     });
+30: 
+31:     std::for_each(var_list.begin(), var_list.end(), [](int num){ std::cout << num << std::endl; });
+32: 
+33: #if defined(__APPLE__) || defined(BSD)
+34:     char str[] = "imareallycoolstringright";
+35:     memset_s(str, sizeof str, 'b', 5);
+36: #endif
+37: }
+/* end */
+

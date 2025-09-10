@@ -1,0 +1,33 @@
+---
+flavor: icc
+owner: International Color Consortium
+base-flavor: iso
+copyright-notice: copyright.adoc
+i18n-dictionary: i18n.yaml
+publisher-logo: icc-full.svg
+htmlcoverpage: htmlcoverpage.html
+htmlstylesheet-override: htmlstylesheet-override.scss
+base-override:
+  publisher: International Color Consortium
+  publisher_abbr: ICC
+  presentation-metadata-color-secondary: '#376795'
+  presentation-metadata-backcover-text: color.org
+  body-font: Arial, 'Helvetica Neue', Helvetica, sans-serif
+  header-font: Arial, 'Helvetica Neue', Helvetica, sans-serif
+doctypes:
+- taste: specification # Specification # The name goes into i18n.yaml
+  base: international-standard
+  override-attributes:
+  - presentation-metadata-color-secondary: '#376795'
+- taste: ics # Interoperability Conformance Specification
+  base: international-standard
+  override-attributes:
+  - presentation-metadata-color-secondary: '#376795'
+- taste: white-paper # White Paper
+  base: international-standard
+- taste: proposal # Proposal
+  base: international-standard
+- taste: votable-proposal # Votable Proposal
+  base: international-standard
+- taste: technical-note # Technical Note
+  base: international-standard

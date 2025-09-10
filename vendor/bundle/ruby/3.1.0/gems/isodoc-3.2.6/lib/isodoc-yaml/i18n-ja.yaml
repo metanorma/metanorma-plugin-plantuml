@@ -1,0 +1,227 @@
+term_def_boilerplate: 
+scope: 適用範囲
+symbolsabbrev: 記号及び略語
+abbrev: 略語
+symbols: 記号
+table_of_contents: 目次
+introduction: 序文
+foreword: まえがき
+abstract: はじめに
+acknowledgements: 謝辞
+executivesummary: エグゼクティブサマリー
+termsdef: 用語及び定義
+termsdefsymbolsabbrev: 用語及び定義並びに記号及び略語
+termsdefsymbols: 用語及び定義並びに記号
+termsdefabbrev: 用語及び定義並びに略語
+normref: 引用規格
+bibliography: 参考文献
+index: 索引
+see: 参照
+see_also: 追加参照
+preface: 序文
+section: セクション
+clause: 箇条
+annex: 附属書
+appendix: Appendix
+continued: 続き
+no_terms_boilerplate: |
+          この規格には，定義する用語はない。
+internal_terms_boilerplate: |
+        この規格で用いる主な用語及び定義は，次による。
+norm_with_refs_pref: 
+      次に掲げる引用規格は，この規格に引用されることによって，その一部又は全部がこの規格の要 求事項を構成している。これらの引用規格のうち，西暦年を付記してあるものは，記載の年の版を適 用し，その後の改正版(追補を含む。)は適用しない。西暦年の付記がない引用規格は，その最新版(追 補を含む。)を適用する。
+norm_empty_pref: 
+          この規格には，引用規格はない。
+external_terms_boilerplate: |
+          この規格で用いる主な用語及び定義は，% による。
+internal_external_terms_boilerplate: |
+          この規格で用いる主な用語及び定義は，次によるほか，% による。
+no_information_available: "[情報はありません]"
+term_defined_in: "(%)"
+binary_and: "%1 <conn>及び</conn> %2"
+multiple_and: "%1<enum-comma>、</enum-comma>%2"
+binary_or: "%1 <conn>または</conn> %2"
+multiple_or: "%1<enum-comma>、</enum-comma> <conn>または</conn> %2"
+chain_and: "%1 <conn>及び</conn> %2"
+chain_or: "%1 <conn>または</conn> %2"
+chain_from: "%1 <conn>から</conn> %2"
+chain_to: "%1<conn>～</conn>%2"
+nested_xref: "%1<conn>の</conn>%2"
+list_nested_xref: "%1<conn>の</conn>%2"
+no_conflate_xref_locations: true
+ordinal_keys: []
+SpelloutRules: spellout-ordinal
+OrdinalRules: digits-ordinal
+note: 注記
+note_xref: 注記
+termnote: 注釈%
+list: リスト
+deflist: 定義リスト
+figure: 図
+diagram: Diagram
+formula: 式
+inequality: 式
+table: 表
+requirement: 要求
+recommendation: 推奨
+permission: 許可
+box: Box
+index: 索引
+standard_no: 規格番号
+number: 番号
+# Modspec
+recommendationtest: 推奨テスト
+requirementtest: 要件テスト
+permissiontest: 許可テスト
+recommendationclass: 推奨群
+requirementclass: 要件群
+permissionclass: 許可群
+abstracttest: 抽象テスト
+conformanceclass: 適合性テスト群
+key: 記号説明
+example: 例
+example_xref: 例
+where: ここで，
+where_one: ここで，
+wholeoftext: Whole of text
+draft_label: draft
+inform_annex: 参考
+norm_annex: 規定
+modified: 修正された
+adapted: 適合しました
+deprecated: 推奨しない用語
+source: 出典
+and: and
+no_identifier: (識別子なし)
+all_parts: 規格群
+edition_ordinal: "第{{ var1 }}版"
+edition: 版
+version: version
+toc_figures: List of figures
+toc_tables: List of tables
+toc_recommendations: List of recommendations
+month_january: 1月
+month_february: 2月
+month_march: 3月
+month_april: 4月
+month_may: 5月
+month_june: 6月
+month_july: 7月
+month_august: 8月
+month_september: 9月
+month_october: 10月
+month_november: 11月
+month_december: 12月
+obligation: Obligation
+admonition: {
+  danger: 危険です,
+  warning: 警告,
+  caution: 注意,
+  important: 重要,
+  safety precautions: 安全上の注意,
+  editorial: 編集者注
+}
+locality: {
+                      section: セクション,
+                      clause: 箇条,
+                      subclause: 細分箇条,
+                      part: 部,
+                      paragraph: 段落,
+                      chapter: 第章,
+                      page: ページ,
+                      table: 表,
+                      annex: 附属書,
+                      figure: 図,
+                      example: 例,
+                      note: 注記,
+                      formula: 式,
+                    }
+grammar_abbrevs:
+  masculine: m
+  feminine: f
+  neuter: n
+  common: common
+  singular: sg
+  dual: dual
+  pl: pl
+  isPreposition: prep
+  isParticiple: part
+  isAdjective: adj
+  isAdverb: adv
+  isNoun: noun
+  isVerb: verb
+relatedterms:
+  deprecates: deprecates
+  supersedes: supersedes
+  narrower: narrower
+  broader: broader
+  equivalent: equivalent
+  compare: compare
+  contrast: contrast
+  see: 参照
+  seealso: see also
+inflection:
+  Clause:
+    sg: Clause
+    pl: Clauses
+  Annex:
+    sg: Annex
+    pl: Annexes
+  Appendix:
+    sg: Appendix
+    pl: Appendixes
+  Note:
+    sg: Note
+    pl: Notes
+  "Note % to entry":
+    sg: Note % to entry
+    pl: Notes % to entry
+  List:
+    sg: List
+    pl: Lists
+  Figure:
+    sg: Figure
+    pl: Figures
+  Formula:
+    sg: Formula
+    pl: Formulas
+  Table:
+    sg: Table
+    pl: Tables
+  Requirement:
+    sg: Requirement
+    pl: Requirements
+  Recommendation:
+    sg: Recommendation
+    pl: Recommendations
+  Permission:
+    sg: Permission
+    pl: Permissions
+  Example:
+    sg: Example
+    pl: Examples
+  Part:
+    sg: Part
+    pl: Parts
+  Section:
+    sg: Section
+    pl: Sections
+  Paragraph:
+    sg: Paragraph
+    pl: Paragraphs
+  Chapter:
+    sg: Chapter
+    pl: Chapters
+  Page:
+    sg: Page
+    pl: Pages
+doctype_dict:
+  international-standard: 日本産業規格
+  technical-specification: 標準仕様書
+  technical-report: 標準報告書
+  publicly-available-specification: Publicly Available Specification
+  international-workshop-agreement: International Workshop Agreement
+  guide: Guide
+  amendment: 追補
+  technical-corrigendum: Technical Corrigendum
+  directive: Directive

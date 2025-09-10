@@ -1,0 +1,49 @@
+in: in
+at: at
+and: and
+author_and: and
+updated: updated
+viewed: viewed
+version: version
+also_pub_as: "Also published as: "
+no_date: n.d.
+no_place: n.p.
+date_formats:
+  month_year: yMMMM
+  day_month_year: to_long_s
+  date_time: to_long_s
+ordinal_keys: []
+OrdinalRules: digits-ordinal
+edition: edition
+edition_ordinal: "{{ var1 | ordinal_num: '', '' }} edition"
+draft: "draft %"
+editor:
+  sg: ed.
+  pl: eds.
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close:
+stage:
+  valid: Valid
+  withdrawn: Withdrawn
+extent:
+  page:
+    sg: "p. %"
+    pl: "pp. %"
+  volume:
+    sg: "vol. %"
+    pl: "vols. %"
+  issue:
+    sg: "no. %"
+    pl: "nos. %"
+size:
+  page:
+    sg: "% p."
+    pl: "% pp."
+  volume:
+    sg: "% vol."
+    pl: "% vols."
+  issue:
+    sg: "% no."
+    pl: "% nos."

@@ -1,0 +1,48 @@
+requirements:
+  default:
+    requirement: Требование
+    recommendation: Рекомендация
+    permission: Разрешение
+    obligation: Обязательство
+    subject: Тема
+    inherits: Наследует
+  modspec:
+    recommendationtest: Проверка рекомендации
+    requirementtest: Проверка требований
+    permissiontest: Проверка разрешения
+    recommendationclass: Класс рекомендаций
+    requirementclass: Класс требований
+    permissionclass: Класс разрешений
+    abstracttest: Абстрактная проверка
+    conformanceclass: Класс соответствия
+    conformancetest: Проверка на соответствие
+    targettype: Тип цели
+    target: Цель
+    testpurpose: Цель теста
+    testmethod: Метод теста
+    dependency: Условие
+    indirectdependency: Косвенное условие
+    identifier: Идентификатор
+    included_in: Входит в
+    statement: Утверждение
+    description: Описание
+    guidance: Руководство
+    implements: Реализует
+    provision: Нормативное положение
+inflection:
+  Нормативное положение:
+    sg: Нормативное положение
+    pl: Нормативные положения
+  Проверка на соответствие:
+    sg: Проверка на соответствие
+    pl: Проверки на соответствие
+  Утверждение:
+    sg: Утверждение
+    pl: Утверждения
+  Условие:
+    sg: Условие
+    pl: Условия
+  Косвенное условие:
+    sg: Косвенное условие
+    pl: Косвенное условия
+

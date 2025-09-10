@@ -1,0 +1,10 @@
+coverage/
+.byebug_history
+.rspec_status
+
+testcache
+testcache2
+.rubocop-https---raw-githubusercontent-com-riboseinc-oss-guides-master-ci-rubocop-yml
+.vscode/
+pkg/
+Gemfile.lock

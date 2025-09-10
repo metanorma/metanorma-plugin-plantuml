@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require "fontist"
+require "fontist/cli"
+
+fontist_cli = proc {
+  Fontist::CLI.start(ARGV)
+}
+
+if ENV["SOCKS_PROXY"]
+  require "socksify"
+  require "uri"
+  begin
+    proxy = URI.parse(ENV["SOCKS_PROXY"])
+    if proxy.userinfo
+      user, pass = proxy.userinfo.split(":")
+      TCPSocket::socks_username = user
+      TCPSocket::socks_password = pass
+    end
+    Socksify::proxy(proxy.host, proxy.port, &fontist_cli)
+  rescue URI::InvalidURIError
+    warn "Value of ENV.SOCKS_PROXY=#{ENV['SOCKS_PROXY']} is invalid! Droping it"
+    ENV.delete("SOCKS_PROXY")
+    fontist_cli.call
+  end
+else
+  fontist_cli.call
+end

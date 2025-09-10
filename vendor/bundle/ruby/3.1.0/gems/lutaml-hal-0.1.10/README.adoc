@@ -1,0 +1,234 @@
+= LutaML Model for HAL
+
+https://github.com/lutaml/lutaml-hal[image:https://img.shields.io/github/stars/lutaml/lutaml-hal.svg?style=social[GitHub Stars]]
+https://github.com/lutaml/lutaml-hal[image:https://img.shields.io/github/forks/lutaml/lutaml-hal.svg?style=social[GitHub Forks]]
+image:https://img.shields.io/github/license/lutaml/lutaml-hal.svg[License]
+image:https://img.shields.io/github/actions/workflow/status/lutaml/lutaml-hal/test.yml?branch=main[Build Status]
+image:https://img.shields.io/gem/v/lutaml-hal.svg[RubyGems Version]
+
+== Purpose
+
+The `lutaml-hal` gem provides a framework for interacting with HAL-compliant
+APIs using the power of LutaML Models.
+
+Hypertext Application Language (HAL)
+(https://www.ietf.org/archive/id/draft-kelly-json-hal-11.html[HAL Internet-Draft])
+is a simple format for representing
+resources and their relationships in a hypermedia-driven API.
+
+It allows clients to navigate and interact with resources using links, making it
+easier to build flexible and extensible applications.
+
+This library provides a set of classes and methods for modeling HAL resources,
+links, and collections, as well as a client for making HTTP requests to HAL
+APIs.
+
+== Features
+
+* Classes for modeling HAL resources and links
+* A client for making HTTP requests to HAL APIs
+* Tools for pagination and resource resolution
+* Integration with the `lutaml-model` serialization framework
+* Error handling and response validation for API interactions
+* Comprehensive embed support for reducing HTTP requests and improving performance
+* Built-in rate limiting with exponential backoff and retry logic
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+[source,ruby]
+----
+gem 'lutaml-hal'
+----
+
+And then execute:
+
+[source,sh]
+----
+$ bundle install
+----
+
+Or install it yourself as:
+
+[source,sh]
+----
+$ gem install lutaml-hal
+----
+
+== Quick start
+
+Here's a minimal example to get you started:
+
+[source,ruby]
+----
+require 'lutaml-hal'
+
+# Define a HAL resource
+class Product < Lutaml::Hal::Resource
+  attribute :id, :string
+  attribute :name, :string
+  attribute :price, :float
+
+  hal_link :self, key: 'self', realize_class: 'Product'
+  hal_link :category, key: 'category', realize_class: 'Category'
+
+  key_value do
+    map 'id', to: :id
+    map 'name', to: :name
+    map 'price', to: :price
+  end
+end
+
+# Set up API client and register
+client = Lutaml::Hal::Client.new(api_url: 'https://api.example.com')
+register = Lutaml::Hal::ModelRegister.new(name: :my_api, client: client)
+
+# Register endpoints
+register.add_endpoint(
+  id: :product_resource,
+  type: :resource,
+  url: '/products/{id}',
+  model: Product
+)
+
+# Fetch and use resources
+product = register.fetch(:product_resource, id: '123')
+puts product.name
+puts product.price
+
+# Navigate to related resources
+category = product.links.category.realize(register)
+puts category.name
+----
+
+== Documentation
+
+=== Detailed topics
+
+For detailed documentation, see these topics:
+
+link:docs/getting-started.adoc[Getting started]::
+Get started with your HAL API client (15 minutes)
+
+link:docs/data-definition.adoc[Data definition]::
+Full reference to define HAL resources, model registers, and API endpoints
+
+link:docs/runtime-usage.adoc[Runtime usage]::
+Patterns to fetch resources, navigate links, and handle pagination
+
+link:docs/hal-links-reference.adoc[HAL links reference]::
+Advanced configuration of HAL links
+
+link:docs/pagination.adoc[Pagination]::
+Working with paginated APIs and large datasets
+
+link:docs/complex-path-patterns.adoc[Complex path patterns]::
+Advanced URL patterns and path matching examples
+
+link:docs/embedded-resources.adoc[Embedded resources]::
+Implementing and using embedded resources in HAL APIs with automatic link realization
+
+link:docs/rate-limiting.adoc[Rate limiting]::
+Configuring and using built-in rate limiting functionality
+
+link:docs/error-handling.adoc[Error handling]::
+Understanding and handling different types of errors when working with HAL APIs
+
+
+=== Architecture overview
+
+The library is organized into these main components:
+
+`Lutaml::Hal::Client`::
+HTTP client for making requests to HAL APIs. Supports GET requests with
+automatic response handling.
+
+`Lutaml::Hal::ModelRegister`::
+Registry for managing HAL resource models and their API endpoints. Handles URL
+resolution and resource fetching.
+
+`Lutaml::Hal::GlobalRegister`::
+Optional singleton for managing multiple ModelRegisters and enabling automatic
+link resolution.
+
+`Lutaml::Hal::Resource`::
+Base class for defining HAL resource models with attributes, links, and
+serialization mappings.
+
+`Lutaml::Hal::Link`::
+Represents HAL links with automatic realization capabilities for fetching
+target resources.
+
+`Lutaml::Hal::Page`::
+Specialized resource class for handling pagination with navigation methods and
+helper functions.
+
+== Usage workflow
+
+The `lutaml-hal` workflow follows a two-phase approach:
+
+=== 1. Data definition phase
+
+. **Define resource models**: Create classes inheriting from
+  `Lutaml::Hal::Resource`
+. **Set up client**: Create a `Client` instance pointing to your API
+. **Create register**: Set up a `ModelRegister` to manage your models
+. **Register endpoints**: Map your models to specific API URLs
+
+=== 2. Runtime phase
+
+. **Fetch resources**: Use `register.fetch()` to get data from the API
+. **Access attributes**: Work with resource data as normal Ruby objects
+. **Navigate links**: Use HAL links to move between related resources
+. **Realize links**: Convert links to actual resource instances
+
+== Path matching specification
+
+The library supports sophisticated URL pattern matching for endpoint
+registration. Patterns use curly braces `{}` for parameter interpolation:
+
+[source,ruby]
+----
+# Simple patterns
+'/products/{id}'
+'/users/{user_id}/orders/{order_id}'
+
+# With query parameters
+register.add_endpoint(
+  id: :search_products,
+  type: :index,
+  url: '/products',
+  model: ProductIndex,
+  parameters: [
+    Lutaml::Hal::EndpointParameter.query('category',
+      schema: { type: :string },
+      description: 'Product category filter'
+    ),
+    Lutaml::Hal::EndpointParameter.query('page',
+      schema: { type: :integer },
+      description: 'Page number'
+    ),
+    Lutaml::Hal::EndpointParameter.query('limit',
+      schema: { type: :integer },
+      description: 'Results per page'
+    )
+  ]
+)
+----
+
+For complex path pattern examples, see
+link:docs/complex-path-patterns.adoc[Complex Path Patterns].
+
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/lutaml/lutaml-hal.
+
+== License and Copyright
+
+This project is licensed under the BSD 2-clause License.
+See the link:LICENSE.md[] file for details.
+
+Copyright Ribose.

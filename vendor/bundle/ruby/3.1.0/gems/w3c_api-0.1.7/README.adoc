@@ -1,0 +1,1273 @@
+= W3C API through LutaML Models
+
+image:https://img.shields.io/gem/v/w3c_api.svg["Gem Version", link="https://rubygems.org/gems/w3c_api"]
+image:https://github.com/relaton/w3c_api/workflows/rake/badge.svg["Build Status", link="https://github.com/relaton/w3c_api/actions?workflow=rake"]
+image:https://codeclimate.com/github/relaton/w3c_api/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/relaton/w3c_api"]
+
+== Purpose
+
+A Ruby client implementation for the W3C web API with a CLI interface.
+
+This gem provides:
+
+* A complete client for the W3C API (oft-used endpoints implemented)
+* Data models created with
+https://github.com/lutaml/lutaml-hal[lutaml-hal] and
+https://github.com/lutaml/lutaml-model[lutaml-model]
+for all W3C API resources
+* HAL (Hypertext Application Language) implementation for recursive resource
+traversal
+* Built-in rate limiting with exponential backoff for reliable API access
+* A command-line interface using Thor following GitHub CLI patterns
+
+The endpoint supported is at https://api.w3.org.
+
+This gem is developed against the W3C API documented at https://api.w3.org/doc.
+
+== Illustrative example usage
+
+This is an example demonstrating the power of this library as inherited
+from `lutaml-hal`, showing multiple levels of automatic link resolution.
+
+.Calling the Ruby API with multiple levels of link resolution
+[example]
+====
+[source,ruby]
+----
+> require 'w3c_api'
+> W3cApi::Hal.instance.register.fetch(:ecosystem_index)
+  .links.ecosystems.first.realize
+  .links.evangelists.realize
+
+# =>
+#  #<W3cApi::Models::EvangelistIndex:0x000000011de99d50
+#   @limit=100,
+#   @links=
+#    #<W3cApi::Models::EvangelistIndexLinkSet:0x000000011c19a600
+#     @evangelists=
+#      [#<W3cApi::Models::UserLink:0x000000011c1b9f78
+#        @deprecation=nil,
+#        @href="https://api.w3.org/users/664293jn3jswwo4sccsoko0wwk0wog0",
+#        @lang=nil,
+#        @name=nil,
+#        @profile=nil,
+#        @templated=nil,
+#        @title="Marty Voshell",
+#        @type="User">],
+#     @first=
+#      #<W3cApi::Models::EvangelistIndexLink:0x000000010c7378c0
+#       @deprecation=nil,
+#       @href="https://api.w3.org/ecosystems/advertising/evangelists?page=1&items=100",
+#       @lang=nil,
+#       @name=nil,
+#       @profile=nil,
+#       @templated=nil,
+#       @title=nil,
+#       @type="EvangelistIndex">,
+#       ...>,
+#   @page=1,
+#   @pages=1,
+#   @total=1>
+----
+====
+
+== Ruby API
+
+=== Rate limiting
+
+The W3C API client includes built-in rate limiting with exponential backoff to handle API rate limits gracefully. Rate limiting is enabled by default and works transparently with all API operations.
+
+==== Quick start
+
+[source,ruby]
+----
+require 'w3c_api'
+
+# Rate limiting is enabled by default
+client = W3cApi::Client.new
+
+# Configure rate limiting if needed
+W3cApi::Hal.instance.configure_rate_limiting(
+  max_retries: 5,        # Maximum retry attempts
+  base_delay: 1.0,       # Initial delay in seconds
+  max_delay: 60.0,       # Maximum delay cap
+  backoff_factor: 2.0    # Exponential backoff multiplier
+)
+
+# Make requests - rate limiting works automatically
+specifications = client.specifications
+----
+
+==== Demo and examples
+
+To see rate limiting in action, run the included demonstration scripts:
+
+[source,shell]
+----
+# Basic rate limiting demo
+$ ruby demo/rate_limiting_demo.rb
+
+# Advanced stress testing and performance analysis
+$ ruby examples/rate_limiting_stress_test.rb
+----
+
+The demo script shows:
+* Default rate limiting configuration
+* Custom configuration examples
+* Enabling/disabling rate limiting
+* Status checking
+
+The stress test example demonstrates:
+* Rapid sequential requests
+* Cross-endpoint performance analysis
+* Dynamic configuration changes
+* Bulk operation patterns
+
+=== Embed support with auto-realize
+
+==== General
+
+The W3C API supports embedded content to reduce the number of HTTP requests
+needed to fetch related resources. This gem provides comprehensive embed
+support with automatic link realization for optimal performance.
+
+[source,ruby]
+----
+require 'w3c_api'
+
+# Create a client and use embed parameter directly
+client = W3cApi::Client.new
+
+# Fetch specifications with embedded content
+specs = client.specifications(embed: true, items: 5)
+
+# Fetch groups with embedded content
+groups = client.groups(embed: true, items: 5)
+
+# Fetch series with embedded content
+series = client.series(embed: true, items: 5)
+
+# Discover which endpoints support embed
+supported_endpoints = W3cApi::Client.embed_supported_endpoints
+# => [:group_index, :serie_index, :specification_index]
+
+# Check if specific endpoint supports embed
+client.embed_supported?(:specification_index)  # => true
+----
+
+==== Auto-realize functionality
+
+The gem features automatic embedded content detection that eliminates the need
+to manually pass `parent_resource` parameters. Links automatically detect and
+use embedded content when available, falling back to HTTP requests when needed.
+
+[source,ruby]
+----
+# Fetch specifications with embed enabled
+specs = client.specifications(embed: true, items: 5)
+
+# Links automatically use embedded content - no parent_resource needed!
+specs.links.specifications.each do |spec_link|
+  # This uses embedded data automatically - no HTTP request needed!
+  spec = spec_link.realize
+  puts "#{spec.title} - #{spec.shortname}"
+end
+
+# The auto-realize functionality works by:
+# 1. Links store references to their parent resources automatically
+# 2. Before making HTTP requests, links check for embedded data
+# 3. If embedded content is available, it's used directly
+# 4. If no embedded content exists, normal HTTP requests are made
+----
+
+==== Performance comparison
+
+Using embed with auto-realize provides significant performance improvements:
+
+[source,ruby]
+----
+# Without embed: 1 request for index + N requests for each specification
+specs = client.specifications(items: 5)
+specs.links.specifications.each do |spec_link|
+  spec = spec_link.realize  # Each call makes an HTTP request
+  puts spec.title
+end
+# Total: 6 HTTP requests (1 + 5)
+
+# With embed: 1 request total, embedded data used automatically
+specs = client.specifications(embed: true, items: 5)
+specs.links.specifications.each do |spec_link|
+  spec = spec_link.realize  # Uses embedded data automatically!
+  puts spec.title
+end
+# Total: 1 HTTP request only
+----
+
+==== Embed discovery
+
+The gem provides methods to discover embed capabilities:
+
+[source,ruby]
+----
+# Get list of endpoints that support embed
+W3cApi::Client.embed_supported_endpoints
+# => [:group_index, :serie_index, :specification_index]
+
+# Check if specific endpoint supports embed
+client.embed_supported?(:specification_index)  # => true
+client.embed_supported?(:specification_resource)  # => false
+
+# Get comprehensive embed information
+embed_info = W3cApi::Embed.embed_info
+puts embed_info[:supported_endpoints]
+puts embed_info[:descriptions]
+puts embed_info[:usage_example]
+----
+
+
+=== General
+
+[source,ruby]
+----
+require 'w3c_api'
+
+# Create a client
+client = W3cApi::Client.new
+
+# Get specifications
+specifications = client.specifications
+specification = client.specification('webrtc')
+
+versions = client.specification_versions('webrtc')
+version = client.specification_version('webrtc', '20241008')
+specs_by_status = client.specifications_by_status('Recommendation')
+
+# Get predecessor and successor versions
+predecessors = client.specification_version_predecessors('webrtc', '20241008')
+successors = client.specification_version_successors('webrtc', '20241008')
+
+# Navigate through version history with chained realization
+version = client.specification_version('html5', '20140429')
+
+# Get all predecessors and navigate through them
+predecessors = version.links.predecessor_versions.realize
+predecessors.links.predecessor_versions.each do |pred_link|
+  predecessor = pred_link.realize
+  puts "#{predecessor.title} - #{predecessor.date}"
+
+  # Each predecessor can have its own predecessors
+  if predecessor.links.predecessor_versions
+    pred_predecessors = predecessor.links.predecessor_versions.realize
+    # Continue navigation...
+  end
+end
+
+# Get all successors and navigate through them
+successors = version.links.successor_versions.realize
+successors.links.successor_versions.each do |succ_link|
+  successor = succ_link.realize
+  puts "#{successor.title} - #{successor.date}"
+
+  # Each successor can have its own successors
+  if successor.links.successor_versions
+    succ_successors = successor.links.successor_versions.realize
+    # Continue navigation...
+  end
+end
+
+# All client methods support comprehensive options including:
+
+# Pagination options
+specifications = client.specifications(page: 2, per_page: 50)
+groups = client.groups(page: 1, per_page: 10, limit: 25, offset: 100)
+
+# HTTP client options
+user = client.user('hash', timeout: 30, headers: { 'User-Agent' => 'MyApp/1.0' })
+spec = client.specification('html5', read_timeout: 45, open_timeout: 10)
+
+# Query parameters for filtering and sorting
+rec_specs = client.specifications_by_status('REC', sort: 'date', order: 'desc')
+active_groups = client.groups(type: 'working-group', status: 'active')
+
+# Combining multiple options
+options = {
+  page: 1,
+  per_page: 25,
+  headers: { 'Accept-Language' => 'en-US' },
+  timeout: 60,
+  sort: 'name'
+}
+specs = client.specifications(options)
+
+# Backward compatibility - existing code continues to work
+specifications = client.specifications  # No options
+specification = client.specification('webrtc')  # Required params only
+
+# Work with linked resources directly
+spec = client.specification('webrtc')
+spec_versions = spec.links.versions
+latest = spec.links.latest_version.realize # Resolves the latest-version link
+series = spec.links.series
+editors = spec.links.editors
+deliverers = spec.links.deliverers
+
+# Get groups
+groups = client.groups
+group = client.group(109735)  # Immersive Web Working Group
+users = client.group_users(109735)
+specifications = client.group_specifications(109735)
+charters = client.group_charters(109735)
+chairs = client.group_chairs(109735)
+team_contacts = client.group_team_contacts(109735)
+
+# Use link resolution with groups
+group = client.group(109735)
+specs = group.links.specifications
+users = group.links.users
+chairs = group.links.chairs
+charters = group.links.charters
+
+# Get users
+users = client.users
+user = client.user('f1ovb5rydm8s0go04oco0cgk0sow44w')
+groups = client.user_groups('f1ovb5rydm8s0go04oco0cgk0sow44w')
+specs = client.user_specifications('f1ovb5rydm8s0go04oco0cgk0sow44w')
+affiliations = client.user_affiliations('f1ovb5rydm8s0go04oco0cgk0sow44w')
+participations = client.user_participations('f1ovb5rydm8s0go04oco0cgk0sow44w')
+chair_groups = client.user_chair_of_groups('f1ovb5rydm8s0go04oco0cgk0sow44w')
+team_contact_groups = client.user_team_contact_of_groups('f1ovb5rydm8s0go04oco0cgk0sow44w')
+
+# Get affiliations
+affiliations = client.affiliations
+affiliation = client.affiliation(35662)  # Google LLC
+participants = client.affiliation_participants(35662)
+participations = client.affiliation_participations(35662)
+
+# Translations
+translations = client.translations
+translation = client.translation(2)
+
+# Ecosystems
+ecosystems = client.ecosystems
+ecosystem = client.ecosystem('data')
+----
+
+=== Models
+
+==== General
+
+This library provides models for various W3C API resources under the
+`W3cApi::Models` namespace.
+
+==== Affiliation
+
+The `W3cApi::Models::Affiliation` represents a W3C affiliation model that
+includes various attributes and methods to interact with affiliated entities.
+
+.Fetching the affiliation index
+[example]
+====
+
+[source,ruby]
+----
+> W3cApi::Hal.instance.register.fetch(:affiliation_index)
+# =>
+#  #<W3cApi::Models::AffiliationIndex:0x0000000123ecca38
+#   @_global_register_id=:w3c_api,
+#   @limit=100,
+#   @links=
+#    #<W3cApi::Models::AffiliationIndexLinkSet:0x00000001325b4a68
+#     @_global_register_id=:w3c_api,
+#     @affiliations=
+#      [#<W3cApi::Models::AffiliationLink:0x000000011fe453c0
+#        @_global_register_id=:w3c_api,
+#        @deprecation=nil,
+#        @href="https://api.w3.org/affiliations/1001",
+#        @lang=nil,
+#        @name=nil,
+#        @profile=nil,
+#        @templated=nil,
+#        @title=
+#         "Framkom (Forskningsaktiebolaget Medie-och Kommunikationsteknik)",
+#        @type="Affiliation">,
+#       #<W3cApi::Models::AffiliationLink:0x000000011fe232c0
+#        @_global_register_id=:w3c_api,
+#        @deprecation=nil,
+#        @href="https://api.w3.org/affiliations/1003",
+#        @lang=nil,
+#        @name=nil,
+#        @profile=nil,
+#        @templated=nil,
+#        @title="BackWeb Technologies, Inc.",
+#        @type="Affiliation">,
+#        ...
+----
+====
+
+.Fetching a specific affiliation
+[example]
+====
+
+[source,ruby]
+----
+> W3cApi::Hal.instance.register.fetch(:affiliation_resource, id: 35662)
+# =>
+#  #<W3cApi::Models::Affiliation:0x000000011de99d50
+#   @id=35662,
+#   @name="Google LLC",
+#   @discr="organization",
+# ... >
+----
+====
+
+== Command line interface
+
+=== General
+
+W3C API provides a command-line interface (CLI) for various operations.
+
+The main executable is `w3c_api`.
+
+By default, the output is in YAML format. You can specify the output format
+using the `--format` option, which accepts `json` or `yaml`.
+
+[source,shell]
+----
+Commands:
+  # Work with W3C specifications
+  w3c_api specification SUBCOMMAND ...ARGS
+  # Work with W3C specification versions
+  w3c_api specification_version SUBCOMMAND ...ARGS
+  # Work with W3C specification series
+  w3c_api series SUBCOMMAND ...ARGS
+  # Work with W3C groups
+  w3c_api group SUBCOMMAND ...ARGS
+  # Work with W3C users
+  w3c_api user SUBCOMMAND ...ARGS
+  # Work with W3C affiliations
+  w3c_api affiliation SUBCOMMAND ...ARGS
+  # Work with W3C translations
+  w3c_api translation SUBCOMMAND ...ARGS
+  # Work with W3C ecosystems
+  w3c_api ecosystem SUBCOMMAND ...ARGS
+  # Describe available commands or one specific command
+  w3c_api help [COMMAND]
+----
+
+=== Specifications
+
+This command provides access to W3C specifications.
+
+==== Index
+
+When fetching an index of specifications, for every specification, only the
+`href` and `title` attributes are provided.
+
+[source,shell]
+----
+# Fetch specifications
+$ w3c_api specification fetch [OPTIONS]
+# Fetch specifications with a specific status
+$ w3c_api specification fetch --status=Recommendation
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api specification fetch
+- href: https://www.w3.org/TR/html5/
+  title: HTML5
+- href: https://www.w3.org/TR/css3-color/
+  title: CSS Color Module Level 3
+----
+====
+
+==== Get
+
+Getting a specification provides all attributes of the specification.
+
+[source,shell]
+----
+# Fetch a specification
+$ w3c_api specification fetch --shortname=webrtc
+# Fetch a specific version of a specification
+$ w3c_api specification fetch --shortname=webrtc --version=20241008
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api specification fetch --shortname=webrtc
+---
+shortlink: https://www.w3.org/TR/webrtc/
+description: "<p>This document defines a set of ECMAScript APIs in WebIDL to allow
+  media to be sent to and received from another browser or device implementing the
+  appropriate set of real-time protocols. This specification is being developed in
+  conjunction with a protocol specification developed by the IETF RTCWEB group and
+  an API specification to get access to local media devices.</p>"
+title: 'WebRTC: Real-Time Communication in Browsers'
+shortname: webrtc
+editor_draft: https://w3c.github.io/webrtc-pc/
+series_version: '1.0'
+_links:
+  self:
+    href: https://api.w3.org/specifications/webrtc
+  version_history:
+    href: https://api.w3.org/specifications/webrtc/versions
+  first_version:
+    href: https://api.w3.org/specifications/webrtc/versions/20111027
+    title: Working Draft
+  latest_version:
+    href: https://api.w3.org/specifications/webrtc/versions/20241008
+    title: Recommendation
+  series:
+    href: https://api.w3.org/specification-series/webrtc
+----
+====
+
+==== Versions
+
+This command provides access to W3C specification versions given a shortname.
+
+[source,shell]
+----
+# Fetch versions of a specification
+$ w3c_api specification versions --shortname=webrtc
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api specification versions --shortname=webrtc
+spec_versions:
+- title: 'WebRTC: Real-Time Communication in Browsers'
+  href: https://api.w3.org/specifications/webrtc/versions/20241008
+- title: 'WebRTC: Real-Time Communication in Browsers'
+  href: https://api.w3.org/specifications/webrtc/versions/20230306
+- title: 'WebRTC: Real-Time Communication in Browsers'
+  href: https://api.w3.org/specifications/webrtc/versions/20230301
+# Additional versions omitted for brevity
+----
+====
+
+==== Status
+
+This command provides access to W3C specifications by status.
+
+[source,shell]
+----
+# Fetch specifications with a specific status
+$ w3c_api specification fetch --status=Recommendation
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api specification fetch --status=Recommendation
+specifications:
+- title: 'XML Schema Part 1: Structures Second Edition'
+  href: https://api.w3.org/specifications/xmlschema-1
+- title: 'XML Schema Part 2: Datatypes Second Edition'
+  href: https://api.w3.org/specifications/xmlschema-2
+- title: CSS Namespaces Module Level 3
+  href: https://api.w3.org/specifications/css-namespaces-3
+# Additional specifications omitted for brevity
+----
+====
+
+=== Specification version
+
+==== Editors
+
+This command provides access to editors of a specification version.
+
+[source,shell]
+----
+# Fetch editors of a specification version
+$ w3c_api specification_version editors --shortname=webrtc --version=20241008
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api specification_version editors --shortname=webrtc --version=20241008
+---
+_links:
+  editors:
+  - href: https://api.w3.org/users/bzb5w20eg68k40gc8w0wg0okk4k84os
+    title: Cullen Jennings
+    type: User
+  - href: https://api.w3.org/users/f521yr1m6g0kks880s8ocwsgwskgss4
+    title: Jan-Ivar Bruaroey
+    type: User
+  - href: https://api.w3.org/users/1dsgdsi4zrj4goo4k400c8scw4k4ggk
+    title: Henrik Boström
+    type: User
+  - href: https://api.w3.org/users/nlyfs3q8s2s0gk0owoggkco0sg0wwso
+    title: Florent Castelli
+    type: User
+----
+====
+
+==== Deliverers
+
+This command provides access to deliverers (working groups) of a specification
+version.
+
+[source,shell]
+----
+# Fetch deliverers of a specification version
+$ w3c_api specification_version deliverers --shortname=webrtc --version=20241008
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api specification_version deliverers --shortname=webrtc --version=20241008
+---
+_links:
+  deliverers:
+  - href: https://api.w3.org/groups/wg/webrtc
+    title: Web Real-Time Communications Working Group
+    type: Group
+----
+====
+
+=== Series
+
+This command provides access to W3C specification series.
+
+==== Index
+
+Fetching an index of specification series.
+
+[source,shell]
+----
+# Fetch specification series
+$ w3c_api series fetch [OPTIONS]
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api series fetch
+- shortname: html
+  name: HTML
+- shortname: css
+  name: CSS
+# Additional series omitted for brevity
+----
+====
+
+==== Get
+
+Getting a specification series by shortname.
+
+[source,shell]
+----
+# Fetch a specification series
+$ w3c_api series fetch --shortname=webrtc
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api series fetch --shortname=webrtc
+---
+shortname: webrtc
+name: 'WebRTC: Real-Time Communication Between Browsers'
+_links:
+  self:
+    href: https://api.w3.org/specification-series/webrtc
+  specifications:
+    href: https://api.w3.org/specification-series/webrtc/specifications
+  current_specification:
+    href: https://api.w3.org/specifications/webrtc
+----
+====
+
+==== Specifications
+
+This command provides access to specifications in a series.
+
+[source,shell]
+----
+# Fetch specifications in a series
+$ w3c_api series specifications --shortname=webrtc
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api series specifications --shortname=webrtc
+---
+specifications:
+- title: 'WebRTC: Real-Time Communication in Browsers'
+  href: https://api.w3.org/specifications/webrtc
+----
+====
+
+=== Users
+
+This command provides access to W3C users.
+
+.User ID formats
+[IMPORTANT]
+====
+The W3C API uses both numeric IDs (e.g., `128112`) and string IDs (e.g.,
+`f1ovb5rydm8s0go04oco0cgk0sow44w`) for users. All user-related commands
+support both formats. The format depends on how the user is referenced in API
+responses.
+====
+
+==== Get
+
+Getting a user by ID.
+
+[source,shell]
+----
+# Fetch a user with a numeric ID
+$ w3c_api user fetch --hash=128112
+# Fetch a user with a string ID
+$ w3c_api user fetch --hash=f1ovb5rydm8s0go04oco0cgk0sow44w
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api user fetch --hash=f1ovb5rydm8s0go04oco0cgk0sow44w
+---
+id: 128112
+name: Jennifer Strickland
+given: Jennifer
+family: Strickland
+discr: user
+country_code: US
+connected_accounts:
+- created: '2021-03-12T22:06:06+00:00'
+  service: github
+  identifier: '57469'
+  nickname: jenstrickland
+  profile_picture: https://avatars.githubusercontent.com/u/57469?v=4
+  href: https://github.com/jenstrickland
+  _links:
+    user:
+      href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w
+_links:
+  self:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w
+  affiliations:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w/affiliations
+  groups:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w/groups
+  specifications:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w/specifications
+  participations:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w/participations
+  chair_of_groups:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w/chair-of-groups
+  team_contact_of_groups:
+    href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w/team-contact-of-groups
+----
+====
+
+==== Groups
+
+Getting groups a user is a member of.
+
+[source,shell]
+----
+# Fetch groups a user is a member of
+$ w3c_api user groups --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api user groups --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+---
+groups:
+- href: https://api.w3.org/groups/wg/ag
+  title: Accessibility Guidelines Working Group
+- href: https://api.w3.org/groups/cg/global-inclusion
+  title: Accessibility Internationalization Community Group
+- href: https://api.w3.org/groups/wg/apa
+  title: Accessible Platform Architectures Working Group
+- href: https://api.w3.org/groups/wg/css
+  title: Cascading Style Sheets (CSS) Working Group
+- href: https://api.w3.org/groups/cg/coga-community
+  title: Cognitive Accessibility Community Group
+- href: https://api.w3.org/groups/cg/equity
+  title: Equity Community Group
+- href: https://api.w3.org/groups/wg/immersive-web
+  title: Immersive Web Working Group
+- href: https://api.w3.org/groups/cg/pwe
+  title: Positive Work Environment Community Group
+- href: https://api.w3.org/groups/cg/silver
+  title: Silver Community Group
+- href: https://api.w3.org/groups/wg/sdw
+  title: Spatio-temporal Data on the Web Working Group
+- href: https://api.w3.org/groups/cg/sustainability
+  title: Sustainability Community Group
+- href: https://api.w3.org/groups/ig/sustainableweb
+  title: Sustainable Web Interest Group
+- href: https://api.w3.org/groups/cg/w3process
+  title: W3C Process Community Group
+- href: https://api.w3.org/groups/wg/webapps
+  title: Web Applications Working Group
+- href: https://api.w3.org/groups/cg/webcomponents
+  title: Web Components Community Group
+- href: https://api.w3.org/groups/wg/webperf
+  title: Web Performance Working Group
+----
+====
+
+==== Specifications
+
+Getting specifications a user has contributed to.
+
+[source,shell]
+----
+# Fetch specifications a user has contributed to
+$ w3c_api user specifications --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api user specifications --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+specifications:
+- title: HTML 5.2
+  href: https://api.w3.org/specifications/html52
+- title: CSS Color Module Level 3
+  href: https://api.w3.org/specifications/css-color-3
+# Additional specifications omitted for brevity
+----
+====
+
+==== Affiliations
+
+Getting affiliations of a user.
+
+[source,shell]
+----
+# Fetch affiliations of a user
+$ w3c_api user affiliations --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api user affiliations --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+---
+affiliations:
+- href: https://api.w3.org/affiliations/1092
+  title: MITRE Corporation
+----
+====
+
+==== Participations
+
+Getting participations of a user.
+
+[source,shell]
+----
+# Fetch participations of a user
+$ w3c_api user participations --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api user participations --id=f1ovb5rydm8s0go04oco0cgk0sow44w
+---
+participations:
+- title: Silver Community Group
+  href: https://api.w3.org/participations/38785
+- title: Accessibility Guidelines Working Group
+  href: https://api.w3.org/participations/41574
+- title: Cognitive Accessibility Community Group
+  href: https://api.w3.org/participations/38233
+- title: Immersive Web Working Group
+  href: https://api.w3.org/participations/43790
+- title: Cascading Style Sheets (CSS) Working Group
+  href: https://api.w3.org/participations/38783
+- title: Positive Work Environment Community Group
+  href: https://api.w3.org/participations/38784
+----
+====
+
+=== Groups
+
+This command provides access to W3C groups.
+
+==== Index
+
+Fetching an index of groups.
+
+[source,shell]
+----
+# Fetch groups
+$ w3c_api group fetch [OPTIONS]
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api group fetch
+---
+groups:
+- href: https://api.w3.org/groups/wg/ag
+  title: Accessibility Guidelines Working Group
+- href: https://api.w3.org/groups/cg/global-inclusion
+  title: Accessibility Internationalization Community Group
+# Additional groups omitted for brevity
+----
+====
+
+==== Get
+
+Getting a group by ID.
+
+[source,shell]
+----
+# Fetch a group
+$ w3c_api group fetch --id=109735
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api group fetch --id=109735
+---
+id: 109735
+name: Immersive Web Working Group
+shortname: immersive-web
+type: working group
+start_date: '2018-10-01'
+end_date: '2020-09-30'
+description: The mission of the Immersive Web Working Group is to help bring
+  high-performance Virtual Reality (VR) and Augmented Reality (AR) to the open Web
+  via APIs to interact with VR and AR devices and sensors in browsers.
+_links:
+  self:
+    href: https://api.w3.org/groups/wg/immersive-web
+  users:
+    href: https://api.w3.org/groups/109735/users
+  specifications:
+    href: https://api.w3.org/groups/109735/specifications
+  chairs:
+    href: https://api.w3.org/groups/109735/chairs
+  team_contacts:
+    href: https://api.w3.org/groups/109735/teamcontacts
+  charters:
+    href: https://api.w3.org/groups/109735/charters
+----
+====
+
+==== Users
+
+Getting users in a group.
+
+[source,shell]
+----
+# Fetch users in a group
+$ w3c_api group users --id=109735
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api group users --id=109735
+---
+users:
+- href: https://api.w3.org/users/f1ovb5rydm8s0go04oco0cgk0sow44w
+  title: Jennifer Strickland
+- href: https://api.w3.org/users/bzb5w20eg68k40gc8w0wg0okk4k84os
+  title: Cullen Jennings
+# Additional users omitted for brevity
+----
+====
+
+==== Specifications
+
+Getting specifications delivered by a group.
+
+[source,shell]
+----
+# Fetch specifications delivered by a group
+$ w3c_api group specifications --id=109735
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api group specifications --id=109735
+---
+specifications:
+- title: WebXR Device API
+  href: https://api.w3.org/specifications/webxr
+- title: WebXR Gamepads Module - Level 1
+  href: https://api.w3.org/specifications/webxr-gamepads-1
+# Additional specifications omitted for brevity
+----
+====
+
+=== Affiliations
+
+This command provides access to W3C affiliations.
+
+==== Index
+
+Fetching an index of affiliations.
+
+[source,shell]
+----
+# Fetch affiliations
+$ w3c_api affiliation fetch [OPTIONS]
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api affiliation fetch
+---
+affiliations:
+- href: https://api.w3.org/affiliations/1001
+  title: Framkom (Forskningsaktiebolaget Medie-och Kommunikationsteknik)
+- href: https://api.w3.org/affiliations/1003
+  title: BackWeb Technologies, Inc.
+# Additional affiliations omitted for brevity
+----
+====
+
+==== Get
+
+Getting an affiliation by ID.
+
+[source,shell]
+----
+# Fetch an affiliation
+$ w3c_api affiliation fetch --id=35662
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api affiliation fetch --id=35662
+---
+id: 35662
+name: Google LLC
+discr: organization
+_links:
+  self:
+    href: https://api.w3.org/affiliations/35662
+  participants:
+    href: https://api.w3.org/affiliations/35662/participants
+  participations:
+    href: https://api.w3.org/affiliations/35662/participations
+----
+====
+
+==== Participants
+
+Getting participants of an affiliation.
+
+[source,shell]
+----
+# Fetch participants of an affiliation
+$ w3c_api affiliation participants --id=35662
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api affiliation participants --id=35662
+---
+participants:
+- href: https://api.w3.org/users/bzb5w20eg68k40gc8w0wg0okk4k84os
+  title: Cullen Jennings
+- href: https://api.w3.org/users/f521yr1m6g0kks880s8ocwsgwskgss4
+  title: Jan-Ivar Bruaroey
+# Additional participants omitted for brevity
+----
+====
+
+=== Translations
+
+This command provides access to W3C translations.
+
+==== Index
+
+Fetching an index of translations.
+
+[source,shell]
+----
+# Fetch translations
+$ w3c_api translation fetch [OPTIONS]
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api translation fetch
+---
+translations:
+- href: https://api.w3.org/translations/1
+  title: HTML 4.01 Specification
+- href: https://api.w3.org/translations/2
+  title: Cascading Style Sheets, level 1
+# Additional translations omitted for brevity
+----
+====
+
+==== Get
+
+Getting a translation by ID.
+
+[source,shell]
+----
+# Fetch a translation
+$ w3c_api translation fetch --id=2
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api translation fetch --id=2
+---
+id: 2
+title: Cascading Style Sheets, level 1
+language: fr
+url: https://www.yoyodesign.org/doc/w3c/css1/index.html
+_links:
+  self:
+    href: https://api.w3.org/translations/2
+----
+====
+
+=== Ecosystems
+
+This command provides access to W3C ecosystems.
+
+==== Index
+
+Fetching an index of ecosystems.
+
+[source,shell]
+----
+# Fetch ecosystems
+$ w3c_api ecosystem fetch [OPTIONS]
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api ecosystem fetch
+---
+ecosystems:
+- shortname: advertising
+  name: Advertising
+- shortname: data
+  name: Data
+# Additional ecosystems omitted for brevity
+----
+====
+
+==== Get
+
+Getting an ecosystem by shortname.
+
+[source,shell]
+----
+# Fetch an ecosystem
+$ w3c_api ecosystem fetch --shortname=data
+----
+
+[example]
+====
+[source,shell]
+----
+$ w3c_api ecosystem fetch --shortname=data
+---
+shortname: data
+name: Data
+description: The Data ecosystem focuses on technologies and standards for
+  representing, exchanging, and processing data on the Web.
+_links:
+  self:
+    href: https://api.w3.org/ecosystems/data
+  groups:
+    href: https://api.w3.org/ecosystems/data/groups
+  evangelists:
+    href: https://api.w3.org/ecosystems/data/evangelists
+----
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+[source,ruby]
+----
+gem 'w3c_api'
+----
+
+And then execute:
+
+[source,shell]
+----
+$ bundle install
+----
+
+Or install it yourself as:
+
+[source,shell]
+----
+$ gem install w3c_api
+----
+
+== Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then,
+run `rake spec` to run the tests. You can also run `bin/console` for an
+interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`.
+To release a new version, update the version number in `version.rb`, and then
+run `bundle exec rake release`, which will create a git tag for the version,
+push git commits and the created tag, and push the `.gem` file to
+https://rubygems.org[rubygems.org].
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/relaton/w3c_api.
+
+== License
+
+The gem is available as open source under the terms of the
+https://opensource.org/licenses/MIT[MIT License].

@@ -1,0 +1,50 @@
+= mn2pdf Ruby gem
+
+image:https://img.shields.io/gem/v/mn2pdf.svg["Gem Version", link="https://rubygems.org/gems/mn2pdf"]
+image:https://github.com/metanorma/mn2pdf-ruby/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/mn2pdf-ruby/actions?workflow=rake"]
+image:https://codeclimate.com/github/metanorma/mn2pdf-ruby/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/mn2pdf-ruby"]
+image:https://img.shields.io/github/issues-pr-raw/metanorma/mn2pdf-ruby.svg["Pull Requests", link="https://github.com/metanorma/mn2pdf-ruby/pulls"]
+image:https://img.shields.io/github/commits-since/metanorma/mn2pdf-ruby/latest.svg["Commits since latest",link="https://github.com/metanorma/mn2pdf-ruby/releases"]
+
+== Purpose
+
+The mn2pdf Ruby gem is a wrapper around the Java https://github.com/metanorma/mn2pdf[mn2pdf]
+which converts Metanorma XML files into native PDFs.
+
+This gem is used to provide mn2pdf.jar with mirrored version numbers, to allow
+Ruby code to easily refer to the desired mn2pdf version as dependencies.
+
+== Installation
+
+[source,ruby]
+----
+gem install mn2pdf
+----
+
+Or include it in your gemspec.
+
+== Usage
+
+[source,ruby]
+----
+require 'mn2pdf'
+Mn2pdf.convert(sample_xml_path, output_pdf_path, sample_xsl_path, options = "")
+----
+
+The options are any options trailing in the mn2pdf Java executable, e.g. `--split-by-language`.
+
+== Updating the gem
+
+Update `lib/mn2pdf/version.rb` to the desired version of https://github.com/metanorma/mn2pdf[mn2pdf].
+
+Run `rake` to download the `bin/mn2pdf.jar` file:
+
+[source,ruby]
+----
+rm -f bin/mn2pdf.jar
+rake bin/mn2pdf.jar
+----
+
+Then release the gem with `rake release`.
+
+

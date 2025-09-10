@@ -1,0 +1,18 @@
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/racc-1.8.1/ext/racc/cparse
+/opt/hostedtoolcache/Ruby/3.1.7/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-15keqw sitelibdir\=./.gem.20250826-2159-15keqw clean
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-15keqw sitelibdir\=./.gem.20250826-2159-15keqw
+compiling cparse.c
+linking shared-object racc/cparse.so
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-15keqw sitelibdir\=./.gem.20250826-2159-15keqw install
+/usr/bin/install -c -m 0755 cparse.so ./.gem.20250826-2159-15keqw/racc
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-15keqw sitelibdir\=./.gem.20250826-2159-15keqw clean

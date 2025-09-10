@@ -1,0 +1,281 @@
+term_def_boilerplate: 
+scope: Сфера применения
+symbolsabbrev: Символы и сокращенные термины
+abbrev: Сокращенные термины
+symbols: Символы
+table_of_contents: Содержание
+introduction: Введение
+foreword: Предисловие
+abstract: Реферат
+acknowledgements: Подтверждения
+executivesummary: Управляющее резюме
+termsdef: Термины и определения
+termsdefsymbolsabbrev: Термины, определения, символы и сокращенные термины
+termsdefsymbols: Термины, определения и символы
+termsdefabbrev: Термины, определения и сокращенные термины
+normref: Нормативные ссылки
+bibliography: Библиография
+index: Алфавитный указатель
+see: см.
+see_also: см. также
+section: Раздел
+clause: Пункт
+annex: Дополнение
+appendix: Приложение
+continued: продолжение
+no_terms_boilerplate: |
+        Термины и определения не перечислены в этом документе.
+internal_terms_boilerplate: |
+        Для целей этого документа применяются следующие термины и определения.
+norm_with_refs_pref: 
+      Следующие документы упоминаются в тексте таким образом, 
+      что некоторая часть или все их содержание являются требованиями 
+      настоящего  документа. Для датированных ссылок применяют только указанное издание.
+      Для недатированных ссылок применяют последнее издание 
+      указанного документа (включая любые поправки).
+norm_empty_pref: 
+          Нет нормативных ссылок в этом документе.
+external_terms_boilerplate: |
+          Для целей этого документа применяются термины и определения, данные в %.
+internal_external_terms_boilerplate: |
+          Для целей этого документа применяются термины и определения, данные в % и следующие.
+no_information_available: "[ИНФОРМАЦИЯ ОТСУТСТВУЕТ]"
+term_defined_in: "(%)"
+binary_and: "%1 <conn>и</conn> %2"
+multiple_and: "%1<enum-comma>,</enum-comma> <conn>и</conn> %2"
+binary_or: "%1 <conn>или</conn> %2"
+multiple_or: "%1<enum-comma>,</enum-comma> <conn>или</conn> %2"
+chain_and: "%1 <conn>и</conn> %2"
+chain_or: "%1 <conn>или</conn> %2"
+chain_from: "%1 <conn>от</conn> %2"
+chain_to: "%1 <conn>до</conn> %2"
+nested_xref: "%1<comma>,</comma> %2"
+list_nested_xref: "%1 %2"
+ordinal_keys: [gender,number,case]
+SpelloutRules:
+  m.sg.nom: spellout-ordinal-masculine
+  m.sg.gen: spellout-ordinal-masculine-genitive
+  m.sg.dat: spellout-ordinal-masculine-dative
+  m.sg.acc: spellout-ordinal-masculine-accusative
+  m.sg.loc: spellout-ordinal-masculine-locative
+  m.sg.ins: spellout-ordinal-masculine-ablative
+  f.sg.nom: spellout-ordinal-feminine
+  f.sg.gen: spellout-ordinal-feminine-genitive
+  f.sg.dat: spellout-ordinal-feminine-dative
+  f.sg.acc: spellout-ordinal-feminine-accusative
+  f.sg.loc: spellout-ordinal-feminine-locative
+  f.sg.ins: spellout-ordinal-feminine-ablative
+  n.sg.nom: spellout-ordinal-neuter
+  n.sg.gen: spellout-ordinal-neuter-genitive
+  n.sg.dat: spellout-ordinal-neuter-dative
+  n.sg.acc: spellout-ordinal-neuter-accusative
+  n.sg.loc: spellout-ordinal-neuter-locative
+  n.sg.ins: spellout-ordinal-neuter-ablative
+  m.pl.nom: spellout-ordinal-plural
+  m.pl.gen: spellout-ordinal-plural-genitive
+  m.pl.dat: spellout-ordinal-plural-dative
+  m.pl.acc: spellout-ordinal-plural-accusative
+  m.pl.loc: spellout-ordinal-plural-locative
+  m.pl.ins: spellout-ordinal-plural-ablative
+  f.pl.nom: spellout-ordinal-plural
+  f.pl.gen: spellout-ordinal-plural-genitive
+  f.pl.dat: spellout-ordinal-plural-dative
+  f.pl.acc: spellout-ordinal-plural-accusative
+  f.pl.loc: spellout-ordinal-plural-locative
+  f.pl.ins: spellout-ordinal-plural-ablative
+  n.pl.nom: spellout-ordinal-plural
+  n.pl.gen: spellout-ordinal-plural-genitive
+  n.pl.dat: spellout-ordinal-plural-dative
+  n.pl.acc: spellout-ordinal-plural-accusative
+  n.pl.loc: spellout-ordinal-plural-locative
+  n.pl.ins: spellout-ordinal-plural-ablative
+OrdinalRules:
+  m.sg.nom: digits-ordinal-masculine
+  m.sg.gen: digits-ordinal-masculine-genitive
+  m.sg.dat: digits-ordinal-masculine-dative
+  m.sg.acc: digits-ordinal-masculine-accusative
+  m.sg.loc: digits-ordinal-masculine-locative
+  m.sg.ins: digits-ordinal-masculine-ablative
+  f.sg.nom: digits-ordinal-feminine
+  f.sg.gen: digits-ordinal-feminine-genitive
+  f.sg.dat: digits-ordinal-feminine-dative
+  f.sg.acc: digits-ordinal-feminine-accusative
+  f.sg.loc: digits-ordinal-feminine-locative
+  f.sg.ins: digits-ordinal-feminine-ablative
+  n.sg.nom: digits-ordinal-neuter
+  n.sg.gen: digits-ordinal-neuter-genitive
+  n.sg.dat: digits-ordinal-neuter-dative
+  n.sg.acc: digits-ordinal-neuter-accusative
+  n.sg.loc: digits-ordinal-neuter-locative
+  n.sg.ins: digits-ordinal-neuter-ablative
+  m.pl.nom: digits-ordinal-plural
+  m.pl.gen: digits-ordinal-plural-genitive
+  m.pl.dat: digits-ordinal-plural-dative
+  m.pl.acc: digits-ordinal-plural-accusative
+  m.pl.loc: digits-ordinal-plural-locative
+  m.pl.ins: digits-ordinal-plural-ablative
+  f.pl.nom: digits-ordinal-plural
+  f.pl.gen: digits-ordinal-plural-genitive
+  f.pl.dat: digits-ordinal-plural-dative
+  f.pl.acc: digits-ordinal-plural-accusative
+  f.pl.loc: digits-ordinal-plural-locative
+  f.pl.ins: digits-ordinal-plural-ablative
+  n.pl.nom: digits-ordinal-plural
+  n.pl.gen: digits-ordinal-plural-genitive
+  n.pl.dat: digits-ordinal-plural-dative
+  n.pl.acc: digits-ordinal-plural-accusative
+  n.pl.loc: digits-ordinal-plural-locative
+  n.pl.ins: digits-ordinal-plural-ablative
+note: ПРИМЕЧАНИЕ
+note_xref: Примечание
+termnote: Примечание % к определению
+list: Список
+deflist: Список определений
+figure: Рисунок
+diagram: Диаграмма
+formula: Формула
+inequality: Формула
+table: Таблица
+requirement: Требование
+recommendation: Рекомендация
+permission: Разрешение
+box: Вставка
+key: Условные обозначения
+example: ПРИМЕР
+example_xref: Пример
+where: где
+where_one: где
+wholeoftext: Текст полностью
+draft_label: проект
+inform_annex: информативное
+norm_annex: нормативное
+modified: изменен
+adapted: адаптированный
+deprecated: НЕ РЕКОМЕНДУЕТСЯ
+source: ИСТОЧНИК
+and: и
+no_identifier: (БЕЗ ИДЕНТИФИКАТОРА)
+all_parts: Все части
+edition_ordinal: "{{ var1 | ordinal_word: 'edition', '' }} издание"
+edition: издание
+version: версия
+toc_figures: Таблица фигур
+toc_tables: Таблица таблиц
+toc_recommendations: Таблица рекомендаций
+month_january: Январь
+month_february: Февраль
+month_march: Март
+month_april: Апрель
+month_may: Май
+month_june: Июнь
+month_july: Июль
+month_august: Август
+month_september: Сентябрь
+month_october: Октябрь
+month_november: Ноябрь
+month_december: Декабрь
+obligation: Обязательство
+admonition: {
+  danger: Опасность,
+  warning: Предупреждение,
+  caution: Предостережение,
+  important: Важно,
+  safety precautions: Меры безопасности,
+  editorial: Редакционная Заметка
+}
+locality: {
+                      section: Раздел,
+                      clause: Пункт,
+                      part: Часть,
+                      paragraph: Абзац,
+                      chapter: Глава,
+                      page: Стр.,
+                      table: Таблица,
+                      annex: Дополнение,
+                      figure: Рисунок,
+                      example: Пример,
+                      note: Примечание,
+                      formula: Формула
+}
+grammar_abbrevs:
+  masculine: муж
+  feminine: жен
+  neuter: ср
+  common: общего рода
+  singular: ед
+  dual: дв
+  plural: мн
+  isPreposition: предл
+  isParticiple: прич
+  isAdjective: прил
+  isAdverb: нар
+  isNoun: сущ
+  isVerb: глаг
+relatedterms:
+  deprecates: устаревший
+  supersedes: заменяет
+  narrower: более узкий
+  broader: более широкий
+  equivalent: эквивалент
+  compare: наравне
+  contrast: противоположный
+  see: см.
+  seealso: см. также
+inflection:
+  Пункт:
+    sg: Пункт
+    pl: Пункты
+  Дополнение:
+    sg: Дополнение
+    pl: Дополнения
+  Приложение:
+    sg: Приложение
+    pl: Приложения
+  Примечание:
+    sg: Примечание
+    pl: Примечания
+  "Примечание % к записи":
+    sg: Примечание % к записи
+    pl: Примечания % к записи
+  Список:
+    sg: Список
+    pl: Списки
+  Рисунок:
+    sg: Рисунок
+    pl: Рисунки
+  Формула:
+    sg: Формула
+    pl: Формулы
+  Таблица:
+    sg: Таблица
+    pl: Таблицы
+  Требование:
+    sg: Требование
+    pl: Требования
+  Рекомендация:
+    sg: Рекомендация
+    pl: Рекомендации
+  Разрешение:
+    sg: Разрешение
+    pl: Разрешения
+  Пример:
+    sg: Пример
+    pl: Примеры
+  Часть:
+    sg: Часть
+    pl: Части
+  Раздел:
+    sg: Раздел
+    pl: Разделы
+  Абзац:
+    sg: Абзац
+    pl: Абзацы
+  Глава:
+    sg: Глава
+    pl: Главы
+  "Стр.":
+    sg: Стр.
+    pl: Стр.
+  издание:
+    grammar:
+      gender: n

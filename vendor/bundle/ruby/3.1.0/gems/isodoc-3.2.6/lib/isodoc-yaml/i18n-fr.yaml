@@ -1,0 +1,215 @@
+term_def_boilerplate: 
+scope: Domaine d’application
+symbolsabbrev: Symboles et termes abrégés
+abbrev: Termes abrégés
+symbols: Symboles
+table_of_contents: Sommaire
+introduction: Introduction
+foreword: Avant-propos
+abstract: Résumé
+acknowledgements: Remerciements
+executivesummary: Résumé exécutif
+termsdef: Termes et définitions
+termsdefsymbolsabbrev: Termes, définitions, symboles et termes abrégés
+termsdefsymbols: Termes, définitions et symboles
+termsdefabbrev: Termes, définitions et termes abrégés
+normref: Références normatives
+bibliography: Bibliographie
+index: Index
+see: voir
+see_also: voir aussi
+preface: Préface
+section: Section
+clause: Article
+annex: Annexe
+appendix: Appendice
+continued: continué
+no_terms_boilerplate: |
+         Aucun terme n’est défini dans le présent document.
+internal_terms_boilerplate: |
+         Pour les besoins du présent document, les termes et définitions suivants s’appliquent.
+norm_with_refs_pref: 
+     Les documents suivants cités dans le texte constituent, pour tout ou partie de leur contenu, des exigences du présent document. Pour les références datées, seule l’édition citée s’applique. Pour les références non datées, la dernière édition du document de référence s’applique (y compris les éventuels amendements).
+norm_empty_pref: 
+          Le présent document ne contient aucune référence normative.
+external_terms_boilerplate: |
+          Pour les besoins du présent document, les termes et définitions de % s’appliquent.
+internal_external_terms_boilerplate: |
+          Pour les besoins du présent document, les termes et définitions de % ainsi que les suivants, s’appliquent.
+no_information_available: "[PAS D’INFORMATION DISPONIBLE]"
+term_defined_in: "(%)"
+binary_and: "%1 <conn>et</conn> %2"
+multiple_and: "%1<enum-comma>,</enum-comma> <conn>et</conn> %2"
+binary_or: "%1 <conn>ou</conn> %2"
+multiple_or: "%1<enum-comma>,</enum-comma> <conn>ou</conn> %2"
+chain_and: "%1 <conn>et</conn> %2"
+chain_or: "%1 <conn>ou</conn> %2"
+chain_from: "%1 <conn>de</conn> %2"
+chain_to: "%1 <conn>à</conn> %2"
+nested_xref: "%1<comma>,</comma> %2"
+list_nested_xref: "%1 %2"
+ordinal_keys: [gender,number]
+SpelloutRules:
+  m.sg: spellout-ordinal-masculine
+  f.sg: spellout-ordinal-feminine
+  m.pl: spellout-ordinal-masculine-plural
+  f.pl: spellout-ordinal-feminine-plural
+OrdinalRules:
+  m.sg: digits-ordinal-masculine
+  f.sg: digits-ordinal-feminine
+  m.pl: digits-ordinal-masculine-plural
+  f.pl: digits-ordinal-feminine-plural
+note: NOTE
+note_xref: Note
+termnote: Note % à l’article
+figure: Figure
+diagram: Diagramme
+formula: Formule
+inequality: Formule
+list: Liste
+deflist: Liste de définitions
+table: Tableau
+requirement: Exigence
+recommendation: Recommandation
+permission: Autorisation
+box: Encadré
+key: Légende
+example: EXEMPLE
+example_xref: Exemple
+where: où
+where_one: où
+wholeoftext: Ensemble du texte
+draft_label: brouillon
+inform_annex: informative
+norm_annex: normative
+modified: modifié
+adapted: adapté
+deprecated: DÉCONSEILLÉ
+source: SOURCE
+edition: édition
+version: version
+and: et
+no_identifier: (PAS D'IDENTIFIANT)
+all_parts: toutes les parties
+edition_ordinal: "{{ var1 | ordinal_word: 'edition', '' }} édition"
+edition: édition
+toc_figures: Table des figures
+toc_tables: Table des tableaux
+toc_recommendations: Table de recommandations
+month_january: Janvier
+month_february: Février
+month_march: Mars
+month_april: Avril
+month_may: Mai
+month_june: Juin
+month_july: Juillet
+month_august: Août
+month_september: Septembre
+month_october: Octobre
+month_november: Novembre
+month_december: Décembre
+obligation: Obligation
+admonition: {
+  danger: Danger,
+  warning: Avertissement,
+  caution: Attention,
+  important: Important,
+  safety precautions: Précautions de Sécurité,
+  editorial: Note éditoriale
+}
+locality: {
+                      section: Section,
+                      clause: Article,
+                      part: Partie,
+                      paragraph: Alinéa,
+                      chapter: Chapitre,
+                      page: Page,
+                      table: Tableau,
+                      annex: Annexe,
+                      figure: Figure,
+                      example: Exemple,
+                      note: Note,
+                      formula: Formule
+                    }
+grammar_abbrevs:
+  masculine: masc
+  feminine: fem
+  neuter: neut
+  common: épicène
+  singular: sg
+  dual: duel
+  plural: pl
+  isPreposition: prép
+  isParticiple: part
+  isAdjective: adj
+  isAdverb: adv
+  isNoun: subst
+  isVerb: vb
+relatedterms:
+  deprecates: déprécie
+  supersedes: remplace
+  narrower: plus étroit
+  broader: plus large
+  equivalent: équivalent
+  compare: comparez
+  contrast: contrastez
+  see: voir
+  seealso: voir aussi
+inflection:
+  Clause:
+    sg: Article
+    pl: Articles
+  Annex:
+    sg: Annexe
+    pl: Annexes
+  Appendix:
+    sg: Appendice
+    pl: Appendices
+  Note:
+    sg: Note
+    pl: Notes
+  "Note % à l’article":
+    sg: Note % à l’article
+    pl: Notes % à l’article
+  List:
+    sg: Liste
+    pl: Listes
+  Figure:
+    sg: Figure
+    pl: Figures
+  Formula:
+    sg: Formule
+    pl: Formules
+  Table:
+    sg: Tableau
+    pl: Tableaux
+  Requirement:
+    sg: Exigence
+    pl: Exigences
+  Recommendation:
+    sg: Recommandation
+    pl: Recommandations
+  Permission:
+    sg: Autorisation
+    pl: Autorisations
+  Example:
+    sg: Exemple
+    pl: Exemples
+  Part:
+    sg: Partie
+    pl: Parties
+  Section:
+    sg: Section
+    pl: Sections
+  Paragraph:
+    sg: Alinéa
+    pl: Alinéas
+  Chapter:
+    sg: Chapitre
+    pl: Chapitres
+  Page:
+    sg: Page
+    pl: Pages
+  édition:
+    grammar:
+      gender: f

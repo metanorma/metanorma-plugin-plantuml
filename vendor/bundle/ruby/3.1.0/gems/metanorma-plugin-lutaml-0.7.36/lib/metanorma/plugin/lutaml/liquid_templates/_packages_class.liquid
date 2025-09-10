@@ -1,0 +1,129 @@
+{% assign is_klass_spare = klass.name | slice: 0,5 %}
+{% if is_klass_spare == 'old: ' %}{% continue %}
+{% elsif is_klass_spare == 'Spare' %}{% continue %}
+{% endif %}
+{% assign klass_name = klass.name | downcase | replace: ':', '' | replace: ' ', '_' %}
+[[section-{{ klass.type }}-{{ klass.xmi_id }}]]
+.Elements of &#8220;{{ package.name }}::{{ klass.name }}&#8221; ({{ klass.stereotype }})
+[width="100%",cols="a,a,a,a,a,a,a,a"]
+|===
+
+h|Name 7+| {{ klass.name }}
+
+h|Definition 7+| {{ klass.definition | html2adoc }}
+
+h|Stereotype 7+| {{ klass.stereotype | default: 'interface' }}
+
+{% assign inherited = klass.associations | where: "member_end_type", "inheritance" %}
+{% if inherited.size > 0 %}
+h|Inherits from 7+| {{ inherited | map: 'member_end' | join: ", " }}
+{% endif %}
+
+{% assign generalizations = klass.associations | where: "member_end_type", "generalization" %}
+{% if generalizations.size > 0 %}
+h|Generalization of 7+| {{ generalizations | map: 'member_end' | join: ", " }}
+{% endif %}
+
+h|Abstract 7+| {% if klass.is_abstract %}True{% else %}False{% endif %}
+{% assign aggregations = klass.associations | where: "member_end_type", "aggregation" %}
+
+{% if aggregations.size > 0 %}
+
+{% assign associations_colspan = aggregations.size | plus: 1 %}
+{% for assoc in aggregations %}
+{% if assoc.connector && assoc.connector.source %}
+{% assign associations_colspan = associations_colspan | plus: 1 %}
+{% endif %}
+{% if assoc.connector && assoc.connector.target %}
+{% assign associations_colspan = associations_colspan | plus: 1 %}
+{% endif %}
+{% endfor %}
+
+.{{associations_colspan}}+h|Associations
+2+h| _Name_
+2+h| _Type_
+3+h| _Definition_
+
+{% for assoc in aggregations %}
+
+{% assign member_end_documentation_size = assoc.member_end.definition | size %}
+{% capture member_end_documentation %}{% if member_end_documentation_size > 0 %}{{ assoc.member_end.definition }}{% else %}(none){% endif %}{% endcapture %}
+
+2+| {{ assoc.member_end }}
+2+| {{ assoc.member_end_attribute_name }}
+3+| {{ member_end_documentation | html2adoc }}
+
+{% if assoc.connector && assoc.connector.source %}
+{% assign source_name_size = assoc.connector.source.name | size %}
+{% capture source_name %}{% if source_name_size > 0 %}{{ assoc.connector.source.name }}{% else %}(self){% endif %}{% endcapture %}
+{% assign source_documentation_size = assoc.connector.source.documentation | size %}
+{% capture source_documentation %}{% if source_documentation_size > 0 %}{{ assoc.connector.source.documentation }}{% else %}(none){% endif %}{% endcapture %}
+{% assign source_multiplicity_size = assoc.connector.source.multiplicity | size %}
+{% capture source_multiplicity %}{% if source_multiplicity_size > 0 %}[{{ assoc.connector.source.multiplicity }}]{% else %}[none]{% endif %}{% endcapture %}
+
+2+| source:{{ source_name }} {{ source_multiplicity }}
+2+| {{ assoc.connector.source.type }}
+3+| {{ source_documentation | html2adoc }}
+{% endif %}
+
+{% if assoc.connector && assoc.connector.target %}
+{% assign target_name_size = assoc.connector.target.name | size %}
+{% capture target_name %}{% if target_name_size > 0 %}{{ assoc.connector.target.name }}{% else %}(self){% endif %}{% endcapture %}
+{% assign target_documentation_size = assoc.connector.target.documentation | size %}
+{% capture target_documentation %}{% if target_documentation_size > 0 %}{{ assoc.connector.target.documentation }}{% else %}(none){% endif %}{% endcapture %}
+{% assign target_multiplicity_size = assoc.connector.target.multiplicity | size %}
+{% capture target_multiplicity %}{% if target_multiplicity_size > 0 %}[{{ assoc.connector.target.multiplicity }}]{% else %}[none]{% endif %}{% endcapture %}
+
+2+| target:{{ target_name }} {{ target_multiplicity }}
+2+| {{ assoc.connector.target.type }}
+3+| {{ target_documentation | html2adoc }}
+{% endif %}
+
+{% endfor %}
+{% else %}
+h| Associations 7+| (none)
+{% endif %}
+
+{% if klass.attributes.size > 0 %}
+.{{klass.attributes.size | plus: 1}}+h|Attributes
+2+h| _Name_
+2+h| _Type_
+3+h| _Definition_
+
+{% for attr in klass.attributes %}
+{% capture attr_cardinality %}[{{attr.cardinality.min}}..{{attr.cardinality.max}}]{% endcapture %}
+{% if attr_cardinality == "[*..*]" or attr_cardinality == "[0..*]" %}
+{% assign attr_cardinality = "[*]" %}
+{% endif %}
+{% if attr_cardinality == "[1..1]" %}
+{% assign attr_cardinality = "[1]" %}
+{% endif %}
+{% if attr_cardinality == "[..]" %}
+{% assign attr_cardinality = "[none]" %}
+{% endif %}
+
+{% assign attr_definition_size = attr.definition | size %}
+{% capture attr_definition %}{% if attr_definition_size > 0 %}{{ attr.definition }}{% else %}(none){% endif %}{% endcapture %}
+
+2+| {{ attr.name }} {{ attr_cardinality }}
+2+| {{ attr.type }}
+3+| {{ attr_definition | html2adoc }}
+
+{% endfor %}
+{% else %}
+h| Attributes
+7+| (none)
+{% endif %}
+
+{% if klass.constraints.size > 0 %}
+.{{ klass.constraints.size }}+h| Constraints
+{% for constraint in klass.constraints %}
+7+| `{{ constraint.body }}`: `{{ constraint.definition | replace: '|', '\|' }}`
+
+{% endfor %}
+{% else %}
+
+h|Constraints 7+| (none)
+{% endif %}
+
+|===

@@ -1,0 +1,102 @@
+= Relaton Render
+
+image:https://img.shields.io/gem/v/relaton-render.svg["Gem Version", link="https://rubygems.org/gems/relaton-render"]
+image:https://github.com/metanorma/relaton-render/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/relaton-render/actions?workflow=rake"]
+image:https://codeclimate.com/github/metanorma/relaton-render/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/relaton-render"]
+
+Gem that takes a https://github.com/relaton/relaton[Relaton] bibliographic description and 
+a configuration, and generates a https://www.metanorma.org[Metanorma] XML rendering of that description.
+
+== Calling
+
+[source,ruby]
+----
+input = "<bibitem type='...'>....</bibitem>"
+
+r = Relaton::Render::General.new(template: ..., nametemplate: ..., seriestemplate: ..., language: "en", script: "Latn")
+
+r.render(input) == "Author1 and Author2 2000. Title &c."
+
+bibliography = "<references><bibitem id=''>...</bibitem>...<bibitem id=''>...</bibitem></references>"
+
+r.render_all(bibliography, type: "author-cite") ==
+
+{ bibitem["id"] :
+  { author: "Author1 and Author2",
+    date: "2000a",
+    citation: "Author1 and Author2 2000a",
+    formattedref: "Author1 and Author2 2000a. Title &c."
+  }
+}
+----
+
+The gem processes either Relaton XML, or native Relaton classes.
+
+The gem is intended to be inherited from by Metanorma flavours, which may specialise it with their own
+code. The templates are however intended to determine much of the rendering.
+
+Gems can provide their configurations in YAML files, and parse them before passing them to the call to Relaton::Render.
+The built-in values for Relaton::Render are given in `/lib/relaton/render/general/config.yml`, and can be overridden by
+the parameters of initialising Relaton::Render.
+
+The parameters are:
+
+`language`:: in ISO-639
+`script`:: in ISO-15124
+`template`:: templates for rendering different bibliographic types
+`nametemplate`:: templates for rendering personal names
+`authorcitetemplate`:: templates for rendering names for the purpose of author-date citations
+`seriestemplate`:: template for rendering series
+`journaltemplate`:: template for rendering journals in article citations
+`extenttemplate`:: templates for rendering extents
+`sizetemplate`:: templates for rendering sizes
+`edition_ordinal`:: override formatting of edition with ordinal
+`date`:: default date format (from Twitter CLDR)
+`i18nhash`:: Metanorma internationalisation hash
+
+== Functionality
+
+=== Rendering single reference
+
+Given an Relaton bibitem object (or equivalent Relaton XML), `render(input)` will output a formatted reference for that
+bibitem, following the rules laid out in the configuration. That output can be inserted into the `<formattedref>` element
+of the bibitem by the calling code, and used as the authoritative rendering of the citation.
+
+This method does not address how the bibliographic item is to be cited, and does not differentiate citations with the same
+author and date. It should not be used for rendering of references aligned to the author-date citation system. 
+
+=== Rendering multiple references
+
+Given a collection of Relaton bibitem objects (or equivalent Relaton XML, wrapped in `<references>`), 
+`render_all(bibliography, type: type)`
+will output a hash of objects, with information to be used both for rendering references, and for generating citations.
+This method addresses the disambiguation of citations, and changes to rendering of references reflecting that disambiguation
+(e.g. differentiating two works with the same wuthor surname and year: _Jones 1996a_ and _Jones 1996b_).
+For that reason, this method should be used for references using the author-date citation system.
+
+The `type` argument of `render_all` reflects the citation system to be used. 
+
+* If it is set to "author-date", citations with the same author and date will be disambiguated from each other
+by appending a letter to the date, in the order in which they occur in `bibliography`. (That means that any fixed sorting
+of references needs to be applied before the bibliography is presented to the method.)
+* If it is set to nil (as is the default), no such disambiguation occurs.
+
+The hash maps from the anchor of each bibitem (`bibitem/@id`), to an object containing the following fields:
+
+`formattedref`:: the formatted reference, as output by `render(input)`, but with the date of the citation disambiguated
+if called with `type: "author-date"`.
+`citation`:: the citation for the reference (Author-Date if called with `type: "author-date"`; `docidentifier` if called with `type: nil`).
+`author`:: the author designation for the reference (if called with `type: "author-date"`)
+`date`:: the date designation for the reference, with disambiguating letter if necessary (if called with `type: "author-date"`).
+The author and date are differentiated so that consumers can separate them in citations -- e.g. "Jones (1996) claims", 
+"(Jones 1996, 1997)".
+
+=== Parsing single reference
+
+Given an Relaton bibitem object (or equivalent Relaton XML), `parse(input)` will output the hash of fields that is passed into the
+Liquid templates described below for rendering: it is the hash of bibliographic fields extracted by the gem.
+
+== Configuration
+
+For the configuation YAML used in relaton-render, refer to https://relaton.org/specs/relaton-render 
+

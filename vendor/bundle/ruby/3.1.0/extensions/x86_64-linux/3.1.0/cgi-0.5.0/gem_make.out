@@ -1,0 +1,18 @@
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/cgi-0.5.0/ext/cgi/escape
+/opt/hostedtoolcache/Ruby/3.1.7/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/cgi-0.5.0/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-6v3ftn sitelibdir\=./.gem.20250826-2159-6v3ftn clean
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/cgi-0.5.0/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-6v3ftn sitelibdir\=./.gem.20250826-2159-6v3ftn
+compiling escape.c
+linking shared-object cgi/escape.so
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/cgi-0.5.0/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-6v3ftn sitelibdir\=./.gem.20250826-2159-6v3ftn install
+/usr/bin/install -c -m 0755 escape.so ./.gem.20250826-2159-6v3ftn/cgi
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/cgi-0.5.0/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-6v3ftn sitelibdir\=./.gem.20250826-2159-6v3ftn clean

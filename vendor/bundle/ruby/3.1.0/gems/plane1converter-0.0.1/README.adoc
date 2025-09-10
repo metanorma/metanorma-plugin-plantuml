@@ -1,0 +1,70 @@
+= plane1converter
+Convert character + font shift to Unicode Plane 1 Mathematical Alphanumeric Symbols
+
+[source,ruby]
+----
+require "plane1converter"
+
+Plane1Converter.conv("Plane1Converter", :fraktur)
+----
+
+which gives:
+
+[source,console]
+----
+----
+
+* The first argument is a string; all ASCII alphabetic characters (and, if supported, numeric
+characters, and Greek characters) are converted to the Unicode Plane 1 
+https://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols[Mathematical Alphanumeric Symbols]
+character corresponding to the font shift named in the second argument. The gem also supports
+the https://en.wikipedia.org/wiki/Enclosed_Alphanumerics[Enclosed Alphanumerics] and
+https://en.wikipedia.org/wiki/Enclosed_Alphanumeric_Supplement[Enclosed Alphanumeric Supplement] blocks, and,
+circled numbers in https://en.wikipedia.org/wiki/Dingbat[Dingbats],
+
+* Characters are assumed to be in UTF-8; if characters are escaped for representation in ASCII,
+they need to be converted to UTF-8 before being passed to this gem.
+
+* The string is converted one character at a time: multi-character dingbats such as 
+DINGBAT CIRCLED SANS-SERIF NUMBER TEN (U+2789) (➉) are not supported.
+
+* Other characters mapped to Mathematical Alphanumeric Symbols are also supported, including:
+** U+0131 LATIN SMALL LETTER DOTLESS I (ı)
+** U+0237 LATIN SMALL LETTER DOTLESS J (ȷ)
+** U+03F4 GREEK CAPITAL THETA SYMBOL (ϴ)
+** U+2207 NABLA (∇)
+** U+2202 PARTIAL DIFFERENTIAL (∂)
+** U+03F5 GREEK LUNATE EPSILON SYMBOL (ϵ)
+** U+03D1 GREEK THETA SYMBOL (ϑ)
+** U+03F0 GREEK KAPPA SYMBOL (ϰ)
+** U+03D5 GREEK PHI SYMBOL (ϕ)
+** U+03F1 GREEK RHO SYMBOL (ϱ)
+** U+03D6 GREEK PI SYMBOL (ϖ)
+** U+03DC GREEK LETTER DIGAMMA (Ϝ)
+** U+03DD GREEK SMALL LETTER DIGAMMA (ϝ)
+
+* If a character is not supported in the specified font shift, it is left as is.
+
+* Legal values supported for the second argument are:
+`:fraktur`:: Fraktur Normal
+`:frakturbold`:: Fraktur Bold
+`:monospace`:: Monospace
+`:doublestruck`:: Double-Struck
+`:script`:: Script
+`:scriptbold`:: Script Bold
+`:circled`:: Circled
+`:circledblack`:: Circled Black
+`:squared`:: Squared
+`:squaredblack`:: Squared Black
+`:serifbold`:: Serifed Bold
+`:serifitalic`:: Serifed Italic
+`:serifbolditalic`:: Serifed Bold Italic
+`:sans`:: Sans-Serif
+`:sansbold`:: Sans-Serif Bold
+`:sansitalic`:: Sans-Serif Italic
+`:sansbolditalic`:: Sans-Serif Bold Italic
+
+* Illegal values for the second argument will raise an error.
+
+
+* The base mapping is taken from http://textconverter.net/js/app.300d38d3.js 

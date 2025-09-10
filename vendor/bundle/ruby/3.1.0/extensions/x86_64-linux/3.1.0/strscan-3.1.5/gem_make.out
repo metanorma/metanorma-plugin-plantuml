@@ -1,0 +1,20 @@
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.5/ext/strscan
+/opt/hostedtoolcache/Ruby/3.1.7/x64/bin/ruby extconf.rb
+checking for onig_region_memsize() in ruby.h... yes
+checking for rb_reg_onig_match() in ruby.h... no
+creating Makefile
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.5/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-vlt4ql sitelibdir\=./.gem.20250826-2159-vlt4ql clean
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.5/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-vlt4ql sitelibdir\=./.gem.20250826-2159-vlt4ql
+compiling strscan.c
+linking shared-object strscan.so
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.5/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-vlt4ql sitelibdir\=./.gem.20250826-2159-vlt4ql install
+/usr/bin/install -c -m 0755 strscan.so ./.gem.20250826-2159-vlt4ql
+
+current directory: /home/runner/work/metanorma-plugin-plantuml/metanorma-plugin-plantuml/vendor/bundle/ruby/3.1.0/gems/strscan-3.1.5/ext/strscan
+make DESTDIR\= sitearchdir\=./.gem.20250826-2159-vlt4ql sitelibdir\=./.gem.20250826-2159-vlt4ql clean

@@ -1,0 +1,150 @@
+term_def_boilerplate: 
+scope: 范围
+symbolsabbrev: 符号、代号和缩略语
+abbrev: 代号和缩略语
+symbols: 符号
+table_of_contents: 目次
+introduction: 引言
+foreword: 前言
+abstract: 摘要
+acknowledgements: 致謝
+executivesummary: 执行摘要
+termsdef: 术语和定义
+termsdefsymbolsabbrev: 术语、定义、符号、代号和缩略语
+termsdefsymbols: 术语、定义、符号和代号
+termsdefabbrev: 术语、定义、符号和缩略语
+normref: 规范性引用文件
+bibliography: 参考文献
+index: 索引
+see: 见
+see_also: 另见
+preface: 序言
+section: 条
+clause: 条
+annex: 附件
+appendix: 附录
+continued: 继续
+no_terms_boilerplate: |
+          本文件不提供术语和定义。
+internal_terms_boilerplate: |
+          下列术语和定义适用于本文件。
+norm_with_refs_pref: 
+          下列文件对于本文件的应用是必不可少的。
+          凡是注日期的引用文件，仅注日期的版本适用于本文件。
+          凡是不注日期的引用文件，其最新版本（包括所有的修改单）适用于本文件。
+norm_empty_pref: 
+          本文件并没有规范性引用文件。
+external_terms_boilerplate: |
+          % 界定的术语和定义适用于本文件。
+internal_external_terms_boilerplate: |
+          % 界定的以及下列术语和定义适用于本文件。
+no_information_available: "[无资料]"
+term_defined_in: "（%）"
+binary_and: "%1<conn>和</conn>%2"
+multiple_and: "%1<enum-comma>、</enum-comma><conn>和</conn>%2"
+binary_or: "%1<conn>或</conn>%2"
+multiple_or: "%1<enum-comma>、</enum-comma><conn>或</conn>%2"
+chain_and: "%1<conn>和</conn>%2"
+chain_or: "%1<conn>或</conn>%2"
+chain_from: "%1<conn>从</conn>%2"
+chain_to: "%1<conn>到</conn>%2"
+nested_xref: "%1<comma>,</comma> %2"
+list_nested_xref: "%1 %2"
+ordinal_keys: []
+SpelloutRules: spellout-ordinal
+OrdinalRules: digits-ordinal
+note: 注
+note_xref: 注
+termnote: 注%
+figure: 图
+diagram: 图表
+formula: 公式
+inequality: 公式
+list: 列项
+deflist: 定义列表
+table: 表
+requirement: 要求
+recommendation: 建议
+permission: 容許
+box: 专栏
+key: 说明
+example: 示例
+example_xref: 示例
+where: 式中
+where_one: 式中
+wholeoftext: 全部
+draft_label: 稿
+inform_annex: 资料性附录
+norm_annex: 规范性附录
+modified: 改写
+adapted: 改编
+deprecated: 被取代
+source: 定义
+and: 和
+no_identifier: （无标识符）
+all_parts: 所有部分
+edition_ordinal: "第{{ var1 | ordinal_word: '', '' }}版"
+edition: 版
+version: 版本
+toc_figures: 数字列表
+toc_tables: 表列表
+toc_recommendations: 建议清单
+month_january: 一月
+month_february: 二月
+month_march: 三月
+month_april: 四月
+month_may: 五月
+month_june: 六月
+month_july: 七月
+month_august: 八月
+month_september: 九月
+month_october: 十月
+month_november: 十一月
+month_december: 十二月
+obligation: 义务
+admonition: {
+  danger: 危险,
+  warning: 警告,
+  caution: 注意,
+  important: 重要,
+  safety precautions: 安全须知,
+  editorial: 编辑说明
+}
+locality: {
+  section: 条,
+  clause: 条,
+  part: 部分,
+  paragraph: 段,
+  chapter: 章,
+  page: 页,
+  table: 表,
+  annex: 附录,
+  figure: 图,
+  example: 示例,
+  note: 注
+}
+grammar_abbrevs:
+  masculine: 男性性别
+  feminine: 阴性
+  neuter: 中性的
+  common: 通性
+  singular: 单数
+  dual: 双
+  plural: 复数
+  isPreposition: 介词
+  isParticiple: 分词
+  isAdjective: 形容词
+  isAdverb: 副词
+  isNoun: 名词
+  isVerb: 动词
+relatedterms:
+  deprecates: 旧词
+  supersedes: 取替
+  narrower: 狭义
+  broader: 广义
+  equivalent: 同义
+  compare: 比较
+  contrast: 对比
+  see: 见
+  seealso: 参见
+

@@ -1,0 +1,21 @@
+system:
+  linux:
+    paths:
+      - /usr/share/fonts/**/**.{ttf,ttc}
+
+  windows:
+    paths:
+      - C:/Windows/Fonts/**/**.{ttc,ttf}
+      - C:/Users/{username}/AppData/Local/Microsoft/Windows/Fonts/**/**.{ttc,ttf}
+
+  macos:
+    paths:
+      - /Library/Fonts/**/**.{ttf,ttc}
+      - /System/Library/Fonts/**/**.{ttf,ttc}
+      - /Users/{username}/Library/Fonts/**.{ttf,ttc}
+      - /Applications/Microsoft**/Contents/Resources/**/**.{ttf,ttc}
+      - /System/Library/AssetsV2/com_apple_MobileAsset_Font6/**/**.{ttf,ttc}
+
+  unix:
+    paths:
+      - /usr/share/fonts/**/**.{ttf,ttc}

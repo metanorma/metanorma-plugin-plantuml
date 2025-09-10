@@ -1,0 +1,68 @@
+== gb-agencies
+
+image:https://img.shields.io/gem/v/gb-agencies.svg["Gem Version", link="https://rubygems.org/gems/gb-agencies"]
+image:https://github.com/metanorma/gb-agencies/workflows/ubuntu/badge.svg["Ubuntu Build Status", link="https://github.com/metanorma/gb-agencies/actions?query=workflow%3Aubuntu"]
+image:https://github.com/metanorma/gb-agencies/workflows/macos/badge.svg["OSX Build Status", link="https://github.com/metanorma/gb-agencies/actions?query=workflow%3Amacos"]
+image:https://github.com/metanorma/gb-agencies/workflows/windows/badge.svg["Windows Build Status", link="https://github.com/metanorma/gb-agencies/actions?query=workflow%3Awindows"]
+image:https://codeclimate.com/github/metanorma/gb-agencies/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/gb-agencies"]
+image:https://img.shields.io/github/issues-pr-raw/metanorma/gb-agencies.svg["Pull Requests", link="https://github.com/metanorma/gb-agencies/pulls"]
+image:https://img.shields.io/github/commits-since/metanorma/gb-agencies/latest.svg["Commits since latest",link="https://github.com/metanorma/gb-agencies/releases"]
+
+Gem to look up agency names for GB standards
+
+[source,ruby]
+----
+# hash of localised labels
+LABELS = { "PRC" => "PRC", # People's Republic of China
+           "industry_standard" => "Industry Standard",
+           "local_standard" => "Local Standard",
+           "enterprise_standard" => "Enterprise Standard",
+           "social_standard" => "Social Standard" }
+
+# language (only "en", "zh" defined)
+# LABELS: hash of localised labels
+# issuer: name of organisation issuing the standard (only used for enterprise and social-group standards;
+#          this gem provides lookup for local, sector, and national agency names)
+gba = GbAgencies::Agencies.new("en", LABELS, "My Org")
+
+# scope: "national", "sector", "local", "enterprise", "social-group"
+# prefix: the prefix of the standard
+# mandate: "mandatory", "recommended", "guide"
+gba.standard_class("national", "GB", "mandatory")
+=> "National standard"
+
+gba.standard_class("local", "81", "guide")
+=> "Hong Kong Special Administrative Region Local Standard"
+
+# scope: "national", "sector", "local", "enterprise", "social-group"
+# prefix: the prefix of the standard
+# mandate: "mandatory", "recommended", "guide"
+gba.standard_agency("national", "GB", "mandatory")
+=> "General Administration of Quality Supervision, Inspection and Quarantine; Standardization Administration of China"
+
+# return agency as single string
+GbAgencies::Agencies.new("zh", LABELS, "My Org").standard_agency1("national", "GB", "mandatory")
+
+# return agency as array (where there is more than one body involved)
+GbAgencies::Agencies.new("zh", LABELS, "My Org").standard_agency("national", "GB", "mandatory")
+=> "["中华人民共和国国家质量监督检验检疫总局 中国国家标准化管理委员会"]
+
+# scope: "national", "sector", "local", "enterprise", "social-group"
+# prefix: the prefix of the standard
+# mandate: "mandatory", "recommended", "guide"
+# year: year of publication
+# nunumber: the number of the standard
+gba.docidentifier("social-group", "PREFIX", "guide", "2002", "123")
+=> "T/Z/PREFIX 123&mdash;2002"
+
+# scope: "national", "sector", "local", "enterprise", "social-group"
+# prefix: the prefix of the standard
+gba.gbtype_validate("national", "GB")
+=> true
+
+# scope: "national", "sector", "local", "enterprise", "social-group"
+# prefix: the prefix of the standard
+gba.gbtype_validate("national", "ZZ")
+ZZ is not a recognised national prefix
+=> false
+----

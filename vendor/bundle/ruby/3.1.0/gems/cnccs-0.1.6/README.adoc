@@ -1,0 +1,106 @@
+= CnCcs: Ruby gem for using CCS codes
+
+image:https://img.shields.io/gem/v/cnccs.svg["Gem Version", link="https://rubygems.org/gems/cnccs"]
+image:https://github.com/metanorma/cnccs/workflows/ubuntu/badge.svg["Ubuntu Build Status", link="https://github.com/metanorma/cnccs/actions?query=workflow%3Aubuntu"]
+image:https://github.com/metanorma/cnccs/workflows/macos/badge.svg["OSX Build Status", link="https://github.com/metanorma/cnccs/actions?query=workflow%3Amacos"]
+image:https://github.com/metanorma/cnccs/workflows/windows/badge.svg["Windows Build Status", link="https://github.com/metanorma/cnccs/actions?query=workflow%3Awindows"]
+image:https://codeclimate.com/github/metanorma/cnccs/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/cnccs"]
+image:https://img.shields.io/github/issues-pr-raw/metanorma/cnccs.svg["Pull Requests", link="https://github.com/metanorma/cnccs/pulls"]
+image:https://img.shields.io/github/commits-since/metanorma/cnccs/latest.svg["Commits since latest",link="https://github.com/metanorma/cnccs/releases"]
+
+
+The categories used in the Classification of Chinese Standards ("CCS")
+are accessible via this gem.
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+[source,ruby]
+----
+gem 'cnccs'
+----
+
+And then execute:
+
+[source]
+----
+$ bundle
+----
+
+Or install it yourself as:
+
+[source]
+----
+$ gem install cnccs
+----
+
+== Usage
+
+Fetching CCS data:
+
+[source,ruby]
+----
+# Fetch field
+ccs = Cnccs.fetch fieldcode: "J"
+ccs.code        # => "J"
+ccs.fieldcode   # => "J"
+ccs.description "机械"
+ccs.notes # => ""
+
+# Fetch group
+ccs = Cnccs.fetch fieldcode: "J", groupcode: "90/99"
+ccs.code             # => "J90/99"
+ccs.groupcode        # => "90/99"
+ccs.description      # => "活塞式内燃机与其他动力设备"
+ccs.description_full # => "机械；活塞式内燃机与其他动力设备"
+ccs.fieldcode        # => "J"
+ccs.notes            # => [
+  #<Cnccs::Note:XXX @text="汽车专用发动机入{ccs-code}", @ccs_code="T10/19">,
+  #<Cnccs::Note:XXX @text="船舶专用发动机入{ccs-code}", @ccs_code="U40/44">,
+  #<Cnccs::Note:XXX @text="航天专用发动机入{ccs-code}", @ccs_code="V30/34">,
+  #<Cnccs::Note:XXX @text="铁路机车专用发动机入{ccs-code}", @ccs_code="V72">,
+  #<Cnccs::Note:XXX @text="动车专用发动机入{ccs-code}", @ccs_code="S40/49">,
+  #<Cnccs::Note:XXX @text="发电用动力设备入{ccs-code}", @ccs_code="K50/59">,
+]
+
+J98,,J90/99,
+
+
+# Fetch subgroup
+ccs = Cnccs.fetch subgroupcode: "J98"
+ccs.code             # => "J98"
+ccs.fieldcode        # => "J"
+ccs.groupcode        # => "90/99"
+ccs.subgroupcode     # => "98"
+ccs.description      # => "锅炉及其辅助设备"
+ccs.description_full # => "机械；活塞式内燃机与其他动力设备：锅炉及其辅助设备"
+ccs.notes            # => [
+  #<Cnccs::Note:XXX @text="电站锅炉，工业锅炉、余热锅炉、热水锅炉等及其辅助设备。", @ccs_code=nil>,
+  #<Cnccs::Note:XXX @text="锅炉高能点火器入 {ccs-code}", @ccs_code="T37">,
+  #<Cnccs::Note:XXX @text="煤的粉碎、推进机械，锅炉用水处理设备、罐内水处理剂配方等入此。", @ccs_code=nil>,
+]
+
+note = ccs.notes[1]
+note.text            # => "锅炉高能点火器入 {ccs-code}"
+note.ccs_code        # => "T37"
+note.ccs.description # => "点火装置"
+
+# Fetch by code
+ccs = Cnccs.fetch "J98"
+ccs.description_full # => "机械；活塞式内燃机与其他动力设备：锅炉及其辅助设备"
+----
+
+== Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/metanorma/cnccs.
+
+== License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

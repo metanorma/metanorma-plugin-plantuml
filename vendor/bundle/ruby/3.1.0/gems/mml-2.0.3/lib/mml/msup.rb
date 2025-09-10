@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+module Mml
+  class Msup < Lutaml::Model::Serializable
+    attribute :mathcolor, :string
+    attribute :mathbackground, :string
+    attribute :superscriptshift, :string
+
+    xml do
+      root "msup", mixed: true
+
+      map_attribute "mathcolor", to: :mathcolor, namespace: nil
+      map_attribute "mathbackground", to: :mathbackground, namespace: nil
+      map_attribute "superscriptshift", to: :superscriptshift, namespace: nil
+    end
+  end
+end

@@ -1,0 +1,29 @@
+# -*- encoding: utf-8 -*-
+# stub: relaton-ccsds 1.20.2 ruby lib
+
+Gem::Specification.new do |s|
+  s.name = "relaton-ccsds".freeze
+  s.version = "1.20.2".freeze
+
+  s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
+  s.require_paths = ["lib".freeze]
+  s.authors = ["Ribose Inc.".freeze]
+  s.bindir = "exe".freeze
+  s.date = "2024-12-12"
+  s.description = "RelatonCcsds: retrive www.ccsds.org Standards".freeze
+  s.email = ["open.source@ribose.com".freeze]
+  s.homepage = "https://github.com/metanorma/relaton-ccsds".freeze
+  s.licenses = ["MIT".freeze]
+  s.required_ruby_version = Gem::Requirement.new(">= 2.7.0".freeze)
+  s.rubygems_version = "3.3.27".freeze
+  s.summary = "RelatonCcsds: retrive www.ccsds.org Standards".freeze
+
+  s.installed_by_version = "3.6.9".freeze
+
+  s.specification_version = 4
+
+  s.add_runtime_dependency(%q<mechanize>.freeze, ["~> 2.10".freeze])
+  s.add_runtime_dependency(%q<pubid-ccsds>.freeze, ["~> 0.1.6".freeze])
+  s.add_runtime_dependency(%q<relaton-bib>.freeze, ["~> 1.20.0".freeze])
+  s.add_runtime_dependency(%q<relaton-index>.freeze, ["~> 0.2.16".freeze])
+end

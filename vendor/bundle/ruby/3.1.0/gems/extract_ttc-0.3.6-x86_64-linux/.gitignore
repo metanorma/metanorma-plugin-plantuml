@@ -1,0 +1,17 @@
+/.bundle/
+/vendor/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/Gemfile.lock
+
+/lib/*.so
+/lib/*.bundle
+/ext/*.o
+
+# remote file cache
+.rubocop-*

@@ -1,0 +1,48 @@
+requirements:
+  default:
+    requirement: Requerimiento
+    recommendation: Recomendación
+    permission: Permiso
+    obligation: Obligación
+    subject: Tema
+    inherits: Hereda
+  modspec:
+    recommendationtest: Prueba de recomendación
+    requirementtest: Prueba de requerimiento
+    permissiontest: Prueba de permiso
+    recommendationclass: Clase de recomendaciones
+    requirementclass: Clase de requerimientos
+    permissionclass: Clase de permisos
+    abstracttest: Prueba abstracta
+    conformanceclass: Clase de conformidad
+    conformancetest: Prueba de conformidad
+    targettype: Tipo de objetivo
+    target: Objetivo
+    testpurpose: Propósito de prueba
+    testmethod: Método de prueba
+    dependency: Requisito
+    indirectdependency: Requisito indirecto
+    identifier: Identificador
+    included_in: Incluido en
+    statement: Declaración
+    description: Descripción
+    guidance: Orientación
+    implements: Implementa
+    provision: Declaración normativa
+inflection:
+  Declaración normativa:
+    sg: Declaración normativa
+    pl: Declaraciones normativas
+  Prueba de conformidad:
+    sg: Prueba de conformidad
+    pl: Pruebas de conformidad
+  Déclaration:
+    sg: Déclaration
+    pl: Déclarations
+  Prérequis:
+    sg: Prérequis
+    pl: Prérequis
+  Dépendance indirecte:
+    sg: Prérequis indirect
+    pl: Prérequis indirects
+

@@ -1,0 +1,837 @@
+= UnitsDB in Ruby (UnitsML)
+
+== Purpose
+
+UnitsML is a standard for units of measure, and UnitsDB is the database
+that contains enumerative elements used by UnitsML.
+
+UnitsDB includes the following content:
+
+* Unit systems
+* Units of measure
+* Prefixes
+* Constants
+* Quantities
+
+Such content is hosted at the official UnitsDB repository at
+https://github.com/unitsml/unitsdb.
+
+This repository contains the Ruby codebase for UnitsDB, which is used
+to access and manipulate the UnitsDB content.
+
+== Install
+
+[source,sh]
+----
+$ gem install unitsdb
+----
+
+
+
+== UnitsDB version support
+
+=== General
+
+This library supports the UnitsDB 2.0.0 format only.
+
+The version of the YAML files are stored in the `version` field of the `*.yaml`
+files. The library checks this version when loading the database and raises an
+error if the version is not 2.0.0.
+
+=== UnitsDB 2.0.0 features
+
+==== General
+
+UnitsDB 2.0.0 introduces several significant improvements over version 1.0.0.
+
+==== UnitsML identifiers
+
+From UnitsDB 2.0.0, all entities now have an organization-independent identifier
+that is unique across all entities in the scope of `unitsml`.
+
+==== New Content
+
+Version 2.0.0 includes several new additions:
+
+* New dimensions (fluence, phase, fuel efficiency, etc.)
+* New quantities (like emission_rate, fluence, kerma_rate, etc.)
+* Formal structure for scale definitions
+* Additional symbols and improved representation
+
+==== Multilingual support
+
+Version 2.0.0 adds support for localized names in multiple languages:
+
+* Names are now structured as objects with `value` and `lang` properties
+* English (en) is the primary language for all entries
+* French (fr) translations for units and quantities are available
+
+[source,ruby]
+----
+# Accessing multilingual names (UnitsDB 2.0.0)
+meter = db.find_by_type(id: "NISTu1", type: "units")
+english_names = meter.names.select { |n| n.lang == "en" }.map(&:value)
+french_names = meter.names.select { |n| n.lang == "fr" }.map(&:value)
+----
+
+==== Enhanced symbol representation
+
+Symbols now have more comprehensive representation formats:
+
+* All entities with symbols have representations in multiple formats (ASCII, Unicode, HTML, MathML, LaTeX)
+* Prefixes now use the same symbol structure as units with a collection of symbol objects
+* Dimensions now use `symbols` instead of `dim_symbols`
+
+==== External references
+
+The 2.0.0 format includes a formalized approach to external references:
+
+* The `references` field links to external resources like the SI Digital Framework
+* More consistent structure for references between entities
+
+
+=== Unified UnitsDB release file format
+
+While the UnitsDB database is maintained in separate YAML files for easier
+management (`units.yaml`, `quantities.yaml`, etc.), the unified release file
+consolidates all data into a single YAML file for improved user convenience.
+
+Syntax:
+
+[source,yaml]
+----
+schema_version: 2.0.0
+version: 1.0.0  # Release version (in semantic format x.y.z)
+dimensions:
+  - identifiers: [...]
+    length: {...}
+    names: [...]
+  - ...
+prefixes:
+  - identifiers: [...]
+    name: ...
+    symbols: [...]
+  - ...
+quantities:
+  - identifiers: [...]
+    quantity_type: ...
+    names: [...]
+  - ...
+units:
+  - identifiers: [...]
+    names: [...]
+    symbols: [...]
+  - ...
+unit_systems:
+  - identifiers: [...]
+    name: ...
+  - ...
+----
+
+There are several advantages to using the unified file format:
+
+* Simplified usage: obsoletes the needd to load and manage multiple files
+* Consistency: All data is guaranteed to be compatible and consistently integrated
+
+The unified file maintains the same structure and relationships as the separate
+files, with all entities organized by type under their respective top-level keys,
+while preserving all identifiers, references, and properties from the original
+database.
+
+
+
+== Usage: CLI
+
+The UnitsDB gem includes a command-line utility for working with UnitsDB data.
+This tool provides several commands for validating and normalizing UnitsDB
+content.
+
+=== Installation
+
+The `unitsdb` command is automatically installed when you install the gem.
+
+=== Available commands
+
+==== Database validation
+
+The UnitsDB CLI provides several validation subcommands to ensure database
+integrity and correctness. These commands help identify potential issues in the
+database structure and content.
+
+===== References validation
+
+Validates that all references within the database exist and point to actual entities:
+
+[source,sh]
+----
+# Validate all references
+$ unitsdb validate references --database=/path/to/unitsdb/data
+
+# Show valid references too (not just errors)
+$ unitsdb validate references --print-valid --database=/path/to/unitsdb/data
+
+# Show detailed registry contents for debugging
+$ unitsdb validate references --debug-registry --database=/path/to/unitsdb/data
+----
+
+This command checks all entity references (unit references, quantity references,
+dimension references, etc.) to ensure they point to existing entities within the
+database. It reports any "dangling" references that point to non-existent
+entities, which could cause issues in applications using the database.
+
+Options:
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+`--debug_registry`:: Show registry contents for debugging
+`--print_valid`:: Print valid references too, not just invalid ones
+
+===== Identifiers validation
+
+Checks for uniqueness of identifier fields to prevent duplicate IDs:
+
+[source,sh]
+----
+$ unitsdb validate identifiers --database=/path/to/unitsdb/data
+----
+
+This command ensures that each identifier within an entity type (units,
+prefixes, quantities, etc.) is unique. Duplicate identifiers could lead to
+ambiguity and unexpected behavior when referencing entities by ID.
+
+Options:
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+===== SI references validation
+
+Validates that each SI digital framework reference is unique per entity type:
+
+[source,sh]
+----
+$ unitsdb validate si_references --database=/path/to/unitsdb/data
+----
+
+This command checks that each SI digital framework URI is referenced by at most
+one entity of each type. Multiple entities of the same type referencing the same
+SI URI could cause issues with mapping and conversion processes.
+
+The command reports:
+
+* Any duplicate SI references within each entity type
+* The entities that share the same SI reference
+* Their position in the database for easy location
+
+Options:
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+=== Examples of validation commands
+
+* Check identifiers for uniqueness:
++
+[source,sh]
+----
+$ unitsdb validate identifiers --database=/path/to/unitsdb/data
+----
+
+* Validate references in a specific directory:
++
+[source,sh]
+----
+$ unitsdb validate references --database=/path/to/unitsdb/data
+----
+
+* Check for duplicate SI references:
++
+[source,sh]
+----
+$ unitsdb validate si_references --database=/path/to/unitsdb/data
+----
+
+
+==== Database Modification (_modify)
+
+Commands that modify the database are grouped under the `_modify` namespace:
+
+[source,sh]
+----
+# Normalize YAML file format
+$ unitsdb _modify normalize [INPUT] [OUTPUT] --database=/path/to/unitsdb/data
+$ unitsdb _modify normalize --all --database=/path/to/unitsdb/data
+
+# Sort by different ID types
+$ unitsdb _modify normalize --sort=nist [INPUT] [OUTPUT] --database=/path/to/unitsdb/data
+$ unitsdb _modify normalize --sort=unitsml [INPUT] [OUTPUT] --database=/path/to/unitsdb/data
+$ unitsdb _modify normalize --sort=short [INPUT] [OUTPUT] --database=/path/to/unitsdb/data
+$ unitsdb _modify normalize --sort=none [INPUT] [OUTPUT] --database=/path/to/unitsdb/data
+----
+
+Options:
+
+`--all`, `-a`:: Process all YAML files in the repository
+`--database`, `-d`:: Path to UnitsDB database (required)
+`--sort`:: Sort units by: 'short' (name), 'nist' (ID, default), 'unitsml' (ID), or 'none'
+
+
+==== Search
+
+Searches for entities in the database and displays ID and ID Type information for each result:
+
+[source,sh]
+----
+# Search by text content
+$ unitsdb search meter --database=/path/to/unitsdb/data
+$ unitsdb search meter --type=units --database=/path/to/unitsdb/data
+
+# Search by ID
+$ unitsdb search any-query --id=NISTu1 --database=/path/to/unitsdb/data
+$ unitsdb search any-query --id=NISTu1 --id_type=nist --database=/path/to/unitsdb/data
+
+# Output in different formats
+$ unitsdb search meter --format=json --database=/path/to/unitsdb/data
+$ unitsdb search kilo --format=yaml --database=/path/to/unitsdb/data
+----
+
+Options:
+
+`--type`, `-t`:: Entity type to search (units, prefixes, quantities, dimensions, unit_systems)
+`--id`, `-i`:: Search for an entity with a specific identifier
+`--id_type`:: Filter the ID search by identifier type
+`--format`:: Output format (text, json, yaml) - default is text
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+==== Get
+
+Retrieves and displays the full details of a specific entity by its identifier:
+
+[source,sh]
+----
+# Get entity details by ID
+$ unitsdb get meter --database=/path/to/unitsdb/data
+$ unitsdb get m --database=/path/to/unitsdb/data
+
+# Get entity with specific ID type
+$ unitsdb get meter --id_type=si --database=/path/to/unitsdb/data
+
+# Output in different formats
+$ unitsdb get kilogram --format=json --database=/path/to/unitsdb/data
+$ unitsdb get second --format=yaml --database=/path/to/unitsdb/data
+----
+
+Options:
+
+`--id_type`:: Filter the search by identifier type
+`--format`:: Output format (text, json, yaml) - default is text
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+==== Check references to SI Digital Framework
+
+Performs a comprehensive check of entities in the BIPM's SI digital framework
+TTL files against UnitsDB database entities.
+
+This combined command checks in both directions to ensure UnitsDB is a strict
+superset of the SI digital framework:
+
+* From SI to UnitsDB: Ensures every TTL entity is referenced by at least one
+UnitsDB entity
+
+* From UnitsDB to SI: Identifies UnitsDB entities that should reference TTL
+entities
+
+[source,sh]
+----
+# Check all entity types and generate a report
+$ unitsdb check_si --database=spec/fixtures/unitsdb --ttl-dir=spec/fixtures/bipm-si-ttl
+
+# Check a specific entity type (units, quantities, or prefixes)
+$ unitsdb check_si --entity-type=units \
+  --database=spec/fixtures/unitsdb \
+  --ttl-dir=spec/fixtures/bipm-si-ttl
+
+# Check in a specific direction only
+$ unitsdb check_si --direction=from_si \
+  --database=spec/fixtures/unitsdb \
+  --ttl-dir=spec/fixtures/bipm-si-ttl
+
+# Update references and write to output directory
+$ unitsdb check_si --output-updated-database=new_unitsdb \
+  --database=spec/fixtures/unitsdb \
+  --ttl-dir=spec/fixtures/bipm-si-ttl
+
+# Include potential matches when updating references (default: false)
+$ unitsdb check_si --include-potential-matches \
+  --output-updated-database=new_unitsdb \
+  --database=spec/fixtures/unitsdb \
+  --ttl-dir=spec/fixtures/bipm-si-ttl
+----
+
+Options:
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+`--ttl-dir`, `-t`:: Path to the directory containing SI digital framework TTL
+files (required)
+
+`--entity-type`, `-e`:: Entity type to check (units, quantities, or prefixes).
+If not specified, all types are checked
+
+`--output-updated-database`, `-o`:: Directory path to write updated YAML files
+with added SI references
+
+`--direction`, `-r`:: Direction to check: 'to_si' (UnitsDB→TTL), 'from_si'
+(TTL→UnitsDB), or 'both' (default)
+
+`--include-potential-matches`, `-p`:: Include potential matches when updating
+references (default: false)
+
+
+==== Check references to UCUM
+
+Performs a comprehensive check of entities in the UCUM XML file against UnitsDB
+database entities and updates UnitsDB with UCUM references.
+
+UCUM supports the following entity types:
+
+* Base units
+* Units
+* Prefixes
+
+UCUM provides dimensions as part of their unit definitions but not as
+uniquely referencable entities.
+
+This combined command checks in both directions to ensure UnitsDB supports
+every UCUM entity:
+
+* From UCUM to UnitsDB: Ensures every UCUM entity is referenced by at least one
+UnitsDB entity
+
+* From UnitsDB to UCUM: Identifies UnitsDB entities that should reference UCUM
+entities
+
+There are two commands:
+
+* `ucum check`: Checks for matches between UnitsDB and UCUM entities and reports results
+
+* `ucum update`: Updates UnitsDB entities with references to matching UCUM entities
+
+[source,sh]
+----
+# Check all entity types and generate a report
+$ unitsdb ucum check --database=spec/fixtures/unitsdb --ucum-file=spec/fixtures/ucum/ucum-essence.xml
+
+# Check a specific entity type (units or prefixes)
+$ unitsdb ucum check --entity-type=units \
+  --database=spec/fixtures/unitsdb \
+  --ucum-file=spec/fixtures/ucum/ucum-essence.xml
+
+# Check in a specific direction only
+$ unitsdb ucum check --direction=from_ucum \
+  --database=spec/fixtures/unitsdb \
+  --ucum-file=spec/fixtures/ucum/ucum-essence.xml
+----
+
+Options:
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+`--ucum-file`, `-u`:: Path to the UCUM essence XML file (required)
+
+`--entity-type`, `-e`:: Entity type to check (units or prefixes).
+If not specified, all types are checked.
+
+`--direction`, `-r`:: Direction to check: `to_ucum` (UnitsDB→UCUM), `from_ucum`
+(UCUM→UnitsDB), or `both` (default)
+
+`--output-updated-database`, `-o`:: Directory path to write updated YAML files
+with added UCUM references
+
+`--include-potential-matches`, `-p`:: Include potential matches when updating
+references (default: false)
+
+
+==== Update UCUM references
+
+[source,sh]
+----
+# Update all entity types with UCUM references
+$ unitsdb ucum update --database=spec/fixtures/unitsdb \
+  --ucum-file=spec/fixtures/ucum/ucum-essence.xml \
+  --output-dir=new_unitsdb
+
+# Update a specific entity type (units or prefixes)
+$ unitsdb ucum update --entity-type=units \
+  --database=spec/fixtures/unitsdb \
+  --ucum-file=spec/fixtures/ucum/ucum-essence.xml \
+  --output-dir=new_unitsdb
+
+# Include potential matches when updating references (default: false)
+$ unitsdb ucum update --include-potential-matches \
+  --database=spec/fixtures/unitsdb \
+  --ucum-file=spec/fixtures/ucum/ucum-essence.xml \
+  --output-dir=new_unitsdb
+----
+
+Options:
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+`--ucum-file`, `-u`:: Path to the UCUM essence XML file (required)
+
+`--entity-type`, `-e`:: Entity type to update (units or prefixes).
+If not specified, all types are updated
+
+`--output-dir`, `-o`:: Directory path to write updated YAML files
+(defaults to database path)
+
+`--include-potential-matches`, `-p`:: Include potential matches when updating
+references (default: false)
+
+==== Release
+
+Creates release files for UnitsDB in unified formats:
+
+[source,sh]
+----
+# Create both unified YAML and ZIP archive
+$ unitsdb release --database=/path/to/unitsdb/data
+
+# Create only unified YAML file
+$ unitsdb release --format=yaml --database=/path/to/unitsdb/data
+
+# Create only ZIP archive
+$ unitsdb release --format=zip --database=/path/to/unitsdb/data
+
+# Specify output directory
+$ unitsdb release --output-dir=/path/to/output --database=/path/to/unitsdb/data
+
+# Specify a version (required)
+$ unitsdb release --version=2.1.0 --database=/path/to/unitsdb/data
+----
+
+This command creates release files for UnitsDB in two formats:
+
+. A unified YAML file that combines all database files into a single file
+
+. A ZIP archive containing all individual database files
+
+The command verifies that all files have the same schema version before creating
+the release files. The output files are named with the schema version (e.g.,
+`unitsdb-2.1.0.yaml` and `unitsdb-2.1.0.zip`).
+
+Options:
+
+`--format`, `-f`:: Output format: 'yaml' (single file), 'zip' (archive), or
+'all' (both). Default is 'all'.
+
+`--output-dir`, `-o`:: Directory to output release files. Default is current
+directory.
+
+`--database`, `-d`:: Path to UnitsDB database (required)
+
+===== Match types in check_si
+
+The `check_si` command classifies matches into two categories:
+
+**Exact matches**::
+These are high-confidence matches based on exact name or label equivalence.
+
+** `short_to_name`: UnitsDB short name matches SI name
+** `short_to_label`: UnitsDB short name matches SI label
+** `name_to_name`: UnitsDB name matches SI name
+** `name_to_label`: UnitsDB name matches SI label
+** `name_to_alt_label`: UnitsDB name matches SI alternative label
+
+**Potential matches**::
+These are lower-confidence matches that require manual verification.
+
+** `symbol_match`: Only the symbols match, not the names
+** `partial_match`: Incomplete match (e.g., "sidereal_day" vs "day")
+
+When using `--include-potential-matches`, both exact and potential matches will
+be included in the reference updates. Without this flag, only exact matches are
+used for automatic updates.
+
+===== SI References Workflow
+
+When the BIPM updates their SI Digital Reference TTL files, follow these steps
+to ensure UnitsDB remains a strict superset:
+
+. Verify unreferenced TTL entries:
+
+** Run this:
++
+[source,sh]
+----
+$ unitsdb check_si --database=/path/to/unitsdb/data --ttl-dir=/path/to/si-framework
+----
+
+** Look for entries in the "SI [Entity Type] not mapped to our database" section
+
+** These are TTL entities that are not currently referenced by any UnitsDB entity
+
+. For each unreferenced TTL entry:
+
+** Search for matching entities in UnitsDB:
++
+[source,sh]
+----
+$ unitsdb search "entity_name" --database=/path/to/unitsdb/data
+----
+
+** If a match exists:
+
+*** Update its references manually in the appropriate YAML file
+*** Add a new reference with `authority: "si-digital-framework"` and the TTL URI
+
+** If no match exists:
+
+*** Create a new entity in the appropriate YAML file (`units.yaml`,
+`quantities.yaml`, or `prefixes.yaml`)
+
+*** Include the necessary reference to the TTL entity
+
+. Verify all references are complete:
+
+** Run this again:
++
+[source,sh]
+----
+$ unitsdb check_si --database=/path/to/unitsdb/data --ttl-dir=/path/to/si-framework
+----
+
+** Confirm no entries appear in the "SI [Entity Type] not mapped to our database" section
+
+** If needed, run with the output option to automatically add missing references:
++
+[source,sh]
+----
+$ unitsdb check_si --output-updated-database=/path/to/output/dir \
+  --database=/path/to/unitsdb/data \
+  --ttl-dir=/path/to/si-framework
+----
+
+. Verify reference uniqueness:
+
+** Run:
++
+[source,sh]
+----
+$ unitsdb validate si_references --database=/path/to/unitsdb/data
+----
+
+** This checks that each SI URI is used by at most one entity of each type
+
+** Fix any duplicate references found
+
+The `check_si` command ensures every entity in the BIPM's SI Digital Reference
+is properly referenced in UnitsDB:
+
+* It verifies that every TTL entity has at least one corresponding UnitsDB
+entity referencing it
+
+* It identifies UnitsDB entities that should reference SI Digital Framework but
+don't yet
+
+* It can automatically update YAML files with proper references when used with
+the `--output-updated-database` option
+
+* It correctly differentiates between exact and potential matches, with
+symbol-to-symbol and partial matches always classified as potential
+
+
+== Usage: Ruby
+
+=== Loading the database
+
+The primary way to load the UnitsDB data is through the `Database.from_db`
+method, which reads data from YAML files:
+
+[source,ruby]
+----
+require 'unitsdb'
+
+# Load from the UnitsDB data directory
+db = Unitsdb::Database.from_db('/path/to/unitsdb/data')
+
+# Access different collections
+units = db.units
+prefixes = db.prefixes
+dimensions = db.dimensions
+quantities = db.quantities
+unit_systems = db.unit_systems
+----
+
+=== Database search methods
+
+The UnitsDB Ruby gem provides several methods for searching and retrieving
+entities.
+
+==== Search by text content
+
+The `search` method allows you to find entities containing specific text in
+their identifiers, names, or descriptions:
+
+[source,ruby]
+----
+# Search across all entity types
+results = db.search(text: "meter")
+
+# Search within a specific entity type
+units_with_meter = db.search(text: "meter", type: "units")
+----
+
+==== Find entity by ID
+
+The `get_by_id` method finds an entity with a specific identifier across all
+entity types:
+
+[source,ruby]
+----
+# Find by ID across all entity types
+meter_entity = db.get_by_id(id: "NISTu1")
+
+# Find by ID with specific identifier type
+meter_entity = db.get_by_id(id: "NISTu1", type: "nist")
+----
+
+==== Find entity by ID within a specific type collection
+
+The `find_by_type` method searches for an entity by ID within a specific entity
+type collection:
+
+[source,ruby]
+----
+# Find unit with specific ID
+meter_unit = db.find_by_type(id: "NISTu1", type: "units")
+----
+
+==== Find entities by symbol
+
+The `find_by_symbol` method allows you to search for units and prefixes by their
+symbol representation:
+
+[source,ruby]
+----
+# Find all entities with symbol "m"
+matching_entities = db.find_by_symbol("m")
+
+# Find only units with symbol "m"
+matching_units = db.find_by_symbol("m", "units")
+
+# Find only prefixes with symbol "k"
+matching_prefixes = db.find_by_symbol("k", "prefixes")
+----
+
+This method performs case-insensitive exact matches on the ASCII representation
+of symbols. It's useful for finding units or prefixes when you know the symbol
+but not the name or identifier.
+
+Parameters:
+
+`symbol` (String)::
+The symbol to search for
+
+`entity_type` (String, Symbol, nil)::
+Optional. Limit search to a specific entity type ("units" or "prefixes"). If
+nil, searches both.
+
+Returns:
+
+* An array of entities (Unit or Prefix objects) with matching symbols
+* Empty array if no matches are found
+
+NOTE: This method only searches units and prefixes, as these are the only entity
+types that have symbol representations.
+
+=== Main classes
+
+The UnitsDB Ruby gem provides the following main classes.
+
+==== Database
+
+The `Database` class is the main container that holds all UnitsML components. It
+loads and provides access to units, prefixes, dimensions, quantities, and unit
+systems.
+
+[source,ruby]
+----
+# Access database collections
+db.units       # => Array of Unit objects
+db.prefixes    # => Array of Prefix objects
+db.dimensions  # => Array of Dimension objects
+db.quantities  # => Array of Quantity objects
+db.unit_systems # => Array of UnitSystem objects
+----
+
+==== Unit
+
+The `Unit` class represents units of measure with their properties and
+relationships:
+
+* Identifiers
+* Short name
+* Whether it's a root unit or can be prefixed
+* Dimension reference
+* Unit system references
+* Unit names
+* Symbol presentations
+* Quantity references
+* SI derived bases
+* Root unit references
+
+==== Prefix
+
+The `Prefix` class represents prefixes for units (like kilo-, mega-, etc.):
+
+* Identifiers
+* Name
+* Symbol presentations
+* Base (e.g., 10)
+* Power (e.g., 3 for kilo)
+
+==== Dimension
+
+The `Dimension` class represents physical dimensions (like length, mass, etc.):
+
+* Identifiers
+* Whether it's dimensionless
+* Basic dimensions (length, mass, time, etc.)
+* Dimension details (power, symbol, dimension symbols)
+* Short name
+
+==== UnitSystem
+
+The `UnitSystem` class represents systems of units (like SI, Imperial, etc.):
+
+* Identifiers
+* Name
+* Short name
+* Whether it's acceptable
+
+==== Quantity
+
+The `Quantity` class represents physical quantities that can be measured:
+
+* Identifiers
+* Quantity type
+* Quantity names
+* Short name
+* Unit references
+* Dimension reference
+
+=== Database files
+
+The `Database.from_db` method reads the following YAML files:
+
+* `prefixes.yaml` - Contains prefix definitions (e.g., kilo-, mega-)
+* `dimensions.yaml` - Contains dimension definitions (e.g., length, mass)
+* `units.yaml` - Contains unit definitions (e.g., meter, kilogram)
+* `quantities.yaml` - Contains quantity definitions (e.g., length, mass)
+* `unit_systems.yaml` - Contains unit system definitions (e.g., SI, Imperial)
+
+
+
+
+== License
+
+Copyright Ribose. BSD 2-clause license.

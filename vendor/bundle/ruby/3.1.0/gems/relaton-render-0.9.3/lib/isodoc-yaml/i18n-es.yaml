@@ -1,0 +1,57 @@
+in: en
+at: en
+and: y
+author_and: y
+updated: actualizado
+viewed: visto
+version: versión
+also_pub_as: "También publicado como: "
+no_date: s.f.
+no_place: s.l.
+date_formats:
+  month_year: yMMMM
+  day_month_year: to_long_s
+  date_time: to_long_s
+ordinal_keys: [gender]
+OrdinalRules: 
+  m: digits-ordinal-masculine
+  f: digits-ordinal-feminine
+edition_ordinal: "{{ var1 | ordinal_num: 'edition', '' }} ed."
+edition: edición
+draft: "borrador %"
+editor:
+  sg: ed.
+  pl: eds.
+qq-open: <em>
+qq-close: </em>
+q-open:
+q-close:
+stage:
+  valid: Válido
+  withdrawn: Retirado
+extent:
+  page:
+    sg: "pág. %"
+    pl: "págs. %"
+  volume:
+    sg: "vol. %"
+    pl: "vols. %"
+  issue:
+    sg: "núm. %"
+    pl: "núms. %"
+size:
+  page:
+    sg: "% pág."
+    pl: "% págs."
+  volume:
+    sg: "% vol."
+    pl: "% vols."
+issue:
+    sg: "% núm."
+    pl: "% núms."
+
+inflection:
+  edición:
+    grammar:
+      gender: f
+

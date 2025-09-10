@@ -1,0 +1,124 @@
+= Library of Congress MODS in Ruby
+
+image:https://img.shields.io/gem/v/loc_mods.svg["Gem Version", link="https://rubygems.org/gems/loc_mods"]
+image:https://github.com/relaton/loc_mods/workflows/rake/badge.svg["Build Status", link="https://github.com/relaton/loc_mods/actions?workflow=rake"]
+image:https://codeclimate.com/github/relaton/loc_mods/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/relaton/loc_mods"]
+
+== Purpose
+
+This is a class-oriented Ruby library that parses LOC's MOD data.
+
+This gem is developed using the MODS 3.7 XSD schema.
+
+== Usage
+
+=== Ruby API
+
+[source,ruby]
+----
+require 'loc_mods'
+
+# Single record under `<modsCollection>`
+LocMods::Collection.from_xml(File.read("spec/fixtures/record_1.xml"))
+
+# Full NIST Tech Pubs records
+# https://github.com/usnistgov/NIST-Tech-Pubs/tree/nist-pages/xml
+LocMods::Collection.from_xml(File.read("reference/allrecords-MODS.xml"))
+----
+
+=== Command line interface
+
+LocMods provides a command-line interface (CLI) for various operations.
+
+The main executable is `loc-mods`.
+
+[source,shell]
+----
+Commands:
+  loc-mods detect-duplicates PATH...  # Detect duplicate records in MODS XML files or directories
+  loc-mods help [COMMAND]             # Describe available commands or one specific command
+----
+
+
+
+
+==== Detect duplicates
+
+The `detect-duplicates` command allows you to find duplicate MODS records based
+on using a "primary ID" that is their DOI (Digital Object Identifier).
+
+NOTE: The library assumes that every record has a DOI. If that is not the case,
+another way to setting the primary key needs to be defined.
+
+Usage:
+
+[source,shell]
+----
+Usage:
+  loc-mods detect-duplicates PATH...
+
+Options:
+  [--show-unchanged], [--no-show-unchanged] # Show unchanged attributes in the diff output
+                                            # Default: false
+  [--highlight-diff], [--no-highlight-diff] # Highlight only the differences
+                                            # Default: false
+  [--color=COLOR]                           # Use colors in the diff output (auto, on, off)
+                                            # Default: auto
+                                            # Possible values: auto, on, off
+----
+
+[source,shell]
+----
+$ loc-mods detect-duplicates [OPTIONS] <file_or_directory_path>
+----
+
+Options:
+
+`--show-unchanged`::
+(default: `false`)
+Show attributes of both objects even when they were not changed.
+
+`--highlight-diff`::
+(default: `false`)
+Highlight values only when they differ between two records.
+
+`--color=COLOR`::
+(default: `auto`) Use colors in the diff output. Values:
+
+`auto`::: the CLI will detect whether the terminal supports colors and display
+with colors if it does.
+`on`::: the CLI will always display with colors.
+`off`::: the CLI will never display with colors.
+
+
+Example:
+
+[source,shell]
+----
+$ loc-mods detect-duplicates  /path/to/mods/files
+----
+
+This command will:
+
+. Search for MODS XML files in the specified directory (and subdirectories if `-r` is used).
+. Parse each MODS file and extract the DOI.
+. Group records with the same DOI.
+. For each group of duplicates:
+.. Display the shared DOI.
+.. List the filenames of the duplicate records.
+.. Show a detailed comparison of the differences between the records.
+
+The output will highlight differences, removed elements, and missing elements
+between the duplicate records, helping you identify discrepancies in the
+metadata.
+
+== Testing
+
+[source,sh]
+----
+bin/update-nist-mods
+----
+
+== License
+
+Copyright Ribose.

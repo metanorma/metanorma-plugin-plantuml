@@ -1,0 +1,133 @@
+= RelatonIana
+
+RelatonIana is a Ruby gem that implements the https://github.com/metanorma/metanorma-model-iso#iso-bibliographic-item[IsoBibliographicItem model].
+
+You can use it to retrieve metadata of W3C Standards from https://w3.org, and access such metadata through the `IanaBibliographicItem` object.
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+[source,ruby]
+----
+gem 'relaton-iana'
+----
+
+And then execute:
+
+    $ bundle install
+
+Or install it yourself as:
+
+    $ gem install relaton-iana
+
+== Usage
+
+=== Search for a standard using keywords
+
+[source,ruby]
+----
+require 'relaton_iana'
+=> true
+
+item = RelatonIana::IanaBibliography.get "IANA service-names-port-numbers"
+[relaton-iana] (IANA service-names-port-numbers) Fetching from Relaton repository ...
+[relaton-iana] (IANA service-names-port-numbers) Found: `IANA service-names-port-numbers`
+=> #<RelatonIana::IanaBibliographicItem:0x00007f7c6cc024d0
+...
+----
+
+=== XML serialization
+
+[source,ruby]
+----
+item.to_xml
+=> "<bibitem id="IANAservice-names-port-numbers" type="standard" schema-version="v1.2.1">
+      <fetched>2022-12-03</fetched>
+      <title format="text/plain">Service Name and Transport Protocol Port Number Registry</title>
+      <uri type="src">http://www.iana.org/assignments/service-names-port-numbers</uri>
+      <docidentifier type="IANA" primary="true">IANA service-names-port-numbers</docidentifier>
+      ...
+    </bibitem>"
+----
+
+=== Typed links
+
+Each IANA document has `src` type link.
+
+[source,ruby]
+----
+item.link.first.type
+=> "src"
+
+item.link.first.content
+=> #<Addressable::URI:0x9ec URI:http://www.iana.org/assignments/service-names-port-numbers>
+----
+
+=== Create bibliographic item from XML
+[source,ruby]
+----
+RelatonIana::XMLParser.from_xml File.read('spec/fixtures/auto-response-parameters.xml')
+=> #<RelatonIana::IanaBibliographicItem:0x00007fa5da1bd118
+...
+----
+
+=== Create bibliographic item from YAML
+[source,ruby]
+----
+YAML.load_file 'spec/fixtures/auto-response-parameters.yaml'
+=> {"schema-version"=>"v1.2.1",
+ "id"=>"IANAauto-response-parameters",
+...
+
+bib_hash = RelatonIana::HashConverter.hash_to_bib hash
+=> {:"schema-version"=>"v1.2.1",
+ :id=>"IANAauto-response-parameters",
+...
+
+RelatonIana::IanaBibliographicItem.new **bib_hash
+=> #<RelatonIana::IanaBibliographicItem:0x007f9381ec6a00
+...
+----
+
+=== Fetch data
+
+There is an IANA dataset https://github.com/ietf-ribose/iana-registries which can be converted into RelatonXML/BibXML/BibYAML formats.
+
+The method `RelatonIana::DataFetcher.fetch(output: "data", format: "yaml")` converts all the documents from the dataset and saves them to the `./data` folder in YAML format.
+Arguments:
+
+- `output` - folder to save documents (default './data').
+- `format` - the format in which the documents are saved. Possible formats are: `yaml`, `xml`, `bibxml` (default `yaml`).
+
+[source,ruby]
+----
+RelatonIana::DataFetcher.fetch
+Started at: 2021-11-19 13:32:05 +0100
+Stopped at: 2021-11-19 13:34:40 +0100
+Done in: 155 sec.
+=> nil
+----
+
+This method uses GitHub search API to fetch the documents. The search API has a https://docs.github.com/en/rest/reference/search#rate-limit[rate limitaion] of 30 requests per minute for authenticated users and 10 requests per minute for unauthenticated users. Usually, the rate limit is not reached because the search API is used only for the file list fetching. But if you run the method multiple times in a short period, the rate limit may be reached. In this case, the method will wait until the rate limit is reset.
+
+You can use a personal access token (PTA) to increase the rate limit. To do this, add your PTA to the `GITHUB_TOKEN` environment variable.
+
+=== Logging
+
+RelatonIana uses the relaton-logger gem for logging. By default, it logs to STDOUT. To change the log levels and add other loggers, read the https://github.com/relaton/relaton-logger#usage[relaton-logger] documentation.
+
+== Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/relaton/relaton_w3c.
+
+
+== License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

@@ -1,0 +1,45 @@
+= Metanorma LutaML plugin (metanorma-plugin-lutaml)
+
+image:https://github.com/metanorma/metanorma-plugin-lutaml/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/metanorma-plugin-lutaml/actions?workflow=rake"]
+
+== Purpose
+
+LutaML is a data model accessor that supports various data model formats.
+
+This plugin allows you to access the following types of information models from
+within a Metanorma document:
+
+* EXPRESS files (`*.exp`)
+* LutaML-UML files (`*.lutaml`)
+* Enterprise Architect exported UML files in XMI format (`*.xmi`)
+* LutaML GML Dictionary files (`*.xml`)
+* JSON or YAML files (`*.json|*.yml|*.yaml`)
+
+== Installation
+
+[source,console]
+----
+$ gem install metanorma-plugin-lutaml
+----
+
+== Usages
+
+link:docs/usages/express.adoc[Usage with EXPRESS]
+
+link:docs/usages/lutaml-uml.adoc[Usage with LutaML-UML]
+
+link:docs/usages/enterprise_architect.adoc[Usage with Enterprise Architect (UML in XMI)]
+
+link:docs/usages/lutaml-gml.adoc[Usage with LutaML GML Dictionary]
+
+link:docs/usages/json_yaml.adoc[Usage with JSON or YAML files]
+
+== Documentation
+
+Please refer to https://www.metanorma.org.
+
+== Copyright and license
+
+Copyright Ribose.
+
+Licensed under the MIT License.

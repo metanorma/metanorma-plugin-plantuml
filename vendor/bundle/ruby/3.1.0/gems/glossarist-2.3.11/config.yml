@@ -1,0 +1,85 @@
+# This file can be used to configure enum attributes in the model.
+# For example to add different allowed values for Abbreviation::Type
+# you can change the values under abbreviation => type
+#
+# NOTE: All the keys in this file are needed for the script to run
+#       and should not be removed. You can change the values but atleast
+#       one option should be present in each list.
+
+concept_source:
+  status:
+    - identical
+    - similar
+    - modified
+    - restyle
+    - context_added
+    - generalisation
+    - specialisation
+    - unspecified
+    - related
+    - not_equal
+  type:
+    - authoritative
+    - lineage
+
+designation:
+  base:
+    normative_status:
+      - preferred
+      - deprecated
+      - admitted
+      - <símbolo> # in iev-data => '<symbol>'
+      - 티에스 # in iev-data => translates to 'TS' I think it is a synonym and not status.
+      - prąd startowy # in iev-data => 'starting current' I think it is a synonym and not status.
+
+related_concept:
+  type:
+    - deprecates
+    - supersedes
+    - superseded_by
+    - narrower
+    - broader
+    - equivalent
+    - compare
+    - contrast
+    - see
+
+abbreviation:
+  type:
+    - truncation
+    - acronym
+    - initialism
+
+grammar_info:
+  boolean_attribute:
+    - participle
+    - adj
+    - verb
+    - adverb
+    - noun
+    - preposition
+  gender:
+    - m
+    - f
+    - n
+    - c
+  number:
+    - singular
+    - dual
+    - plural
+
+concept:
+  status:
+    - draft
+    - submitted
+    - not_valid
+    - invalid
+    - valid
+    - superseded
+    - retired
+
+concept_date:
+  type:
+    - accepted
+    - amended
+    - retired

@@ -1,0 +1,70 @@
+= Metanorma: the standard for standards
+
+image:https://img.shields.io/gem/v/metanorma.svg["Gem Version", link="https://rubygems.org/gems/metanorma"]
+image:https://github.com/metanorma/metanorma/workflows/rake/badge.svg["Build Status", link="https://github.com/metanorma/metanorma/actions?workflow=rake"]
+// image:https://codeclimate.com/github/metanorma/metanorma/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/metanorma/metanorma"]
+image:https://img.shields.io/github/issues-pr-raw/metanorma/metanorma.svg["Pull Requests", link="https://github.com/metanorma/metanorma/pulls"]
+image:https://img.shields.io/github/commits-since/metanorma/metanorma/latest.svg["Commits since latest",link="https://github.com/metanorma/metanorma/releases"]
+
+Metanorma is dedicated to harmonizing standard documents
+produced by different standard-setting bodies in a manner that
+maintains correct semantics while allowing each standard publisher to
+define appropriate semantic extensions.
+
+Simply put, it allows standards bodies or any other organization
+to create their own standard or specification document in a best
+practices manner.
+
+Metanorma is composed of a number of specifications and software
+implementations. The Metanorma document model is based on the SecureDoc
+document model.
+
+For more on Metanorma and who uses it, refer to https://www.metanorma.org[]
+
+== Installation on supported platforms
+
+See https://www.metanorma.org/install/[]
+
+=== Installing individual components
+
+The Metanorma workflow can be utilized via the `metanorma-cli` Ruby gem.
+
+[source,sh]
+----
+gem install metanorma-cli
+----
+
+== Usage
+
+Refer to https://www.metanorma.org/install/man/[Metanorma man page] and https://www.metanorma.org/install/usage/[Metanorma usage]
+
+=== Threaded execution
+
+Metanorma has threaded execution, to generate output documents from the same Presentation XML input more quickly.
+Similar to https://github.com/relaton/relaton[relaton], the `METANORMA_PARALLEL` environment variable 
+can be used to override the default number of parallel fetches used.
+
+
+== Origin of name
+
+*Meta-* is a prefix of Greek origin ("μετα") for "`with`" "`after`".
+In English, it has ended up meaning "about (its own category)"; e.g.
+_meta-discussion_ (a discussion about discussion). (For the roundabout way
+it ended up with that meaning, see https://en.wikipedia.org/wiki/Meta#Etymology.)
+
+*Norma* is Latin for "`rule`" and "`standard`"; hence English _norm_,
+but also German _Norm_ "standard".
+
+The Metanorma project is for setting a standard for standard documents
+created by standards-setting organizations (which is a meta thing to do);
+hence this name.
+
+Metanorma seeks to embrace all standards documents standards, but not possess any:
+it can give rise to many "standard" standards, but not limit the extension of any of those standards.
+
+The motto of the project is https://en.wikipedia.org/wiki/Aequitas[_Aequitate_] _verum_,
+"Truth through equity". Dealing with all standards fairly (_aequitate_), we seek not an abstract
+virtue (_veritas_), but a practical reality on the ground (_verum_), that can be used by
+stakeholders of multiple standards.
+
+

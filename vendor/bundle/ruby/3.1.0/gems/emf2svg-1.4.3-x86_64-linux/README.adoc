@@ -1,0 +1,228 @@
+= emf2svg Ruby gem for EMF to SVG conversion
+
+image:https://github.com/metanorma/emf2svg-ruby/actions/workflows/build.yml/badge.svg["Build", link="https://github.com/metanorma/emf2svg-ruby/actions/workflows/build.yml"]
+image:https://badge.fury.io/rb/emf2svg.svg["Gem Version", link="https://badge.fury.io/rb/emf2svg"]
+
+== Purpose
+
+The `emf2svg` Ruby gem provides a Ruby interface to the
+https://github.com/kakwa/libemf2svg[libemf2svg] EMF-to-SVG conversion library.
+
+NOTE: This gem currently uses the
+https://github.com/metanorma/libemf2svg[Metanorma fork of libemf2svg]
+until feature up-streaming is complete.
+
+== Prerequisites
+
+* Ruby version >= 2.6
+
+== Install
+
+Install the gem directly:
+
+[source,sh]
+----
+gem install 'emf2svg'
+----
+
+Or add it to your `Gemfile`:
+
+[source,ruby]
+----
+gem 'emf2svg'
+----
+
+NOTE: For more information on how to install by compiling from source, see
+<<install-from-source>>.
+
+
+== Usage
+
+This gem provides an interface to `libemf2svg`, allowing your Ruby code to
+directly utilize EMF to SVG conversion facilities.
+
+There are two ways to provide EMF data to `emf2svg`.
+
+=== Loading from file
+
+`Emf2svg.from_file`:: Loads an EMF file directly from the filesystem.
+
+[example]
+.Example of using `Emf2svg.from_file` and exporting an SVG file
+====
+[source,ruby]
+----
+require "emf2svg"
+
+data = Emf2svg.from_file("example.emf", 800, 600)
+File.write("output.svg", data, mode: "wb")
+----
+800, 600 - optional width and height of the bounding rectangle for svg file
+The image will be scaled to fit into this rectangle
+These parameters are optional. If skipped or set to 0 SVG image will have the
+same size as EMF (in pixels)
+====
+
+=== Loading binary data
+
+`Emf2svg.from_binary_string`:: Loads EMF content from binary form.
+
+[example]
+.Example of using `Emf2svg.from_binary_string` and exporting an SVG file
+====
+[source,ruby]
+----
+require "emf2svg"
+
+emf_content = File.read("example.emf", mode: "rb")
+svg_data = Emf2svg.from_binary_string(emf_content, 800, 600)
+File.write("output.svg", svg_data, mode: "wb")
+----
+800, 600 - optional width and height of the bounding rectangle for svg file
+The image will be scaled to fit into this rectangle
+These parameters are optional. If skipped or set to 0 SVG image will have the
+same size as EMF (in pixels)
+====
+
+
+[[packaging]]
+== Packaging
+
+=== Pre-compiled extensions or building from source
+
+This gem is distributed with pre-compiled native extensions for a set of
+supported machine architectures.
+
+On supported platforms, this removes the need for compiling the C extension and
+the installation of system dependencies. This results in much faster and a more
+reliable installation step.
+
+The pre-compiled platforms are:
+
+* `x86_64-linux` (GNU and `musl` flavors)
+* `aarch64-linux` (GNU and `musl` flavors)
+* `x86_64-darwin`
+* `arm64-darwin`
+* `x64-mingw32`
+* `x64-mingw-ucrt`
+
+When installing the gem, Ruby will automatically select a pre-compiled version
+suitable for your platform, or opt to install from source if the platform
+is not supported.
+
+[[install-from-source]]
+=== Installing from source
+
+==== General
+
+For platforms that require compilation, the `emf2svg` build script will
+automatically compile the native extension locally.
+
+The `emf2svg` build script maintains and installs all required libraries and
+other dependencies using the `vcpkg` package manager.
+
+Prior to installation, the system must already have install the appropriate
+build system (such as `gcc`, `clang` or Visual Studio), and CMake.
+
+==== Build prerequisites by platform
+
+==== Windows
+
+On Windows, while all necessary libraries are already pre-compiled, Visual
+Studio 2019 with C++ Build Tools still need to be installed.
+
+They can be downloaded
+https://visualstudio.microsoft.com/downloads/[here], or installed with
+Chocolatey:
+
+[source,sh]
+----
+choco install visualstudio2019buildtools -y --no-progress --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.18362"
+----
+
+==== macOS
+
+On macOS, CMake needs to be installed.
+
+[source,sh]
+----
+brew install cmake
+----
+
+==== Linux: Debian
+
+On Debian, the following build tools need to be installed.
+
+[source,sh]
+----
+# Choose your preferred compiler
+# GCC
+apt-get install gcc g++ gperf cmake pkg-config
+# or
+# clang
+apt-get install clang gperf cmake pkg-config
+----
+
+NOTE: On Debian systems, there exists a
+https://github.com/microsoft/vcpkg/issues/15931[vcpkg bug] that needs to be
+addressed by installing the `gperf` package in addition to other build tools.
+
+==== Linux: Fedora
+
+On Fedora, the following build tools need to be installed.
+
+[source,sh]
+----
+yum install cmake gcc-c++ gcc
+----
+
+
+== Development
+
+=== Basic steps
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run
+`rake spec` to run the tests. You can also run `bin/console` for an interactive
+prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To
+release a new version, update the version number in `version.rb`, and then run
+`bundle exec rake release`, which will create a git tag for the version, push
+git commits and the created tag, and push the `.gem` file to
+https://rubygems.org[rubygems.org].
+
+
+=== Releasing
+
+Releasing is done automatically with GitHub Actions. Just bump and tag with
+`gem-release`.
+
+For a patch release (0.0.x) use:
+
+[source,sh]
+----
+gem bump --version patch --tag --push
+----
+
+For a minor release (0.x.0) use:
+
+[source,sh]
+----
+gem bump --version minor --tag --push
+----
+
+
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/metanorma/emf2svg-ruby. This project is intended to be a
+safe, welcoming space for collaboration, and contributors are expected to adhere
+to the
+https://github.com/metanorma/emf2svg-ruby/blob/master/CODE_OF_CONDUCT.md[code of conduct].
+
+
+== Code of Conduct
+
+Everyone interacting in the emf2svg project's codebases, issue trackers, chat
+rooms and mailing lists is expected to follow the
+https://github.com/metanorma/emf2svg-ruby/blob/master/CODE_OF_CONDUCT.md[code of conduct].
