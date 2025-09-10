@@ -832,7 +832,7 @@ PlantUML versions:
 | Gem version | PlantUML version | Notes
 
 | 1.0.0       | 1.2025.4        | Latest release with updated architecture
-| 1.0.4       | 1.2025.7        | Latest release
+| 1.0.5       | 1.2025.7        | Latest release
 
 |===
 
