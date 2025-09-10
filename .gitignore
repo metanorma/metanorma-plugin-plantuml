@@ -1,0 +1,41 @@
+# Ignore bundler config
+/.bundle/
+
+# Ignore all logfiles and tempfiles
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore vendor directory
+/vendor/
+
+# Ignore Gemfile.lock (for gems)
+/Gemfile.lock
+
+# Ignore pkg directory
+/pkg/
+
+# Ignore OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore test coverage
+/coverage/
+/.simplecov
+
+# Ignore local development files
+.env
+.env.local
