@@ -112,8 +112,15 @@ module Metanorma
                     reader.source
                   else
                     # get content from ImageBlockMacroProcessor
-                    docdir = parent.document.attributes["docdir"]
-                    File.read(File.join(docdir, reader))
+                    docfile_directory = File.dirname(
+                      parent.document.attributes["docfile"] || ".",
+                    )
+
+                    resolved_path = parent.document
+                      .path_resolver
+                      .system_path(reader, docfile_directory)
+
+                    File.read(resolved_path)
                   end
 
             # Validate that we have matching start/end pairs
