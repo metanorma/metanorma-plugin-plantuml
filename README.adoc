@@ -89,6 +89,7 @@ Generally, the command syntax is more suitable for referencing external PlantUML
 files.
 
 
+[[command-syntax]]
 === Command syntax for external diagrams
 
 PlantUML diagrams can be directly referenced from external files using the
@@ -104,7 +105,7 @@ plantuml_image::{plantuml-source.puml}[{options}]
 Where,
 
 `{plantuml-source.puml}`:: Path to the PlantUML source file, relative to the
-path of the current file.
+path of the document root file.
 
 `{options}`:: (Optional) Comma-separated list of options to customize diagram
 generation.
@@ -140,6 +141,35 @@ The file `foo/bar.puml` is the same as above.
 The `format=svg` option specifies the output format as SVG.
 ====
 
+The path to the PlantUML source file is relative to the document root file,
+which is illustrated in the following example.
+
+.PlantUML source file path is relative to document root
+[example]
+====
+Given the following directory structure:
+
+[source]
+----
+dir/
+dir/sources/document.adoc
+dir/sources/sections/section_1.adoc
+dir/sources/plantuml/my_diagram.puml
+----
+
+Where:
+
+* `document.adoc` includes `sections/section_1.adoc`
+* `section_1.adoc` contains the `plantuml_image` command.
+
+The path to the PlantUML source file in `section_1.adoc` is specified relative
+to `document.adoc`, the document root, which is `plantuml/my_diagram.puml`:
+
+[source,asciidoc]
+----
+plantuml_image::plantuml/my_diagram.puml[]
+----
+====
 
 
 === Block syntax for inline diagrams
@@ -383,6 +413,8 @@ Alice -> Bob: Hello
 
 === Using `!include` and `!includesub`
 
+// TODO: verify that the description of paths are accurate in this section
+
 ==== General
 
 PlantUML supports modular diagram definitions using the `!include` and
@@ -451,6 +483,15 @@ Syntax:
 ----
 :plantuml-includedirs: {path1};{path2};...
 ----
+
+Where,
+
+`{path1}`, `{path2}`, etc.:: paths to directories (relative to document root)
+containing PlantUML files to be included, delimited by semicolons.
++
+NOTE: All paths passed to `includedirs` must be relative to the document root
+file, see <<command-syntax>> on how to determine the document root.
+
 
 .Resolving PlantUML includes with document-level `includedirs` attribute
 [example]
