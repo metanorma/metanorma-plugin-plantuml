@@ -413,8 +413,6 @@ Alice -> Bob: Hello
 
 === Using `!include` and `!includesub`
 
-// TODO: verify that the description of paths are accurate in this section
-
 ==== General
 
 PlantUML supports modular diagram definitions using the `!include` and

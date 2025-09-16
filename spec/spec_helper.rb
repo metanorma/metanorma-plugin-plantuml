@@ -41,7 +41,6 @@ def strip_schema_version(xml)
   xml.gsub(%r{schema-version="[^"]+"}, 'schema-version="_"')
 end
 
-# TODO: Read this from metanorma-standoc's spec_helper!
 ASCIIDOC_BLANK_HDR = <<~HDR.freeze
   = Document title
   Author
@@ -51,7 +50,6 @@ ASCIIDOC_BLANK_HDR = <<~HDR.freeze
   :data-uri-image: false
 HDR
 
-# TODO: Read this from metanorma-standoc's spec_helper!
 BLANK_HDR = <<~"HDR".freeze
   <metanorma xmlns="https://www.metanorma.org/ns/standoc" version="#{Metanorma::Standoc::VERSION}" schema-version="_" type="semantic" flavor="standoc">
   <bibdata type="standard">

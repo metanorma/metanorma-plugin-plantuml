@@ -33,7 +33,9 @@ module Metanorma
 
         def add_image_path_to_includedirs(document, image_path, includedirs)
           docdir = document.attributes["docdir"]
-          includedirs << File.dirname(File.join(docdir, image_path))
+          includedirs << File.dirname(
+            document.path_resolver.system_path(image_path, docdir),
+          )
           includedirs.compact.uniq
         end
 
