@@ -14,8 +14,8 @@ module Metanorma
       class Wrapper
         PLANTUML_JAR_NAME = "plantuml.jar".freeze
         PLANTUML_JAR_PATH = File.join(
-          File.dirname(__FILE__), "..", "..", "..",
-          "..", "data", PLANTUML_JAR_NAME
+          Gem::Specification.find_by_name("metanorma-plugin-plantuml").gem_dir,
+          "data", PLANTUML_JAR_NAME
         )
 
         SUPPORTED_FORMATS = %w[png svg pdf txt eps].freeze
@@ -213,7 +213,9 @@ module Metanorma
                   # find local include file in includedirs
                   found_include_file = nil
                   options[:includedirs].each do |includedir|
-                    include_file_path = File.join(includedir, include_file)
+                    include_file_path = Pathname.new(includedir)
+                      .join(include_file).to_s
+
                     if File.exist?(include_file_path)
                       found_include_file = include_file_path
                       break
@@ -222,7 +224,9 @@ module Metanorma
 
                   if found_include_file
                     # create include file in temp directory
-                    temp_include_file = File.join(temp_dir, include_file)
+                    temp_include_file = Pathname.new(temp_dir)
+                      .join(include_file).to_s
+
                     FileUtils.mkdir_p(File.dirname(temp_include_file))
 
                     File.open(temp_include_file, "w") do |f|
