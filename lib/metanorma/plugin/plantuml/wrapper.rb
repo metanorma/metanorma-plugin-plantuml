@@ -321,6 +321,9 @@ module Metanorma
               cmd << "-t#{format_str}"
             end
 
+            # Use 'smetana' layout engine for pragma
+            cmd << "-Playout=smetana"
+
             # Add output directory option
             cmd << "-o" << output_dir
 
