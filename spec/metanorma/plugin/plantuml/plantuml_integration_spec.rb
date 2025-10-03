@@ -254,6 +254,45 @@ RSpec.describe Metanorma::Plugin::Plantuml do
           .to be_xml_equivalent_to(expected)
       end
     end
+
+    context "Non-simple UML with class relationships (issue #673)" do
+      let(:input) do
+        <<~TEXT
+          #{ASCIIDOC_BLANK_HDR}
+          :imagesdir: spec/assets
+
+          [plantuml]
+          ....
+          @startuml uml_Global
+
+          class Global {
+            Version: string
+          }
+
+          Global *-- Product1
+          Global *-- Product2
+          Global *-- Product3
+          @enduml
+          ....
+        TEXT
+      end
+
+      it "correctly renders UML diagrams with relationships using smetana layout engine" do
+        result = metanorma_convert(input)
+
+        expected = <<~XML
+          #{BLANK_HDR}
+          <sections>
+            <figure id="_">
+              <image src="../../_plantuml_images/uml_Global.png" filename="../../_plantuml_images/uml_Global.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+            </figure>
+          </sections>
+          </metanorma>
+        XML
+
+        expect(strip_guid(result)).to be_xml_equivalent_to(expected)
+      end
+    end
   end
 
   context "PlantUML error handling" do
