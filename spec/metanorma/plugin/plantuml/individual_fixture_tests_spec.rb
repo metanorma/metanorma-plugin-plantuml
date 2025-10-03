@@ -57,7 +57,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
     # Handle encoding properly for binary PNG content
     binary_content = content.force_encoding("ASCII-8BIT")
-    png_header = "\x89PNG\r\n\x1a\n".force_encoding("ASCII-8BIT")
+    png_header = "\x89PNG\r\n\x1a\n".dup.force_encoding("ASCII-8BIT")
     binary_content.start_with?(png_header) && content.length > 100
   end
 
