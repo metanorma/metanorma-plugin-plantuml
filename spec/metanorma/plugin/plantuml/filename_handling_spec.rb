@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe "PlantUML Filename Handling" do
@@ -77,7 +79,7 @@ RSpec.describe "PlantUML Filename Handling" do
       result = Metanorma::Plugin::Plantuml::Backend
         .generate_file(test_parent, reader)
 
-      expect(result).to match(/_plantuml_images\/PERT\.png/)
+      expect(result).to match(%r{_plantuml_images/PERT\.png})
     end
 
     it "processes plantuml-lrg-25-10-1.puml with includedirs" do
@@ -89,7 +91,7 @@ RSpec.describe "PlantUML Filename Handling" do
           test_parent, reader, options: { includedirs: [fixtures_path(".")] }
         )
 
-      expect(result).to match(/_plantuml_images\/plantuml_(.){1,999}.png/)
+      expect(result).to match(%r{_plantuml_images/plantuml_(.){1,999}.png})
     end
 
     it "processes plantuml-custom-filename.puml with quoted filename" do
@@ -101,7 +103,7 @@ RSpec.describe "PlantUML Filename Handling" do
       result = Metanorma::Plugin::Plantuml::Backend
         .generate_file(test_parent, reader)
 
-      expect(result).to match(/_plantuml_images\/My_Number\.png/)
+      expect(result).to match(%r{_plantuml_images/My_Number\.png})
     end
   end
 
@@ -110,7 +112,7 @@ RSpec.describe "PlantUML Filename Handling" do
       dangerous_filenames = [
         "../../../etc/passwd",
         "/tmp/dangerous_overwrite",
-        "\\Windows\\System32\\config",
+        '\\Windows\\System32\\config',
         "../../important/file",
       ]
 

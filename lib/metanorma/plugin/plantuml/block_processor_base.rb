@@ -75,7 +75,7 @@ module Metanorma
           includedirs.compact.uniq
         end
 
-        def process_image_block(parent, reader, attrs, formats, options) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def process_image_block(parent, reader, attrs, formats, options) # rubocop:disable Metrics/MethodLength
           if formats.length == 1
             # Single format - original behavior
             filename = Backend.generate_file(

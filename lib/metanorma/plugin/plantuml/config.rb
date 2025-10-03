@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rbconfig"
 
 module Metanorma
@@ -20,9 +22,7 @@ module Metanorma
             "-Djava.awt.headless=true",
           ]
 
-          if RbConfig::CONFIG["host_os"].match?(/darwin|mac os/)
-            options << "-Dapple.awt.UIElement=true"
-          end
+          options << "-Dapple.awt.UIElement=true" if RbConfig::CONFIG["host_os"].match?(/darwin|mac os/)
 
           options
         end

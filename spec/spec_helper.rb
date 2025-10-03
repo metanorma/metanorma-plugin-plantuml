@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "bundler/setup"
 require "metanorma-standoc"
 require "metanorma"
@@ -33,15 +35,15 @@ end
 def strip_guid(xml)
   strip_schema_version(
     xml.gsub(%r{<fetched>[^<]+</fetched>}, "<fetched/>")
-      .gsub(%r{id="_[^"]+"}, 'id="_"'),
+      .gsub(/id="_[^"]+"/, 'id="_"'),
   )
 end
 
 def strip_schema_version(xml)
-  xml.gsub(%r{schema-version="[^"]+"}, 'schema-version="_"')
+  xml.gsub(/schema-version="[^"]+"/, 'schema-version="_"')
 end
 
-ASCIIDOC_BLANK_HDR = <<~HDR.freeze
+ASCIIDOC_BLANK_HDR = <<~HDR
   = Document title
   Author
   :nodoc:

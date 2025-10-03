@@ -34,9 +34,7 @@ module Metanorma
             filename = generate_unique_filename(fmt)
             extracted_filename = extract_plantuml_filename(plantuml_content)
 
-            if extracted_filename
-              filename = "#{extracted_filename}.#{fmt}"
-            end
+            filename = "#{extracted_filename}.#{fmt}" if extracted_filename
 
             absolute_path, relative_path = path_prep(ldir, imagesdir)
             output_file = File.join(absolute_path, filename)
@@ -48,9 +46,7 @@ module Metanorma
               includedirs: options[:includedirs],
             )
 
-            unless result[:success]
-              raise "No image output from PlantUML: #{result[:error].message}"
-            end
+            raise "No image output from PlantUML: #{result[:error].message}" unless result[:success]
 
             File.join(relative_path, filename)
           end
@@ -95,9 +91,7 @@ module Metanorma
             sourcepath = imagesdir ? File.join(localdir, imagesdir) : localdir
             path.mkpath
 
-            unless File.writable?(path)
-              raise "Destination path #{path} not writable for PlantUML!"
-            end
+            raise "Destination path #{path} not writable for PlantUML!" unless File.writable?(path)
 
             [
               path,
@@ -129,31 +123,28 @@ module Metanorma
           end
 
           def generate_attrs(attrs)
-            %w(id align float title role width height alt)
-              .inject({}) do |memo, key|
-              memo[key] = attrs[key] if attrs.has_key?(key)
-              memo
+            %w[id align float title role width height alt]
+              .each_with_object({}) do |key, memo|
+              memo[key] = attrs[key] if attrs.key?(key)
             end
           end
 
           private
 
-          def validate_plantuml_delimiters(src) # rubocop:disable Metrics/MethodLength
+          def validate_plantuml_delimiters(src)
             # Find @start... pattern
             # (case insensitive, support all PlantUML diagram types)
             start_match = src.match(/^@start(\w+)/i)
-            unless start_match
-              raise "PlantUML content must start with @start... directive!"
-            end
+            raise "PlantUML content must start with @start... directive!" unless start_match
 
             diagram_type = start_match[1].downcase
             end_pattern = "@end#{diagram_type}"
 
             # Look for matching @end... directive (case insensitive)
-            unless /#{Regexp.escape(end_pattern)}\s*$/mi.match?(src)
-              raise "@start#{diagram_type} without matching #{end_pattern} " \
-                    "in PlantUML!"
-            end
+            return if /#{Regexp.escape(end_pattern)}\s*$/mi.match?(src)
+
+            raise "@start#{diagram_type} without matching #{end_pattern} " \
+                  "in PlantUML!"
           end
 
           def extract_plantuml_filename(plantuml_content)

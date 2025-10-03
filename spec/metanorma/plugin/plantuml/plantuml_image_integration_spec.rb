@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Metanorma::Plugin::Plantuml do
@@ -186,7 +188,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
         expect do
           metanorma_convert(input)
         end
-          .to output(%r{@startuml without matching @enduml in PlantUML!})
+          .to output(/@startuml without matching @enduml in PlantUML!/)
           .to_stderr
 
         result = metanorma_convert(input)

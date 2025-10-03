@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "open3"
 require "base64"
 require "tempfile"
@@ -12,27 +14,25 @@ module Metanorma
   module Plugin
     module Plantuml
       class Wrapper
-        PLANTUML_JAR_NAME = "plantuml.jar".freeze
+        PLANTUML_JAR_NAME = "plantuml.jar"
         PLANTUML_JAR_PATH = File.join(
           Gem::Specification.find_by_name("metanorma-plugin-plantuml").gem_dir,
           "data", PLANTUML_JAR_NAME
         )
 
         SUPPORTED_FORMATS = %w[png svg pdf txt eps].freeze
-        DEFAULT_FORMAT = "png".freeze
+        DEFAULT_FORMAT = "png"
 
         class << self
           def jvm_options
             options = ["-Xss5m", "-Xmx1024m"]
 
-            if RbConfig::CONFIG["host_os"].match?(/darwin|mac os/)
-              options << "-Dapple.awt.UIElement=true"
-            end
+            options << "-Dapple.awt.UIElement=true" if RbConfig::CONFIG["host_os"].match?(/darwin|mac os/)
 
             options
           end
 
-          def generate( # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+          def generate( # rubocop:disable Metrics/MethodLength
             content,
             format: DEFAULT_FORMAT,
             output_file: nil,
@@ -58,17 +58,15 @@ module Metanorma
             { success: false, error: e }
           end
 
-          def get_include_files(content, _options) # rubocop:disable Metrics/MethodLength
+          def get_include_files(content, _options)
             include_files = []
             content.each_line do |line|
               case line
               when /(!include|!includesub)\s(.+){1}/
-                found_file = $2.split("!").first
+                found_file = ::Regexp.last_match(2).split("!").first
 
                 # skip web links and standard libraries
-                if found_file.start_with?("<", "http")
-                  found_file = nil
-                end
+                found_file = nil if found_file.start_with?("<", "http")
 
                 include_files << found_file
               end
@@ -81,7 +79,8 @@ module Metanorma
             output_file: nil, base64: false, **options
           )
             unless File.exist?(input_file)
-              raise GenerationError.new("Input file not found: #{input_file}")
+              raise GenerationError,
+                    "Input file not found: #{input_file}"
             end
 
             content = File.read(input_file)
@@ -123,21 +122,21 @@ module Metanorma
 
           def validate_format!(format)
             format_str = format.to_s.downcase
-            unless SUPPORTED_FORMATS.include?(format_str)
-              raise InvalidFormatError.new(format, SUPPORTED_FORMATS)
-            end
+            return if SUPPORTED_FORMATS.include?(format_str)
+
+            raise InvalidFormatError.new(format, SUPPORTED_FORMATS)
           end
 
           def ensure_jar_available!
-            unless File.exist?(PLANTUML_JAR_PATH)
-              raise JarNotFoundError.new(PLANTUML_JAR_PATH)
-            end
+            return if File.exist?(PLANTUML_JAR_PATH)
+
+            raise JarNotFoundError, PLANTUML_JAR_PATH
           end
 
           def ensure_java_available!
-            unless java_available?
-              raise JavaNotFoundError.new
-            end
+            return if java_available?
+
+            raise JavaNotFoundError
           end
 
           def java_available?
@@ -155,24 +154,22 @@ module Metanorma
             execute_plantuml(content, format, output_file, options)
 
             unless File.exist?(output_file)
-              raise GenerationError.new(
-                "Output file was not created: #{output_file}",
-              )
+              raise GenerationError,
+                    "Output file was not created: #{output_file}"
             end
 
             { output_path: File.expand_path(output_file) }
           end
 
-          def generate_to_base64(content, format, options) # rubocop:disable Metrics/MethodLength
+          def generate_to_base64(content, format, options)
             Tempfile.create(["plantuml_output", ".#{format}"]) do |temp_file|
               temp_file.close
 
               execute_plantuml(content, format, temp_file.path, options)
 
               unless File.exist?(temp_file.path)
-                raise GenerationError.new(
-                  "Temporary output file was not created",
-                )
+                raise GenerationError,
+                      "Temporary output file was not created"
               end
 
               encoded_content = Base64
@@ -204,9 +201,8 @@ module Metanorma
                 if options[:includedirs].empty?
                   # raise error when include files are found but includedirs
                   # is nil
-                  raise PlantumlError.new(
-                    "includedirs is required when include files are specified",
-                  )
+                  raise PlantumlError,
+                        "includedirs is required when include files are specified"
                 end
 
                 options[:include_files].each do |include_file|
@@ -222,16 +218,16 @@ module Metanorma
                     end
                   end
 
-                  if found_include_file
-                    # create include file in temp directory
-                    temp_include_file = Pathname.new(temp_dir)
-                      .join(include_file).to_s
+                  next unless found_include_file
 
-                    FileUtils.mkdir_p(File.dirname(temp_include_file))
+                  # create include file in temp directory
+                  temp_include_file = Pathname.new(temp_dir)
+                    .join(include_file).to_s
 
-                    File.open(temp_include_file, "w") do |f|
-                      f.write(File.read(found_include_file))
-                    end
+                  FileUtils.mkdir_p(File.dirname(temp_include_file))
+
+                  File.open(temp_include_file, "w") do |f|
+                    f.write(File.read(found_include_file))
                   end
                 end
               end
@@ -268,7 +264,7 @@ module Metanorma
                   error_msg += "Found files: #{generated_files.map do |f|
                     File.basename(f)
                   end.join(', ')}"
-                  raise GenerationError.new(error_msg)
+                  raise GenerationError, error_msg
                 end
               end
 
@@ -276,7 +272,7 @@ module Metanorma
             end
           end
 
-          def find_generated_file(temp_dir, content, format) # rubocop:disable Metrics/MethodLength
+          def find_generated_file(temp_dir, content, format)
             # PlantUML generates files based on the filename specified in
             # @start... line
             extension = format.to_s.downcase
@@ -308,7 +304,7 @@ module Metanorma
             filename.gsub(/^["']|["']$/, "")
           end
 
-          def build_command(input_file, format, output_dir, _options) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+          def build_command(input_file, format, output_dir, _options) # rubocop:disable Metrics/MethodLength
             cmd = [
               configuration.java_path,
               *jvm_options,
@@ -317,9 +313,7 @@ module Metanorma
 
             # Add format-specific options
             format_str = format.to_s.downcase
-            if SUPPORTED_FORMATS.include?(format_str)
-              cmd << "-t#{format_str}"
-            end
+            cmd << "-t#{format_str}" if SUPPORTED_FORMATS.include?(format_str)
 
             # Use 'smetana' layout engine for pragma
             cmd << "-Playout=smetana"
