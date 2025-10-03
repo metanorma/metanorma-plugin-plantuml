@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require "English"
+
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require_relative "lib/metanorma/plugin/plantuml/version"
@@ -17,7 +21,7 @@ end
 def github_client
   require "octokit"
   @github_client ||= begin
-    token = ENV['GITHUB_TOKEN'] || `gh auth token 2>/dev/null`.strip
+    token = ENV["GITHUB_TOKEN"] || `gh auth token 2>/dev/null`.strip
     token = nil if token.empty?
     if token
       Octokit::Client.new(access_token: token)
@@ -31,32 +35,32 @@ def find_latest_valid_plantuml_release
   puts "Searching for latest valid PlantUML release..."
 
   client = github_client
-  releases = client.releases('plantuml/plantuml')
+  releases = client.releases("plantuml/plantuml")
 
   # Filter for valid JAR releases
   valid_releases = releases.reject(&:prerelease).select do |release|
     tag_name = release.tag_name
-    version = tag_name.sub(/^v/, '')
+    version = tag_name.sub(/^v/, "")
     # Must match pattern v\d+\.\d{4}\.\d+ and not contain -native or other suffixes
     tag_name.match?(/^v\d+\.\d{4}\.\d+$/) &&
-    !tag_name.include?('-native') &&
-    !tag_name.include?('-snapshot') &&
-    release.assets.any? { |asset| asset.name == "plantuml-#{version}.jar" }
+      !tag_name.include?("-native") &&
+      !tag_name.include?("-snapshot") &&
+      release.assets.any? { |asset| asset.name == "plantuml-#{version}.jar" }
   end
 
-  if valid_releases.empty?
-    raise "No valid PlantUML JAR releases found"
-  end
+  raise "No valid PlantUML JAR releases found" if valid_releases.empty?
 
   latest = valid_releases.first
-  version = latest.tag_name.sub(/^v/, '')
+  version = latest.tag_name.sub(/^v/, "")
 
   puts "Found latest valid release: #{latest.tag_name} (#{version})"
   {
     version: version,
     tag_name: latest.tag_name,
     html_url: latest.html_url,
-    jar_asset: latest.assets.find { |asset| asset.name == "plantuml-#{version}.jar" }
+    jar_asset: latest.assets.find do |asset|
+      asset.name == "plantuml-#{version}.jar"
+    end,
   }
 rescue Octokit::Error => e
   puts "GitHub API error: #{e.message}"
@@ -80,8 +84,10 @@ def update_version_file(new_plantuml_version, new_gem_version)
 
   # Update PlantUML version (handle .freeze suffix)
   original_content = content.dup
-  content.gsub!(/VERSION = ["']([^"']+)["']\.freeze/, %Q(VERSION = "#{new_gem_version}".freeze))
-  content.gsub!(/PLANTUML_JAR_VERSION = ["']([^"']+)["']\.freeze/, %Q(PLANTUML_JAR_VERSION = "#{new_plantuml_version}".freeze))
+  content.gsub!(/VERSION = ["']([^"']+)["']\.freeze/,
+                %(VERSION = "#{new_gem_version}".freeze))
+  content.gsub!(/PLANTUML_JAR_VERSION = ["']([^"']+)["']\.freeze/,
+                %(PLANTUML_JAR_VERSION = "#{new_plantuml_version}".freeze))
 
   if content == original_content
     puts "⚠️  No changes made to version file. Current content:"
@@ -93,7 +99,7 @@ def update_version_file(new_plantuml_version, new_gem_version)
 
   # Verify the file was written correctly
   updated_content = File.read(version_file)
-  unless updated_content.include?(%Q("#{new_plantuml_version}")) && updated_content.include?(%Q("#{new_gem_version}"))
+  unless updated_content.include?(%("#{new_plantuml_version}")) && updated_content.include?(%("#{new_gem_version}"))
     puts "❌ File content after update:"
     puts updated_content
     raise "Version file update verification failed"
@@ -105,32 +111,31 @@ def update_version_file(new_plantuml_version, new_gem_version)
 end
 
 def increment_gem_version(current_version)
-  require 'rubygems'
+  require "rubygems"
   version = Gem::Version.new(current_version)
   segments = version.segments.dup
   segments[2] = (segments[2] || 0) + 1
-  segments.join('.')
+  segments.join(".")
 end
 
 def test_plantuml_jar
   jar_file = "data/plantuml.jar"
 
-  unless File.exist?(jar_file)
-    raise "PlantUML JAR file not found: #{jar_file}"
-  end
+  raise "PlantUML JAR file not found: #{jar_file}" unless File.exist?(jar_file)
 
   puts "Testing PlantUML JAR functionality..."
 
   # Test version command
   version_output = `java -jar #{jar_file} -version 2>&1`
-  unless $?.success? && version_output.include?("PlantUML")
+  unless $CHILD_STATUS.success? && version_output.include?("PlantUML")
     raise "PlantUML version test failed. Output: #{version_output}"
   end
+
   puts "✅ Version test passed"
 
   # Test diagram generation
   test_diagram = "test_diagram_#{Time.now.to_i}.puml"
-  test_svg = test_diagram.sub('.puml', '.svg')
+  test_svg = test_diagram.sub(".puml", ".svg")
 
   File.write(test_diagram, <<~PUML)
     @startuml
@@ -141,9 +146,10 @@ def test_plantuml_jar
 
   begin
     generation_output = `java -jar #{jar_file} -tsvg #{test_diagram} 2>&1`
-    unless $?.success? && File.exist?(test_svg)
+    unless $CHILD_STATUS.success? && File.exist?(test_svg)
       raise "PlantUML diagram generation test failed. Output: #{generation_output}"
     end
+
     puts "✅ Diagram generation test passed"
   ensure
     FileUtils.rm_f([test_diagram, test_svg])
@@ -214,7 +220,7 @@ task :update_plantuml do
     end
 
     # Check if update is actually newer
-    require 'rubygems'
+    require "rubygems"
     if Gem::Version.new(latest_version) <= Gem::Version.new(current_version)
       puts "⚠️  Latest version (#{latest_version}) is not newer than current (#{current_version})"
       exit 0
@@ -239,7 +245,6 @@ task :update_plantuml do
     puts "  Release: #{release_info[:html_url]}"
 
     exit 1  # Exit with code 1 to indicate changes were made
-
   rescue StandardError => e
     puts "❌ Failed to update PlantUML: #{e.message}"
     exit 2  # Exit with code 2 to indicate error
@@ -247,7 +252,7 @@ task :update_plantuml do
 end
 
 desc "Update PlantUML version in version.rb (manual)"
-task :update_plantuml_version, [:plantuml_version] do |t, args|
+task :update_plantuml_version, [:plantuml_version] do |_t, args|
   plantuml_version = args[:plantuml_version]
 
   unless plantuml_version

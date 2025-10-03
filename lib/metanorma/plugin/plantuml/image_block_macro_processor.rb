@@ -9,15 +9,17 @@ module Metanorma
         use_dsl
         named :plantuml_image
 
-        def process(parent, reader, attrs) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def process(parent, reader, attrs)
           # Check for document-level disable flag
           if parent.document.attr("plantuml-disabled")
-            return abort(parent, reader, attrs, "PlantUML processing disabled")
+            return abort(parent, reader, attrs,
+                         "PlantUML processing disabled")
           end
 
           # Check PlantUML availability explicitly
           unless Backend.plantuml_available?
-            return abort(parent, reader, attrs, "PlantUML not installed")
+            return abort(parent, reader, attrs,
+                         "PlantUML not installed")
           end
 
           # Parse format specifications

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe "PlantUML Individual Fixture Tests" do
@@ -39,7 +41,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
   def self.get_chapter_info(filename)
     if filename =~ /plantuml-lrg-(\d+)-/
-      chapter = $1.to_i
+      chapter = Regexp.last_match(1).to_i
       chapter_name = chapter_names[chapter] || "Unknown Chapter"
       section = filename
         .match(/plantuml-lrg-\d+-(.+)\.puml$/)&.[](1) || "unknown"
