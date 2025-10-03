@@ -10,9 +10,18 @@ inherit_from:
 Metrics/CyclomaticComplexity:
   Max: 10
 
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - 'spec/**/*'
+
 Metrics/MethodLength:
-  Max: 20
-  CountAsOne: ['array', 'hash', 'heredoc', 'method_call']
+  Exclude:
+    - 'Rakefile'
+    - 'lib/metanorma/plugin/plantuml/block_processor.rb'
+    - 'lib/metanorma/plugin/plantuml/image_block_macro_processor.rb'
+    - 'lib/metanorma/plugin/plantuml/wrapper.rb'
+    - 'spec/**/*'
 
 AllCops:
   TargetRubyVersion: 3.1
