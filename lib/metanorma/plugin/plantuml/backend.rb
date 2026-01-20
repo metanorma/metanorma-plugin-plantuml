@@ -70,9 +70,20 @@ module Metanorma
             through_attrs
           end
 
-          def generate_file_prep(parent)
+          def generate_file_prep(parent) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+            imagesdir = if parent.document.attr("docfile") &&
+                parent.document.attr("imagesdir")
+                          File.expand_path(
+                            File.join(
+                              File.dirname(parent.document.attr("docfile")),
+                              parent.document.attr("imagesdir"),
+                            ),
+                          )
+                        else
+                          parent.document.attr("imagesdir")
+                        end
+
             ldir = localdir(parent)
-            imagesdir = parent.document.attr("imagesdir")
             fmt = parent.document
               .attr("plantuml-image-format")&.strip&.downcase ||
               Wrapper::DEFAULT_FORMAT
@@ -86,12 +97,25 @@ module Metanorma
             raise "Destination directory #{ret} not writable for PlantUML!"
           end
 
-          def path_prep(localdir, imagesdir)
-            path = Pathname.new(File.join(localdir, "_plantuml_images"))
-            sourcepath = imagesdir ? File.join(localdir, imagesdir) : localdir
+          def path_prep(localdir, imagesdir) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+            # Determine source path
+            sourcepath = if imagesdir.nil?
+                           localdir
+                         elsif Pathname.new(imagesdir).absolute?
+                           imagesdir
+                         else
+                           File.join(localdir, imagesdir)
+                         end
+
+            # Determine PlantUML images destination absolute path
+            path = Pathname.new(
+              File.expand_path(File.join(localdir, "_plantuml_images")),
+            )
             path.mkpath
 
-            raise "Destination path #{path} not writable for PlantUML!" unless File.writable?(path)
+            unless File.writable?(path)
+              raise "Destination path #{path} not writable for PlantUML!"
+            end
 
             [
               path,
