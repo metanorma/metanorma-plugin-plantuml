@@ -196,7 +196,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
         expected = <<~XML
           #{BLANK_HDR}
           <sections>
-            <sourcecode id="_" lang="plantuml"><body>spec/fixtures/plantuml/plantuml-lrg-1-12-invalid.puml</sourcecode>
+            <sourcecode id="_" lang="plantuml"><body>spec/fixtures/plantuml/plantuml-lrg-1-12-invalid.puml</body></sourcecode>
           </sections>
           </metanorma>
         XML
