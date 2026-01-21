@@ -55,37 +55,29 @@ HDR
 BLANK_HDR = <<~"HDR".freeze
   <metanorma xmlns="https://www.metanorma.org/ns/standoc" version="#{Metanorma::Standoc::VERSION}" schema-version="_" type="semantic" flavor="standoc">
   <bibdata type="standard">
-  <title language="en" type="main">Document title</title>
+    <title language="en" type="main">Document title</title>
     <language>en</language>
     <script>Latn</script>
-    <status><stage>published</stage></status>
+    <status>
+      <stage>published</stage>
+    </status>
     <copyright>
       <from>#{Time.new.year}</from>
     </copyright>
     <ext>
-    <doctype>standard</doctype>
-    <flavor>standoc</flavor>
+      <doctype>standard</doctype>
+      <flavor>standoc</flavor>
     </ext>
   </bibdata>
-    <metanorma-extension>
-       <semantic-metadata>
+  <metanorma-extension>
+    <semantic-metadata>
       <stage-published>true</stage-published>
-     </semantic-metadata>
+    </semantic-metadata>
     <presentation-metadata>
-      <name>TOC Heading Levels</name>
-      <value>2</value>
-    </presentation-metadata>
-    <presentation-metadata>
-      <name>HTML TOC Heading Levels</name>
-      <value>2</value>
-    </presentation-metadata>
-    <presentation-metadata>
-      <name>DOC TOC Heading Levels</name>
-      <value>2</value>
-    </presentation-metadata>
-    <presentation-metadata>
-      <name>PDF TOC Heading Levels</name>
-      <value>2</value>
+      <toc-heading-levels>2</toc-heading-levels>
+      <html-toc-heading-levels>2</html-toc-heading-levels>
+      <doc-toc-heading-levels>2</doc-toc-heading-levels>
+      <pdf-toc-heading-levels>2</pdf-toc-heading-levels>
     </presentation-metadata>
   </metanorma-extension>
 HDR
