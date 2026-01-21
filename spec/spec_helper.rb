@@ -28,6 +28,11 @@ RSpec.configure do |config|
   end
 end
 
+Canon::RSpecMatchers.configure do |config|
+  config.xml.match.profile = :spec_friendly
+  config.xml.match.options = { attribute_order: :ignore }
+end
+
 def fixtures_path(path)
   File.join(File.expand_path("./fixtures/plantuml", __dir__), path)
 end
