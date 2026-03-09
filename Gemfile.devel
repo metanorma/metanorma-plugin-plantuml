@@ -1,0 +1,2 @@
+gem "metanorma-standoc", github: "metanorma/metanorma-standoc", branch: "fix/ruby-4.0"
+
