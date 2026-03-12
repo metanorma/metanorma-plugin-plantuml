@@ -44,6 +44,7 @@ module Metanorma
               format: fmt,
               output_file: output_file,
               includedirs: options[:includedirs],
+              layout: options[:layout],
             )
 
             raise "No image output from PlantUML: #{result[:error].message}" unless result[:success]

@@ -50,6 +50,35 @@ RSpec.describe Metanorma::Plugin::Plantuml do
       end
     end
 
+    context "Basic PlantUML processing with layout option" do
+      let(:input) do
+        <<~TEXT
+          #{ASCIIDOC_BLANK_HDR}
+          :imagesdir: spec/assets
+
+          plantuml_image::spec/fixtures/plantuml/plantuml-lrg-layout-option.puml[includedirs=spec/fixtures/plantuml_test_include_path,layout=dot]
+        TEXT
+      end
+
+      it "correctly renders PlantUML diagrams" do
+        result = metanorma_convert(input)
+
+        expected = <<~XML
+          #{BLANK_HDR}
+          <sections>
+            <figure id="_">
+              <image src="../../_plantuml_images/_.png" filename="../../_plantuml_images/_.png" id="_" mimetype="image/png" height="auto" width="auto"/>
+            </figure>
+          </sections>
+          </metanorma>
+        XML
+
+        expect(strip_guid(result.gsub(%r{_plantuml_images/plantuml[^./]+\.},
+                                      "_plantuml_images/_.")))
+          .to be_xml_equivalent_to(expected)
+      end
+    end
+
     context "Basic PlantUML processing with file in includedirs" do
       let(:input) do
         <<~TEXT
@@ -216,7 +245,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
 
       it "falls back to source code block when PlantUML is disabled" do
         # Use document attribute to disable PlantUML processing
-        input_with_disabled = input.sub(/:no-isobib:/,
+        input_with_disabled = input.sub(":no-isobib:",
                                         ":no-isobib:\n:plantuml-disabled:")
 
         result = metanorma_convert(input_with_disabled)
