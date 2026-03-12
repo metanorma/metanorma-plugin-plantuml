@@ -32,8 +32,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "asciidoctor"
   spec.add_dependency "isodoc"
-  spec.add_dependency "benchmark"
   spec.add_dependency "ostruct"
+
+  spec.add_development_dependency "benchmark"
 
   spec.metadata["rubygems_mfa_required"] = "false"
 end
