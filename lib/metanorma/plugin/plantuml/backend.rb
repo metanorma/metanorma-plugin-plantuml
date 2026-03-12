@@ -202,7 +202,7 @@ module Metanorma
           end
 
           def generate_unique_filename(format)
-            timestamp = Time.now.strftime("%Y%m%d_%H%M%S_%L")
+            timestamp = Utils.generate_timestamp
             "plantuml_#{timestamp}.#{format}"
           end
         end
