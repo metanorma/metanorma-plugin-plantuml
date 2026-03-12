@@ -4,10 +4,6 @@ require "open3"
 require "tempfile"
 require "fileutils"
 require "tmpdir"
-require_relative "version"
-require_relative "errors"
-require_relative "config"
-require_relative "utils"
 
 module Metanorma
   module Plugin

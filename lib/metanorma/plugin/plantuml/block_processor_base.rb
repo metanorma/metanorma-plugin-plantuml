@@ -2,7 +2,6 @@
 
 require "asciidoctor"
 require "asciidoctor/extensions"
-require_relative "backend"
 
 module Metanorma
   module Plugin
