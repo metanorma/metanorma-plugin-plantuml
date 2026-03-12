@@ -82,12 +82,12 @@ def update_version_file(new_plantuml_version, new_gem_version)
   version_file = "lib/metanorma/plugin/plantuml/version.rb"
   content = File.read(version_file)
 
-  # Update PlantUML version (handle .freeze suffix)
+  # Update PlantUML version
   original_content = content.dup
-  content.gsub!(/VERSION = ["']([^"']+)["']\.freeze/,
-                %(VERSION = "#{new_gem_version}".freeze))
-  content.gsub!(/PLANTUML_JAR_VERSION = ["']([^"']+)["']\.freeze/,
-                %(PLANTUML_JAR_VERSION = "#{new_plantuml_version}".freeze))
+  content.gsub!(/VERSION = ["']([^"']+)["']/,
+                %(VERSION = "#{new_gem_version}"))
+  content.gsub!(/PLANTUML_JAR_VERSION = ["']([^"']+)["']/,
+                %(PLANTUML_JAR_VERSION = "#{new_plantuml_version}"))
 
   if content == original_content
     puts "⚠️  No changes made to version file. Current content:"
