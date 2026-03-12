@@ -78,14 +78,14 @@ def current_gem_version
   Metanorma::Plugin::Plantuml::VERSION
 end
 
-def update_version_file(new_plantuml_version, new_gem_version)
+def update_version_file(new_plantuml_version)
   version_file = "lib/metanorma/plugin/plantuml/version.rb"
   content = File.read(version_file)
 
   # Update PlantUML version
   original_content = content.dup
-  content.gsub!(/VERSION = ["']([^"']+)["']/,
-                %(VERSION = "#{new_gem_version}"))
+  # content.gsub!(/VERSION = ["']([^"']+)["']/,
+  #               %(VERSION = "#{new_gem_version}"))
   content.gsub!(/PLANTUML_JAR_VERSION = ["']([^"']+)["']/,
                 %(PLANTUML_JAR_VERSION = "#{new_plantuml_version}"))
 
@@ -99,7 +99,7 @@ def update_version_file(new_plantuml_version, new_gem_version)
 
   # Verify the file was written correctly
   updated_content = File.read(version_file)
-  unless updated_content.include?(%("#{new_plantuml_version}")) && updated_content.include?(%("#{new_gem_version}"))
+  unless updated_content.include?(%("#{new_plantuml_version}"))
     puts "❌ File content after update:"
     puts updated_content
     raise "Version file update verification failed"
@@ -107,7 +107,7 @@ def update_version_file(new_plantuml_version, new_gem_version)
 
   puts "✅ Updated version file:"
   puts "  PlantUML: #{new_plantuml_version}"
-  puts "  Gem: #{new_gem_version}"
+  # puts "  Gem: #{new_gem_version}"
 end
 
 def increment_gem_version(current_version)
@@ -165,9 +165,7 @@ file "data/plantuml.jar" do |file|
 
   FileUtils.mkdir_p(File.dirname(file.name))
 
-  File.open(file.name, "wb") do |f|
-    f.write uri_open(url).read
-  end
+  File.binwrite(file.name, uri_open(url).read)
 
   puts "PlantUML JAR downloaded to #{file.name}"
 end
@@ -229,8 +227,8 @@ task :update_plantuml do
     puts "🔄 Updating PlantUML from #{current_version} to #{latest_version}"
 
     # Update version files
-    new_gem_version = increment_gem_version(current_gem)
-    update_version_file(latest_version, new_gem_version)
+    # new_gem_version = increment_gem_version(current_gem)
+    update_version_file(latest_version)
 
     # Clean old JAR and download new one
     Rake::Task[:clean_jar].invoke
@@ -241,7 +239,7 @@ task :update_plantuml do
 
     puts "🎉 Successfully updated PlantUML!"
     puts "  PlantUML: #{current_version} → #{latest_version}"
-    puts "  Gem: #{current_gem} → #{new_gem_version}"
+    puts "  Gem: #{current_gem} → #{current_gem}"
     puts "  Release: #{release_info[:html_url]}"
 
     exit 1  # Exit with code 1 to indicate changes were made
@@ -266,13 +264,14 @@ task :update_plantuml_version, [:plantuml_version] do |_t, args|
   end
 
   current_gem = current_gem_version
-  new_gem_version = increment_gem_version(current_gem)
+  # Use release rake task to increment gem version based on current version
+  # new_gem_version = increment_gem_version(current_gem)
 
-  update_version_file(plantuml_version, new_gem_version)
+  update_version_file(plantuml_version)
 
   puts "Updated versions:"
   puts "  PlantUML: #{plantuml_version}"
-  puts "  Gem: #{new_gem_version}"
+  puts "  Gem: #{current_gem}"
   puts ""
   puts "Don't forget to run: rake clean_jar download_jar"
 end
