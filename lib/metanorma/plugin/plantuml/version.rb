@@ -3,7 +3,7 @@
 module Metanorma
   module Plugin
     module Plantuml
-      VERSION = "1.0.9"
+      VERSION = "1.0.10"
       PLANTUML_JAR_VERSION = "1.2026.2"
     end
   end
