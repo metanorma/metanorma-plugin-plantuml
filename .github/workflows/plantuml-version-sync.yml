@@ -23,6 +23,8 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
 
+      - uses: metanorma/ci/graphviz-setup-action@main
+
       - name: Check for PlantUML updates
         id: update
         run: |
