@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 require "open3"
-require "base64"
 require "tempfile"
 require "fileutils"
 require "tmpdir"
-require "rbconfig"
 require_relative "version"
 require_relative "errors"
 require_relative "config"
+require_relative "utils"
 
 module Metanorma
   module Plugin
@@ -24,19 +23,10 @@ module Metanorma
         DEFAULT_FORMAT = "png"
 
         class << self
-          def jvm_options
-            options = ["-Xss5m", "-Xmx1024m"]
-
-            options << "-Dapple.awt.UIElement=true" if RbConfig::CONFIG["host_os"].match?(/darwin|mac os/)
-
-            options
-          end
-
           def generate( # rubocop:disable Metrics/MethodLength
             content,
             format: DEFAULT_FORMAT,
-            output_file: nil,
-            base64: false, **options
+            output_file: nil, **options
           )
             validate_format!(format)
             ensure_jar_available!
@@ -47,8 +37,6 @@ module Metanorma
 
             result = if output_file
                        generate_to_file(content, format, output_file, options)
-                     elsif base64
-                       generate_to_base64(content, format, options)
                      else
                        generate_to_temp_file(content, format, options)
                      end
@@ -74,24 +62,10 @@ module Metanorma
             include_files.compact.uniq
           end
 
-          def generate_from_file(
-            input_file, format: DEFAULT_FORMAT,
-            output_file: nil, base64: false, **options
-          )
-            unless File.exist?(input_file)
-              raise GenerationError,
-                    "Input file not found: #{input_file}"
-            end
-
-            content = File.read(input_file)
-            generate(content, format: format, output_file: output_file,
-                              base64: base64, **options)
-          end
-
           def version
             return nil unless available?
 
-            cmd = [configuration.java_path, *jvm_options, "-jar",
+            cmd = [configuration.java_path, *configuration.jvm_options, "-jar",
                    PLANTUML_JAR_PATH, "-version"]
             output, _, status = Open3.capture3(*cmd)
 
@@ -161,26 +135,9 @@ module Metanorma
             { output_path: File.expand_path(output_file) }
           end
 
-          def generate_to_base64(content, format, options)
-            Tempfile.create(["plantuml_output", ".#{format}"]) do |temp_file|
-              temp_file.close
-
-              execute_plantuml(content, format, temp_file.path, options)
-
-              unless File.exist?(temp_file.path)
-                raise GenerationError,
-                      "Temporary output file was not created"
-              end
-
-              encoded_content = Base64
-                .strict_encode64(File.read(temp_file.path))
-              { base64: encoded_content }
-            end
-          end
-
           def generate_to_temp_file(content, format, options)
             temp_dir = configuration.temp_dir || Dir.tmpdir
-            timestamp = Time.now.strftime("%Y%m%d_%H%M%S_%L")
+            timestamp = Utils.generate_timestamp
             output_file = File.join(temp_dir, "plantuml_#{timestamp}.#{format}")
 
             generate_to_file(content, format, output_file, options)
@@ -307,7 +264,7 @@ module Metanorma
           def build_command(input_file, format, output_dir, _options) # rubocop:disable Metrics/MethodLength
             cmd = [
               configuration.java_path,
-              *jvm_options,
+              *configuration.jvm_options,
               "-jar", PLANTUML_JAR_PATH
             ]
 

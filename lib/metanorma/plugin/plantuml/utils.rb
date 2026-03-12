@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "liquid"
 require "pathname"
 
 module Metanorma
@@ -16,6 +15,10 @@ module Metanorma
                 document.attributes["localdir"] ||
                 File.dirname(".")
             end
+          end
+
+          def generate_timestamp
+            Time.now.strftime("%Y%m%d_%H%M%S_%L")
           end
         end
       end
