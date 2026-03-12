@@ -27,7 +27,7 @@ jobs:
         id: update
         run: |
           # Run the update task and capture exit code
-          if rake update_plantuml; then
+          if bundle exec rake update_plantuml; then
             echo "update_made=false" >> $GITHUB_OUTPUT
             echo "No update needed - PlantUML is up to date"
           else
