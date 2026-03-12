@@ -41,7 +41,7 @@ module Metanorma
           includedirs.compact.uniq
         end
 
-        def parse_options(parent, reader, attrs)
+        def parse_options(parent, reader, attrs) # rubocop:disable Metrics/AbcSize
           options = {}
 
           # Parse include directory
@@ -52,6 +52,10 @@ module Metanorma
           options[:includedirs] = add_image_path_to_includedirs(
             parent.document, reader, options[:includedirs]
           )
+
+          if attrs["layout"]
+            options[:layout] = attrs["layout"].strip.downcase
+          end
 
           options
         end

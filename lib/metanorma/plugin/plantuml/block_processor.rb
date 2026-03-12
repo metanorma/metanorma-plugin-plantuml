@@ -43,6 +43,10 @@ module Metanorma
             parent.document, attrs, parse_doc_includedirs(parent.document)
           )
 
+          if attrs["layout"]
+            options[:layout] = attrs["layout"].strip.downcase
+          end
+
           options
         end
       end

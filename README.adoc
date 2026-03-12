@@ -457,6 +457,30 @@ the specified PlantUML file will be automatically added as one of the
 file will be resolved relative to the file's location, even if `includedirs` is
 not explicitly set.
 
+==== Setting `layout` option
+
+PlantUML allows you to specify the layout engine using the `layout` option.
+This option can be set at the block level, through the option of the same name.
+
+To set `layout` option:
+
+* The `layout` option in the `[plantuml]` block or `plantuml_image` command
+
+Syntax:
+[source,asciidoc]
+----
+plantuml_image::path/to/my-plantuml-1.puml[layout={layout_option}]
+
+[plantuml,layout={layout_option}]
+@startuml
+...
+@enduml
+----
+
+Where `{layout_option}` can be one of the following:
+
+`smetana`:: Use Smetana for layout (default)
+`dot`:: Use Graphviz DOT for layout
 
 ==== Document-level `plantuml-includedirs` attribute
 

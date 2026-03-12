@@ -192,9 +192,7 @@ module Metanorma
             # We need to use a temp directory and then move the file
             Dir.mktmpdir do |temp_dir| # rubocop:disable Metrics/BlockLength
               # create input file
-              File.open("#{temp_dir}/plantuml_input.puml", "w") do |f|
-                f.write(content)
-              end
+              File.write("#{temp_dir}/plantuml_input.puml", content)
 
               # Handle include files
               if options[:include_files] && !options[:include_files].empty?
@@ -226,7 +224,7 @@ module Metanorma
 
                   FileUtils.mkdir_p(File.dirname(temp_include_file))
 
-                  File.open(temp_include_file, "w") do |f|
+                  File.open(temp_include_file, "w") do |f| # rubocop:disable Style/FileWrite
                     f.write(File.read(found_include_file))
                   end
                 end
@@ -304,7 +302,7 @@ module Metanorma
             filename.gsub(/^["']|["']$/, "")
           end
 
-          def build_command(input_file, format, output_dir, _options) # rubocop:disable Metrics/MethodLength
+          def build_command(input_file, format, output_dir, options) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
             cmd = [
               configuration.java_path,
               *jvm_options,
@@ -316,7 +314,8 @@ module Metanorma
             cmd << "-t#{format_str}" if SUPPORTED_FORMATS.include?(format_str)
 
             # Use 'smetana' layout engine for pragma
-            cmd << "-Playout=smetana"
+            layout = options[:layout] || "smetana"
+            cmd << "-Playout=#{layout}"
 
             # Add output directory option
             cmd << "-o" << output_dir
