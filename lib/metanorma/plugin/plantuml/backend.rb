@@ -2,9 +2,6 @@
 
 require "pathname"
 require "fileutils"
-require_relative "wrapper"
-require_relative "utils"
-require_relative "errors"
 
 module Metanorma
   module Plugin
