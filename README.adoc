@@ -480,7 +480,12 @@ plantuml_image::path/to/my-plantuml-1.puml[layout={layout_option}]
 Where `{layout_option}` can be one of the following:
 
 `smetana`:: Use Smetana for layout (default)
-`dot`:: Use Graphviz DOT for layout
+`dot`:: Use Graphviz DOT for layout (requires GraphViz installation)
+
+NOTE: `Smetana` is the "native layout engine" of PlantUML.  It is a port of
+Graphviz to Java and it does not require an external Graphviz installation.
+`dot` uses the GraphViz layout engine.  External Graphviz installation is
+required for `dot`.
 
 ==== Document-level `plantuml-includedirs` attribute
 
