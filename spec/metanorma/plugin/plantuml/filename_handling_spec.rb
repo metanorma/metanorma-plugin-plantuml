@@ -73,7 +73,8 @@ RSpec.describe "PlantUML Filename Handling" do
     end
 
     it "processes plantuml-lrg-4-7.puml with filename PERT" do
-      fixture_content = File.read(fixtures_path("plantuml-lrg-4-7.puml"))
+      fixture_content = File.read(fixtures_path("plantuml-lrg-4-7.puml"),
+                                  encoding: "UTF-8")
       reader = TestReader.new(fixture_content)
 
       result = Metanorma::Plugin::Plantuml::Backend
@@ -83,7 +84,8 @@ RSpec.describe "PlantUML Filename Handling" do
     end
 
     it "processes plantuml-lrg-25-10-1.puml with includedirs" do
-      fixture_content = File.read(fixtures_path("plantuml-lrg-25-10-1.puml"))
+      fixture_content = File.read(fixtures_path("plantuml-lrg-25-10-1.puml"),
+                                  encoding: "UTF-8")
       reader = TestReader.new(fixture_content)
 
       result = Metanorma::Plugin::Plantuml::Backend
@@ -97,6 +99,7 @@ RSpec.describe "PlantUML Filename Handling" do
     it "processes plantuml-custom-filename.puml with quoted filename" do
       fixture_content = File.read(
         fixtures_path("plantuml-custom-filename.puml"),
+        encoding: "UTF-8",
       )
       reader = TestReader.new(fixture_content)
 

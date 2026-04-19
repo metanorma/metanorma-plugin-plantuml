@@ -28,6 +28,7 @@ module Metanorma
             ensure_jar_available!
             ensure_java_available!
 
+            content = content.dup.force_encoding("UTF-8")
             include_files = get_include_files(content, options)
             options[:include_files] = include_files unless include_files.empty?
 

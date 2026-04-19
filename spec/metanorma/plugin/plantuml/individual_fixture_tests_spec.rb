@@ -76,7 +76,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
     describe "#{chapter_name} (Chapter #{chapter})" do
       describe "Section #{section} (#{fixture_name})" do
-        let(:content) { File.read(fixture_file) }
+        let(:content) { File.read(fixture_file, encoding: "UTF-8") }
 
         it "generates PNG successfully" do
           includedirs = [File.dirname(fixture_file)]
