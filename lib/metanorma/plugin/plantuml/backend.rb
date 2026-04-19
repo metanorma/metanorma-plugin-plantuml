@@ -136,7 +136,7 @@ module Metanorma
                       .path_resolver
                       .system_path(reader, docfile_directory)
 
-                    File.read(resolved_path)
+                    File.read(resolved_path, encoding: "UTF-8")
                   end
 
             # Validate that we have matching start/end pairs
