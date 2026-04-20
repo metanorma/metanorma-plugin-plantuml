@@ -178,8 +178,8 @@ module Metanorma
 
                   FileUtils.mkdir_p(File.dirname(temp_include_file))
 
-                  File.open(temp_include_file, "w") do |f| # rubocop:disable Style/FileWrite
-                    f.write(File.read(found_include_file))
+                  File.open(temp_include_file, "w:UTF-8") do |f| # rubocop:disable Style/FileWrite
+                    f.write(File.read(found_include_file, encoding: "UTF-8"))
                   end
                 end
               end
