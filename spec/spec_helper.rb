@@ -2,7 +2,7 @@
 
 require "bundler/setup"
 require "metanorma-standoc"
-require "metanorma"
+#require "metanorma-core"
 require "metanorma-plugin-plantuml"
 require "rspec"
 require "tempfile"
@@ -28,10 +28,7 @@ RSpec.configure do |config|
   end
 end
 
-Canon::RSpecMatchers.configure do |config|
-  config.xml.match.profile = :spec_friendly
-  config.xml.match.options = { attribute_order: :ignore }
-end
+Canon::Config.instance.profile = :metanorma
 
 def fixtures_path(path)
   File.join(File.expand_path("./fixtures/plantuml", __dir__), path)
