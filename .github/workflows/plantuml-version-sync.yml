@@ -1,5 +1,9 @@
 name: PlantUML Version Sync
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   schedule:
     # Check for new PlantUML releases daily at 6 AM UTC

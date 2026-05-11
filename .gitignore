@@ -39,3 +39,15 @@ Thumbs.db
 # Ignore local development files
 .env
 .env.local
+
+# Ignore generated PlantUML images
+/_plantuml_images/
+
+# Ignore AsciiDoc log files
+*.asciidoc.log.txt
+
+# Ignore rspec status
+.rspec_status
+
+# Ignore rubocop cache
+.rubocop_cache/
