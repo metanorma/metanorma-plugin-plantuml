@@ -6,6 +6,7 @@ module Metanorma
       # PlantUML block processor
       class BlockProcessor < ::Asciidoctor::Extensions::BlockProcessor
         include ::Metanorma::Plugin::Plantuml::BlockProcessorBase
+
         use_dsl
         named :plantuml
         on_context :literal

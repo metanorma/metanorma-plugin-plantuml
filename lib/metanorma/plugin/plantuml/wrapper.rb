@@ -120,7 +120,7 @@ module Metanorma
 
           def generate_to_file(content, format, output_file, options)
             output_dir = File.dirname(output_file)
-            FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
+            FileUtils.mkdir_p(output_dir)
 
             execute_plantuml(content, format, output_file, options)
 
