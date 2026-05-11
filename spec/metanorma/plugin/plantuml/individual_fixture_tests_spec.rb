@@ -9,7 +9,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
   end
 
   # Get all fixture files
-  fixture_files = Dir.glob(File.join(fixtures_path("."), "*.puml")).sort
+  fixture_files = Dir.glob(File.join(fixtures_path("."), "*.puml"))
 
   # Chapter names from the PlantUML Language Reference Guide
   def self.chapter_names
@@ -57,7 +57,7 @@ RSpec.describe "PlantUML Individual Fixture Tests" do
 
     # Handle encoding properly for binary PNG content
     binary_content = content.force_encoding("ASCII-8BIT")
-    png_header = "\x89PNG\r\n\x1a\n".dup.force_encoding("ASCII-8BIT")
+    png_header = (+"\x89PNG\r\n\x1a\n").force_encoding("ASCII-8BIT")
     binary_content.start_with?(png_header) && content.length > 100
   end
 

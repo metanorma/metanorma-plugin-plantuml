@@ -350,7 +350,7 @@ RSpec.describe Metanorma::Plugin::Plantuml do
 
       it "falls back to source code block when PlantUML is disabled" do
         # Use document attribute to disable PlantUML processing
-        input_with_disabled = input.sub(/:no-isobib:/,
+        input_with_disabled = input.sub(":no-isobib:",
                                         ":no-isobib:\n:plantuml-disabled:")
 
         result = metanorma_convert(input_with_disabled)

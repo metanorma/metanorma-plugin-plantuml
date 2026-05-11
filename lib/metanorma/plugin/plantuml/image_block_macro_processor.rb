@@ -6,6 +6,7 @@ module Metanorma
       # PlantUML block processor
       class ImageBlockMacroProcessor < ::Asciidoctor::Extensions::BlockMacroProcessor
         include ::Metanorma::Plugin::Plantuml::BlockProcessorBase
+
         use_dsl
         named :plantuml_image
 

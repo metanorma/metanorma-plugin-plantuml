@@ -6,7 +6,7 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
   let(:temp_dir) { Dir.mktmpdir }
 
   after do
-    FileUtils.rm_rf(temp_dir) if Dir.exist?(temp_dir)
+    FileUtils.rm_rf(temp_dir)
   end
 
   let(:test_document) { TestDocument.new(temp_dir) }
