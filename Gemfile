@@ -7,7 +7,8 @@ gemspec
 gem "benchmark"
 gem "canon"
 gem "metanorma", github: "metanorma/metanorma", branch: "main"
-gem "metanorma-plugin-lutaml", github: "metanorma/metanorma-plugin-lutaml", branch: "fix/ruby-4.0"
+gem "metanorma-plugin-lutaml", github: "metanorma/metanorma-plugin-lutaml",
+                               branch: "fix/ruby-4.0"
 gem "metanorma-standoc", github: "metanorma/metanorma-standoc", branch: "main"
 gem "octokit"
 gem "rake"
