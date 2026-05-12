@@ -12,33 +12,47 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
   let(:test_document) { TestDocument.new(temp_dir) }
   let(:test_parent) { TestParent.new(test_document) }
 
-  describe ".prep_source" do
+  describe ".validate_source" do
     context "with complete PlantUML source" do
-      let(:reader) { TestReader.new("@startuml\nAlice -> Bob\n@enduml") }
-
-      it "returns the source as-is" do
-        result = described_class.prep_source(test_parent, reader)
-        expect(result).to eq("@startuml\nAlice -> Bob\n@enduml")
+      it "returns without error" do
+        expect do
+          described_class.validate_source("@startuml\nAlice -> Bob\n@enduml")
+        end.not_to raise_error
       end
     end
 
     context "with incomplete PlantUML source" do
-      let(:reader) { TestReader.new("Alice -> Bob") }
-
-      it "raises an error for missing delimiters" do
-        expect { described_class.prep_source(test_parent, reader) }
+      it "raises GenerationError for missing delimiters" do
+        expect { described_class.validate_source("Alice -> Bob") }
           .to raise_error(
-            "PlantUML content must start with @start... directive!",
+            Metanorma::Plugin::Plantuml::GenerationError,
+            /PlantUML content must start with @start\.\.\. directive!/,
           )
       end
     end
 
     context "with @startuml but no @enduml" do
-      let(:reader) { TestReader.new("@startuml\nAlice -> Bob") }
+      it "raises GenerationError" do
+        expect { described_class.validate_source("@startuml\nAlice -> Bob") }
+          .to raise_error(
+            Metanorma::Plugin::Plantuml::GenerationError,
+            /@startuml without matching @enduml in PlantUML!/,
+          )
+      end
+    end
 
-      it "raises an error" do
-        expect { described_class.prep_source(test_parent, reader) }
-          .to raise_error("@startuml without matching @enduml in PlantUML!")
+    context "with different diagram types" do
+      it "validates @startjson/@endjson" do
+        json_src = "@startjson\n{\"key\": \"value\"}\n@endjson"
+        expect do
+          described_class.validate_source(json_src)
+        end.not_to raise_error
+      end
+
+      it "detects mismatched diagram types" do
+        expect do
+          described_class.validate_source("@startuml\nAlice -> Bob\n@endjson")
+        end.to raise_error(Metanorma::Plugin::Plantuml::GenerationError)
       end
     end
   end
@@ -88,8 +102,7 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
       expect(result).to eq(temp_dir)
     end
 
-    it "raises error when directory is not writable" do
-      # Create a non-writable directory
+    it "raises GenerationError when directory is not writable" do
       read_only_dir = File.join(temp_dir, "readonly")
       Dir.mkdir(read_only_dir)
       File.chmod(0o444, read_only_dir)
@@ -98,9 +111,9 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
       parent = TestParent.new(document)
 
       expect { described_class.localdir(parent) }
-        .to raise_error(/Destination directory .* not writable for PlantUML!/)
+        .to raise_error(Metanorma::Plugin::Plantuml::GenerationError,
+                        /Destination directory .* not writable for PlantUML!/)
 
-      # Clean up
       File.chmod(0o755, read_only_dir)
     end
   end
@@ -114,7 +127,7 @@ RSpec.describe Metanorma::Plugin::Plantuml::Backend do
                                                                imagesdir)
 
       expect(absolute_path.to_s).to eq(File.join(temp_dir, "_plantuml_images"))
-      expect(relative_path).to eq("../_plantuml_images") # Relative to imagesdir
+      expect(relative_path).to eq("../_plantuml_images")
       expect(Dir.exist?(absolute_path)).to be true
     end
 

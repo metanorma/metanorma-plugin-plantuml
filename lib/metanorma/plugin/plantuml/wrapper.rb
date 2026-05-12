@@ -67,7 +67,6 @@ module Metanorma
             output, _, status = Open3.capture3(*cmd)
 
             if status.success?
-              # Extract version from output
               version_match = output.match(/PlantUML version ([\d.]+)/)
               version_match ? version_match[1] : PLANTUML_JAR_VERSION
             end
@@ -141,24 +140,16 @@ module Metanorma
           end
 
           def execute_plantuml(content, format, output_file, options) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
-            # PlantUML generates output files based on filename specified in
-            # @start... line
-            # We need to use a temp directory and then move the file
             Dir.mktmpdir do |temp_dir| # rubocop:disable Metrics/BlockLength
-              # create input file
               File.write("#{temp_dir}/plantuml_input.puml", content)
 
-              # Handle include files
               if options[:include_files] && !options[:include_files].empty?
                 if options[:includedirs].empty?
-                  # raise error when include files are found but includedirs
-                  # is nil
                   raise PlantumlError,
                         "includedirs is required when include files are specified"
                 end
 
                 options[:include_files].each do |include_file|
-                  # find local include file in includedirs
                   found_include_file = nil
                   options[:includedirs].each do |includedir|
                     include_file_path = Pathname.new(includedir)
@@ -172,7 +163,6 @@ module Metanorma
 
                   next unless found_include_file
 
-                  # create include file in temp directory
                   temp_include_file = Pathname.new(temp_dir)
                     .join(include_file).to_s
 
@@ -202,14 +192,12 @@ module Metanorma
                 raise GenerationError.new(error_message, error)
               end
 
-              # Find the generated file and move it to the desired location
               if output_file
                 generated_file = find_generated_file(temp_dir, content,
                                                      format)
                 if generated_file && File.exist?(generated_file)
                   FileUtils.mv(generated_file, output_file)
                 else
-                  # Debug: List what files were actually generated
                   generated_files = Dir.glob(File.join(temp_dir, "*"))
                   error_msg = "Generated file not found in temp directory. "
                   error_msg += "Expected: #{generated_file}. "
@@ -225,35 +213,17 @@ module Metanorma
           end
 
           def find_generated_file(temp_dir, content, format)
-            # PlantUML generates files based on the filename specified in
-            # @start... line
             extension = format.to_s.downcase
 
-            # First, try to extract filename from PlantUML content
-            plantuml_filename = extract_plantuml_filename_from_content(content)
+            plantuml_filename = FilenameResolver.extract(content)
 
             if plantuml_filename
-              # Look for file with PlantUML-specified name
               generated_file = File.join(temp_dir,
                                          "#{plantuml_filename}.#{extension}")
               return generated_file if File.exist?(generated_file)
             end
 
-            # Fallback: scan directory for any generated files with
-            # the correct extension
             Dir.glob(File.join(temp_dir, "*.#{extension}")).first
-          end
-
-          def extract_plantuml_filename_from_content(content)
-            # Extract the raw filename from @start... line (don't sanitize)
-            match = content.match(/^@start\w+\s+(.{1,999})$/mi)
-            return nil unless match
-
-            filename = match[1].strip.split("\n").first&.strip
-            return nil if filename.nil? || filename.empty?
-
-            # Remove quotes but keep the original name as PlantUML will use it
-            filename.gsub(/^["']|["']$/, "")
           end
 
           def build_command(input_file, format, output_dir, options) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -263,21 +233,14 @@ module Metanorma
               "-jar", PLANTUML_JAR_PATH
             ]
 
-            # Add format-specific options
             format_str = format.to_s.downcase
             cmd << "-t#{format_str}" if SUPPORTED_FORMATS.include?(format_str)
 
-            # Use 'smetana' layout engine for pragma
             layout = options[:layout] || "smetana"
             cmd << "-Playout=#{layout}"
 
-            # Add output directory option
             cmd << "-o" << output_dir
-
-            # Add charset option for better compatibility
             cmd << "-charset" << "UTF-8"
-
-            # Add input file
             cmd << input_file
 
             cmd

@@ -27,6 +27,8 @@ module Metanorma
                "metanorma/plugin/plantuml/invalid_format_error"
       autoload :Config, "metanorma/plugin/plantuml/config"
       autoload :Utils, "metanorma/plugin/plantuml/utils"
+      autoload :FilenameResolver,
+               "metanorma/plugin/plantuml/filename_resolver"
       autoload :Wrapper, "metanorma/plugin/plantuml/wrapper"
       autoload :Backend, "metanorma/plugin/plantuml/backend"
       autoload :BlockProcessorBase,
