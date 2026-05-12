@@ -9,7 +9,7 @@ module Metanorma
             first_line = content.lines.first&.strip
             return nil unless first_line
 
-            match = first_line.match(/^@start\w+\s+(.+)$/i)
+            match = first_line.match(/^@start\w+\s+([^\n]+)/i)
             return nil unless match
 
             filename = match[1].strip
@@ -19,11 +19,21 @@ module Metanorma
           end
 
           def sanitize(filename)
-            filename
-              .gsub(/[^\w\-.]/, "_")
-              .gsub(/\.{2,}/, "_")
-              .gsub(/_{2,}/, "_")
-              .gsub(/^[_\-.]+|[_\-.]+$/, "")
+            result = filename.gsub(/[^\w\-.]/, "_")
+            result = result.tr_s("._", "._")
+            result = result.gsub(/\.{2,}/, ".")
+            result = result.gsub(/_{2,}/, "_")
+            strip_special_edges(result)
+          end
+
+          private
+
+          def strip_special_edges(str)
+            result = str
+            trim = { "_" => true, "-" => true, "." => true }
+            result = result[1..] while result.length > 1 && trim[result[0]]
+            result = result[..-2] while result.length > 1 && trim[result[-1]]
+            result
           end
         end
       end
