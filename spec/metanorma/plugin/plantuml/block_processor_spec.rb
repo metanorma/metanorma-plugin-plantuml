@@ -26,13 +26,13 @@ RSpec.describe Metanorma::Plugin::Plantuml::BlockProcessor do
     it "warns about the error and creates listing block" do
       attrs = { "1" => "plantuml", "id" => "test" }
       msg = "Test error message"
+      display_text = "@startuml\nAlice -> Bob\n@enduml"
 
-      processor.send(:abort, test_parent, test_reader, attrs, msg)
+      processor.abort(test_parent, display_text, attrs, msg)
 
       expect(processor.warnings).to include(msg)
       expect(processor.created_blocks.last[:type]).to eq(:listing)
-      expect(processor.created_blocks.last[:content])
-        .to eq("@startuml\nAlice -> Bob\n@enduml")
+      expect(processor.created_blocks.last[:content]).to eq(display_text)
       expect(processor.created_blocks.last[:attrs])
         .to eq({ "language" => "plantuml", "id" => "test" })
     end
@@ -40,19 +40,29 @@ RSpec.describe Metanorma::Plugin::Plantuml::BlockProcessor do
     it "filters out numeric keys from attributes" do
       attrs = { "1" => "plantuml", "id" => "test", "2" => "ignored" }
       msg = "Test error message"
+      display_text = "@startuml\nAlice -> Bob\n@enduml"
 
-      processor.send(:abort, test_parent, test_reader, attrs, msg)
+      processor.abort(test_parent, display_text, attrs, msg)
 
       created_attrs = processor.created_blocks.last[:attrs]
       expect(created_attrs).to eq({ "language" => "plantuml", "id" => "test" })
       expect(created_attrs).not_to have_key("2")
+    end
+
+    it "preserves language attribute in listing block" do
+      attrs = {}
+      display_text = "@startuml\nAlice -> Bob\n@enduml"
+
+      processor.abort(test_parent, display_text, attrs, "error")
+
+      expect(processor.created_blocks.last[:attrs]["language"])
+        .to eq("plantuml")
     end
   end
 
   describe "integration with real PlantUML" do
     context "when PlantUML wrapper is available" do
       before do
-        # Only run if PlantUML is actually available
         skip "PlantUML not available" unless Metanorma::Plugin::Plantuml::Wrapper.available?
       end
 
@@ -70,11 +80,8 @@ RSpec.describe Metanorma::Plugin::Plantuml::BlockProcessor do
 
     context "when PlantUML wrapper is not available" do
       it "falls back to source code block" do
-        # Create a wrapper that reports unavailable
-        original_available = Metanorma::Plugin::Plantuml::Wrapper
-          .method(:available?)
-        Metanorma::Plugin::Plantuml::Wrapper
-          .define_singleton_method(:available?) { false }
+        allow(Metanorma::Plugin::Plantuml::Wrapper).to receive(:available?)
+          .and_return(false)
 
         attrs = { "1" => "plantuml" }
 
@@ -84,18 +91,12 @@ RSpec.describe Metanorma::Plugin::Plantuml::BlockProcessor do
         expect(processor.created_blocks.last[:type]).to eq(:listing)
         expect(processor.created_blocks.last[:attrs]["language"])
           .to eq("plantuml")
-
-        # Restore original method
-        Metanorma::Plugin::Plantuml::Wrapper.define_singleton_method(
-          :available?, original_available
-        )
       end
     end
   end
 
   describe "error handling" do
     it "handles syntax errors gracefully" do
-      # Missing @enduml
       invalid_reader = TestReader.new("@startuml\nAlice -> Bob")
       attrs = {}
 

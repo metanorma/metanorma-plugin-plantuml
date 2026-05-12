@@ -7,12 +7,12 @@ module Metanorma
   module Plugin
     module Plantuml
       module BlockProcessorBase
-        def abort(parent, reader, attrs, msg)
+        def abort(parent, text, attrs, msg)
           warn msg
           attrs["language"] = "plantuml"
           create_listing_block(
             parent,
-            reader.respond_to?(:source) ? reader.source : reader,
+            text,
             attrs.reject { |k, _v| k.to_s.match?(/^\d+$/) },
           )
         end
@@ -35,19 +35,16 @@ module Metanorma
         end
 
         def parse_formats(attrs, document) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
-          # Check for formats attribute (multiple formats)
           if attrs["formats"]
             formats = attrs["formats"].split(",").map(&:strip).map(&:downcase)
             return formats.select { |f| valid_format?(f) }
           end
 
-          # Check for format attribute (single format override)
           if attrs["format"]
             format = attrs["format"].strip.downcase
             return [format] if valid_format?(format)
           end
 
-          # Fall back to document attribute or default
           default_format = document
             .attr("plantuml-image-format")&.strip&.downcase ||
             Wrapper::DEFAULT_FORMAT
@@ -74,19 +71,17 @@ module Metanorma
           includedirs.compact.uniq
         end
 
-        def process_image_block(parent, reader, attrs, formats, options) # rubocop:disable Metrics/MethodLength
+        def process_image_block(parent, source, attrs, formats, options) # rubocop:disable Metrics/MethodLength
           if formats.length == 1
-            # Single format - original behavior
             filename = Backend.generate_file(
-              parent, reader, format_override: formats.first, options: options
+              parent, source, format_override: formats.first, options: options
             )
             through_attrs = Backend.generate_attrs(attrs)
             through_attrs["target"] = filename
           else
-            # Multiple formats - generate multiple files
             through_attrs = Backend
               .generate_multiple_files(
-                parent, reader, formats, attrs, options: options
+                parent, source, formats, attrs, options: options
               )
           end
 

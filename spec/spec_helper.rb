@@ -2,7 +2,6 @@
 
 require "bundler/setup"
 require "metanorma-standoc"
-# require "metanorma-core"
 require "metanorma-plugin-plantuml"
 require "rspec"
 require "tempfile"
@@ -17,10 +16,7 @@ Asciidoctor::Extensions.register do
 end
 
 RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
-
-  # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
 
   config.expect_with :rspec do |c|
@@ -119,7 +115,6 @@ class TestReader
   end
 end
 
-# Test implementation that captures method calls
 class TestBlockProcessor < Metanorma::Plugin::Plantuml::BlockProcessor
   attr_reader :warnings, :created_blocks
 
