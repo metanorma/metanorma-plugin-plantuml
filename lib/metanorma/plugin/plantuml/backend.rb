@@ -151,8 +151,8 @@ module Metanorma
           end
 
           def matching_end?(source, diagram_type)
-            end_pattern = "@end#{diagram_type}"
-            /#{Regexp.escape(end_pattern)}\s*$/mi.match?(source)
+            end_directive = "@end#{diagram_type}"
+            source.downcase.include?(end_directive.downcase)
           end
 
           def generate_unique_filename(format)
