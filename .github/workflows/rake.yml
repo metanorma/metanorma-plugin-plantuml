@@ -2,21 +2,17 @@
 # See https://github.com/metanorma/cimas
 name: rake
 
-permissions:
-  contents: write
-
 on:
   push:
     branches: [ master, main ]
     tags: [ v* ]
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   rake:
     uses: metanorma/ci/.github/workflows/generic-rake.yml@main
-    with:
-      setup-tools: graphviz
-      submodules: true
-      choco-cache: true
     secrets:
       pat_token: ${{ secrets.METANORMA_CI_PAT_TOKEN }}
