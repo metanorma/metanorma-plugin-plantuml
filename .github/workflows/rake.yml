@@ -17,3 +17,12 @@ jobs:
     uses: metanorma/ci/.github/workflows/generic-rake.yml@main
     secrets:
       pat_token: ${{ secrets.METANORMA_CI_PAT_TOKEN }}
+    with:
+      after-setup-ruby: |
+        # Install Graphviz for PlantUML
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+        elif [ "$RUNNER_OS" = "macOS" ]; then
+          brew install graphviz
+        fi
