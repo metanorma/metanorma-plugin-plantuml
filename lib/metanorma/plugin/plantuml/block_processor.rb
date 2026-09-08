@@ -11,7 +11,7 @@ module Metanorma
         on_context :literal
         parse_content_as :raw
 
-        def process(parent, reader, attrs)
+        def process(parent, reader, attrs) # rubocop:disable Metrics/MethodLength
           source = reader.source
 
           if parent.document.attr("plantuml-disabled")

@@ -16,9 +16,9 @@ inherit_from:
 # on cimas sync — best practice belongs at the shared-template layer, not
 # per-repo. Per ronaldtse feedback on metanorma/ci#332.
 plugins:
-  - rubocop-rspec
-  - rubocop-performance
-  - rubocop-rake
+  # - rubocop-rspec
+  # - rubocop-performance
+  # - rubocop-rake
 
 # local repo-specific modifications
 # ...

@@ -52,7 +52,7 @@ ASCIIDOC_BLANK_HDR = <<~HDR
   :data-uri-image: false
 HDR
 
-BLANK_HDR = <<~"HDR".freeze
+BLANK_HDR = <<~HDR.freeze
   <metanorma xmlns="https://www.metanorma.org/ns/standoc" version="#{Metanorma::Standoc::VERSION}" schema-version="_" type="semantic" flavor="standoc">
   <bibdata type="standard">
     <title language="en" type="main">Document title</title>
@@ -62,7 +62,7 @@ BLANK_HDR = <<~"HDR".freeze
       <stage>published</stage>
     </status>
     <copyright>
-      <from>#{Time.new.year}</from>
+      <from>#{Time.now.year}</from>
     </copyright>
     <ext>
       <doctype>standard</doctype>
