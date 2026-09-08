@@ -43,7 +43,7 @@ module Metanorma
             { success: false, error: e }
           end
 
-          def get_include_files(content, _options)
+          def get_include_files(content, _options) # rubocop:disable Metrics/MethodLength
             include_files = []
             content.each_line do |line|
               case line

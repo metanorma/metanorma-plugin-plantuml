@@ -31,7 +31,7 @@ def github_client
   end
 end
 
-def find_latest_valid_plantuml_release
+def find_latest_valid_plantuml_release # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
   puts "Searching for latest valid PlantUML release..."
 
   client = github_client
@@ -78,7 +78,7 @@ def current_gem_version
   Metanorma::Plugin::Plantuml::VERSION
 end
 
-def update_version_file(new_plantuml_version)
+def update_version_file(new_plantuml_version) # rubocop:disable Metrics/MethodLength
   version_file = "lib/metanorma/plugin/plantuml/version.rb"
   content = File.read(version_file)
 
@@ -118,7 +118,7 @@ def increment_gem_version(current_version)
   segments.join(".")
 end
 
-def test_plantuml_jar
+def test_plantuml_jar # rubocop:disable Metrics/MethodLength
   jar_file = "data/plantuml.jar"
 
   raise "PlantUML JAR file not found: #{jar_file}" unless File.exist?(jar_file)
@@ -199,7 +199,7 @@ task :test_plantuml do
 end
 
 desc "Update PlantUML to latest version"
-task :update_plantuml do
+task :update_plantuml do # rubocop:disable Metrics/BlockLength
   puts "Checking for PlantUML updates..."
 
   current_version = current_plantuml_version

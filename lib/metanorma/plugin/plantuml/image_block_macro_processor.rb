@@ -9,7 +9,7 @@ module Metanorma
         use_dsl
         named :plantuml_image
 
-        def process(parent, target, attrs)
+        def process(parent, target, attrs) # rubocop:disable Metrics/MethodLength
           display_text = target
 
           if parent.document.attr("plantuml-disabled")
@@ -52,7 +52,7 @@ module Metanorma
           includedirs.compact.uniq
         end
 
-        def parse_options(parent, target, attrs) # rubocop:disable Metrics/AbcSize
+        def parse_options(parent, target, attrs) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
           options = {}
 
           options[:includedirs] = parse_doc_includedirs(parent.document)
